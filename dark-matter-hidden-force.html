@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Matter May Have a Hidden Force That Changes Our Understanding of the Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Sora:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0a0a12;
+    --panel:#12121f;
+    --panel-line:#232338;
+    --ink:#e9e7f2;
+    --ink-dim:#9491a8;
+    --force:#7c6fea;
+    --force-dim:#4b3f9e;
+    --gold:#e8c87e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--ink);
+    font-family:'Sora', sans-serif;
+    font-weight:300;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--gold);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:92vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:6vw 6vw 5rem;
+    overflow:hidden;
+    border-bottom:1px solid var(--panel-line);
+  }
+  #field{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+  }
+  .hero-veil{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(10,10,18,0.15) 0%, rgba(10,10,18,0.55) 55%, rgba(10,10,18,0.96) 100%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    position:relative;
+    z-index:2;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--force);
+    margin-bottom:1.6rem;
+    display:flex;
+    align-items:center;
+    gap:0.7rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--force);
+    box-shadow:0 0 12px 2px var(--force);
+  }
+  h1{
+    position:relative;
+    z-index:2;
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(2.2rem, 5.4vw, 4.4rem);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    max-width:16ch;
+    color:#fff;
+  }
+  h1 em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--force);
+  }
+  .dek{
+    position:relative;
+    z-index:2;
+    max-width:46ch;
+    margin-top:1.6rem;
+    font-size:1.08rem;
+    color:var(--ink-dim);
+    font-weight:300;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  main{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 6vw;
+  }
+  .lede{
+    font-family:'Fraunces', serif;
+    font-weight:400;
+    font-style:italic;
+    font-size:1.5rem;
+    line-height:1.55;
+    color:#f2f0f9;
+    padding:4.5rem 0 3rem;
+    border-bottom:1px solid var(--panel-line);
+  }
+  section{
+    padding:3.2rem 0;
+    border-bottom:1px solid var(--panel-line);
+  }
+  section:last-of-type{border-bottom:none;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-bottom:1rem;
+    display:block;
+  }
+  h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(1.5rem, 3vw, 2.05rem);
+    color:#fff;
+    line-height:1.2;
+    margin-bottom:1.3rem;
+    max-width:22ch;
+  }
+  p{
+    font-size:1.03rem;
+    color:var(--ink);
+    margin-bottom:1.15rem;
+  }
+  p:last-child{margin-bottom:0;}
+  strong{color:#fff; font-weight:500;}
+
+  /* pull quote used once for the twist */
+  .pull{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:1.55rem;
+    line-height:1.4;
+    color:var(--force);
+    margin:2.2rem 0;
+    padding-left:1.4rem;
+    border-left:2px solid var(--force);
+  }
+
+  /* the paradox: three states, panel styled like readout cards */
+  .readout{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:1px;
+    background:var(--panel-line);
+    border:1px solid var(--panel-line);
+    margin-top:1.6rem;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .readout-row{
+    background:var(--panel);
+    padding:1.1rem 1.4rem;
+    display:flex;
+    align-items:baseline;
+    gap:1rem;
+  }
+  .readout-row .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    color:var(--force);
+    letter-spacing:0.08em;
+    white-space:nowrap;
+    min-width:6ch;
+  }
+  .readout-row p{margin:0; font-size:0.98rem; color:var(--ink-dim);}
+  .readout-row.up .tag{color:var(--gold);}
+  .readout-row.down .tag{color:#ea6f6f;}
+
+  ul.plain{
+    list-style:none;
+    margin-top:1.4rem;
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.6rem 0;
+  }
+  ul.plain li{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink);
+    padding:0.4rem 0.9rem;
+    border:1px solid var(--panel-line);
+    border-radius:100px;
+    margin-right:0.6rem;
+  }
+
+  figure{
+    margin:2rem 0;
+  }
+  figure img{
+    width:100%;
+    display:block;
+    border-radius:3px;
+    border:1px solid var(--panel-line);
+  }
+  figure.hero-figure img{
+    border-radius:5px;
+  }
+  figcaption{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--ink-dim);
+    letter-spacing:0.02em;
+    margin-top:0.7rem;
+    line-height:1.5;
+  }
+  figcaption .credit{
+    color:var(--force);
+  }
+
+  footer{
+    max-width:760px;
+    margin:0 auto;
+    padding:3rem 6vw 5rem;
+    color:var(--ink-dim);
+    font-size:0.9rem;
+    font-style:italic;
+    font-family:'Fraunces', serif;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <canvas id="field"></canvas>
+  <div class="hero-veil"></div>
+  <span class="eyebrow">Astrophysics &middot; Theoretical Cosmology</span>
+  <h1>Dark matter may carry a hidden force &mdash; and it could be <em>slowing</em> the universe down.</h1>
+  <p class="dek">New theoretical work suggests dark matter particles might pull on each other through a force of their own. The strange part: more attraction doesn't mean faster growth.</p>
+</div>
+
+<main>
+  <p class="lede">For decades, dark matter has been described as the universe's silent architect &mdash; invisible, but felt everywhere through gravity alone. A new theoretical model complicates that picture, and the twist it uncovers runs against intuition.</p>
+
+  <section>
+    <span class="kicker">01 &mdash; The Backdrop</span>
+    <h2>An invisible scaffold</h2>
+    <p>Dark matter does not emit, absorb, or reflect light, which keeps it hidden from every telescope ever built. Its presence is inferred entirely from its gravitational pull on galaxies, galaxy clusters, and the large-scale structure of the cosmos.</p>
+    <p>It's believed to make up roughly <strong>85% of all matter</strong> in the universe, quietly shaping how galaxies form and cluster together. And yet, after decades of study, scientists still don't know what it's actually made of &mdash; or whether gravity is the only way it interacts at all.</p>
+    <figure>
+      <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/missions/hubble/galaxies/clusters/Hubble_Abell209_potw2527a_sm.jpg?w=1280&h=771&fit=clip&crop=faces%2Cfocalpoint" alt="Hubble Space Telescope image of the massive galaxy cluster Abell 209, showing hundreds of golden elliptical and spiral galaxies against dark space.">
+      <figcaption>Abell 209, a galaxy cluster 2.8 billion light-years away. Its visible galaxies are only a small fraction of its total mass &mdash; the rest is dark matter, traced through the way it warps light from objects behind it. <span class="credit">Credit: ESA/Hubble &amp; NASA, M. Postman, P. Kelly</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <span class="kicker">02 &mdash; The Hypothesis</span>
+    <h2>A force that only dark matter feels</h2>
+    <p>The new research explores a provocative possibility: that dark matter particles interact with <em>each other</em> through an additional attractive force, invisible to ordinary matter entirely. Researchers have taken to calling it a <strong>"dark force."</strong></p>
+    <p>The intuitive expectation is simple. Stronger mutual attraction should pull dark matter together faster, accelerating the birth of galaxies and the cosmic structures they belong to.</p>
+    <p>The model says otherwise.</p>
+  </section>
+
+  <section>
+    <span class="kicker">03 &mdash; The Twist</span>
+    <h2>More pull, less growth</h2>
+    <p>As the universe expands, the model shows dark matter particles effectively <strong>losing mass over time</strong>. Weaker mass means weaker gravity &mdash; and that decline cancels out the extra pull the hidden force provides.</p>
+    <p class="pull">"Even an attractive force can produce unexpected outcomes when combined with the complex physics governing cosmic evolution."</p>
+    <div class="readout">
+      <div class="readout-row up">
+        <span class="tag">CLUSTERING</span>
+        <p>Dark matter particles clump together more efficiently under the hidden force.</p>
+      </div>
+      <div class="readout-row down">
+        <span class="tag">GRAVITY</span>
+        <p>Overall gravitational pull weakens as particle mass effectively decays.</p>
+      </div>
+      <div class="readout-row down">
+        <span class="tag">GROWTH</span>
+        <p>Large-scale cosmic structure formation is slowed in many scenarios &mdash; not sped up.</p>
+      </div>
+    </div>
+    <figure>
+      <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/astro/universe/deep-dives/The_Bullet_Cluster.jpg?w=3000&h=2168&fit=clip&crop=faces%2Cfocalpoint" alt="The Bullet Cluster, showing pink X-ray gas at the center of two colliding galaxy clusters, surrounded by blue-purple regions marking the location of dark matter.">
+      <figcaption>The Bullet Cluster: two galaxy clusters caught mid-collision. Pink shows ordinary hot gas (Chandra X-ray); blue shows where dark matter's gravity actually sits (Hubble lensing). The mismatch between the two is some of the clearest evidence that dark matter behaves differently from normal matter &mdash; exactly the kind of behavior a hidden dark-force interaction could help explain. <span class="credit">Credit: X-ray: NASA/CXC/CfA/M. Markevitch; Optical &amp; lensing: NASA/STScI, Magellan/U. Arizona/D. Clowe; Lensing map: ESO WFI</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <span class="kicker">04 &mdash; Why It Matters</span>
+    <h2>Closing the gaps in the standard model</h2>
+    <p>Modern cosmology has a habit of almost, but not quite, agreeing with itself. Measurements of cosmic expansion and galaxy formation don't always line up cleanly with predictions from the standard cosmological model. A hidden dark-matter interaction offers one possible explanation for those small, stubborn discrepancies.</p>
+    <p>If future observations bear this out, it could reshape how scientists understand:</p>
+    <ul class="plain">
+      <li>Galaxy formation</li>
+      <li>Cosmic evolution</li>
+      <li>Dark energy models</li>
+      <li>Expansion history</li>
+    </ul>
+    <figure>
+      <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/missions/webb/science/2024/12/STScI-01J4A04QJ47TX212EY5N7FN4BH.png?w=4657&h=4624&fit=clip&crop=faces%2Cfocalpoint" alt="A dense field of galaxies from the massive cluster MACS J1423, including a large bright elliptical galaxy and many distorted background galaxies stretched by gravitational lensing.">
+      <figcaption>The galaxy cluster MACS J1423. Its dark matter&#8209;dominated mass bends and magnifies light from galaxies far behind it &mdash; the same lensing effect scientists use to map dark matter's distribution across the universe. <span class="credit">Credit: NASA, ESA, CSA, STScI, C. Willott (NRC&#8209;Canada), L. Mowla (Wellesley College), K. Iyer (Columbia)</span></figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <span class="kicker">05 &mdash; What's Next</span>
+    <h2>Waiting on sharper eyes</h2>
+    <p>For now, this remains a theoretical model &mdash; a compelling "what if" rather than a confirmed feature of the cosmos. Upcoming space missions and next-generation telescopes may finally have the precision needed to test whether this hidden interaction is real.</p>
+    <p>The universe, once again, seems to be reminding us that intuition is an unreliable guide. Sometimes more attraction doesn't mean a tighter grip &mdash; it means the rules have quietly changed underneath us.</p>
+  </section>
+</main>
+
+<footer>
+  Dark matter remains one of science's biggest open questions &mdash; and this may be one more clue on the way to answering it.
+</footer>
+
+<script>
+(function(){
+  const canvas = document.getElementById('field');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w, h, particles = [];
+
+  function resize(){
+    w = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    h = canvas.height = canvas.offsetHeight * devicePixelRatio;
+  }
+
+  function init(){
+    resize();
+    const count = Math.min(70, Math.floor((w*h) / 40000));
+    particles = Array.from({length: count}, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15,
+      r: Math.random() * 1.6 + 0.5,
+      mass: Math.random() * 0.6 + 0.4
+    }));
+  }
+
+  function step(){
+    ctx.clearRect(0, 0, w, h);
+
+    // faint attraction toward local neighbors (the "dark force"), damped by decaying mass
+    for(let i=0;i<particles.length;i++){
+      const p = particles[i];
+      p.mass *= 0.9995; // mass slowly decays, weakening pull over time
+      for(let j=i+1;j<particles.length;j++){
+        const q = particles[j];
+        const dx = q.x - p.x, dy = q.y - p.y;
+        const dist2 = dx*dx + dy*dy;
+        if(dist2 < 26000 && dist2 > 100){
+          const f = 0.00025 * p.mass * q.mass;
+          p.vx += dx * f / Math.sqrt(dist2);
+          p.vy += dy * f / Math.sqrt(dist2);
+          q.vx -= dx * f / Math.sqrt(dist2);
+          q.vy -= dy * f / Math.sqrt(dist2);
+        }
+      }
+      p.vx *= 0.99; p.vy *= 0.99;
+      p.x += p.vx; p.y += p.vy;
+
+      if(p.x < 0) p.x += w; if(p.x > w) p.x -= w;
+      if(p.y < 0) p.y += h; if(p.y > h) p.y -= h;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * devicePixelRatio, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(124,111,234,${0.35 + p.mass*0.4})`;
+      ctx.fill();
+    }
+
+    // faint connecting lines for nearby particles (visualizes clustering)
+    ctx.lineWidth = 0.5;
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const p = particles[i], q = particles[j];
+        const dx = q.x - p.x, dy = q.y - p.y;
+        const dist2 = dx*dx + dy*dy;
+        if(dist2 < 9000){
+          ctx.strokeStyle = `rgba(124,111,234,${0.12 * (1 - dist2/9000)})`;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    if(!reduceMotion) requestAnimationFrame(step);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  init();
+  if(reduceMotion){
+    step(); // draw one static frame
+  } else {
+    requestAnimationFrame(step);
+  }
+})();
+</script>
+
+</body>
+</html>
