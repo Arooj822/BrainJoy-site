@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact — BrainJoy</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="logo.png" type="image/png" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand"><img src="logo.png" class="brand-mark" alt="BrainJoy logo"></a>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="current">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap page-body">
+  <h1>Get in touch</h1>
+  <p>Questions, topic requests, or want to collaborate? Send a message below, or email us directly at <a href="mailto:info@brainjoy.site" style="color:var(--violet-deep);font-weight:600;">info@brainjoy.site</a>.</p>
+
+  <form class="contact-form" action="mailto:info@brainjoy.site" method="post" enctype="text/plain">
+    <div>
+      <label for="name">Name</label><br/>
+      <input type="text" id="name" name="name" placeholder="Your name" required />
+    </div>
+    <div>
+      <label for="email">Email</label><br/>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required />
+    </div>
+    <div>
+      <label for="message">Message</label><br/>
+      <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Send message</button>
+  </form>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
