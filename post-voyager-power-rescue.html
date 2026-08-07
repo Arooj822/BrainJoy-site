@@ -1,299 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The 50-Year-Old Spacecraft NASA Refuses to Let Go Of</title>
-<meta name="description" content="How NASA's 'Big Bang' power maneuver is keeping the Voyager probes alive in interstellar space, and what it means for Voyager 1.">
-<style>
-  :root{
-    --void:#0b0e14;
-    --void-deep:#050608;
-    --paper:#eae6da;
-    --signal:#ffb454;
-    --signal-dim:#8a6a3a;
-    --plasma:#5fc9c0;
-    --line:rgba(234,230,218,0.14);
-    --text-dim:#a7a396;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--void);
-    color:var(--paper);
-    font-family:'Iowan Old Style','Georgia',serif;
-    line-height:1.7;
-    -webkit-font-smoothing:antialiased;
-  }
-  .label, .meta, .caption, .stat-label, nav, .signature-tag{
-    font-family:'Courier New', ui-monospace, monospace;
-    letter-spacing:0.08em;
-  }
-
-  .stars{
-    position:fixed; inset:0; z-index:-1; overflow:hidden;
-    background:
-      radial-gradient(1px 1px at 20% 30%, #fff, transparent),
-      radial-gradient(1px 1px at 75% 15%, #fff, transparent),
-      radial-gradient(1px 1px at 40% 65%, #fff, transparent),
-      radial-gradient(1px 1px at 90% 80%, #fff, transparent),
-      radial-gradient(1px 1px at 10% 85%, #fff, transparent),
-      radial-gradient(1px 1px at 60% 40%, #fff, transparent),
-      radial-gradient(1px 1px at 30% 10%, #fff, transparent),
-      radial-gradient(1px 1px at 85% 55%, #fff, transparent);
-    opacity:0.5;
-  }
-
-  nav{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:24px 6vw; font-size:12px; color:var(--text-dim);
-    border-bottom:1px solid var(--line);
-  }
-  nav .craft{ color:var(--signal); }
-
-  header.hero{
-    padding:8vw 6vw 6vw;
-    max-width:900px;
-  }
-  .eyebrow{
-    font-family:'Courier New', ui-monospace, monospace;
-    font-size:12px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:var(--plasma);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:28px;
-  }
-  .eyebrow::before{
-    content:"";
-    width:34px; height:1px; background:var(--plasma);
-  }
-  h1{
-    font-family:'Iowan Old Style','Georgia',serif;
-    font-weight:400;
-    font-size:clamp(2.4rem, 6vw, 4.6rem);
-    line-height:1.05;
-    margin:0 0 28px;
-    color:var(--paper);
-  }
-  h1 em{
-    font-style:italic;
-    color:var(--signal);
-  }
-  .dek{
-    font-size:clamp(1.05rem, 2vw, 1.3rem);
-    color:var(--text-dim);
-    max-width:640px;
-    margin:0 0 36px;
-  }
-  .byline{
-    font-family:'Courier New', ui-monospace, monospace;
-    font-size:12px;
-    color:var(--text-dim);
-    display:flex; gap:24px; flex-wrap:wrap;
-    border-top:1px solid var(--line);
-    padding-top:20px;
-  }
-  .byline b{ color:var(--paper); font-weight:normal; }
-
-  figure{ margin:0; }
-  .hero-image{
-    width:100%; max-width:1200px; margin:0 auto;
-    padding:0 6vw 6vw;
-  }
-  .hero-image img{
-    width:100%; display:block; border-radius:2px;
-    filter: saturate(1.05) contrast(1.02);
-  }
-  figcaption, .caption{
-    font-size:11px; color:var(--text-dim); margin-top:10px;
-    text-transform:uppercase; letter-spacing:0.06em;
-  }
-
-  article{
-    max-width:680px; margin:0 auto; padding:0 6vw 10vw;
-  }
-  article p{
-    font-size:1.15rem; color:#ded9c9; margin:0 0 26px;
-  }
-  article p.lede::first-letter{
-    font-size:3.6rem; float:left; line-height:0.85;
-    padding-right:10px; padding-top:6px;
-    color:var(--signal); font-family:'Iowan Old Style','Georgia',serif;
-  }
-  article h2{
-    font-family:'Iowan Old Style','Georgia',serif;
-    font-weight:400; font-style:italic;
-    font-size:1.9rem; color:var(--signal);
-    margin:64px 0 22px;
-  }
-  article blockquote{
-    margin:44px 0; padding:0 0 0 24px;
-    border-left:2px solid var(--plasma);
-    font-style:italic; font-size:1.3rem; color:var(--paper);
-  }
-  article a{ color:var(--plasma); }
-
-  .readout{
-    margin:56px 0;
-    border:1px solid var(--line);
-    border-radius:2px;
-    padding:32px 28px;
-    background:linear-gradient(180deg, rgba(95,201,192,0.05), transparent);
-  }
-  .readout .rlabel{
-    font-size:11px; color:var(--plasma); text-transform:uppercase;
-    margin-bottom:20px;
-  }
-  .rrow{
-    display:flex; justify-content:space-between; align-items:baseline;
-    padding:12px 0; border-bottom:1px dashed var(--line);
-    font-family:'Courier New', ui-monospace, monospace;
-  }
-  .rrow:last-child{ border-bottom:none; }
-  .rrow .rname{ color:var(--text-dim); font-size:0.85rem; }
-  .rrow .rval{ color:var(--paper); font-size:1.05rem; }
-  .rrow .rval .unit{ color:var(--signal-dim); font-size:0.75rem; margin-left:4px;}
-
-  .inline-image{
-    margin:52px 0;
-  }
-  .inline-image img{
-    width:100%; border-radius:2px; display:block;
-  }
-
-  .power-bar-wrap{
-    margin:48px 0;
-    padding:28px;
-    border:1px solid var(--line);
-  }
-  .power-bar-wrap .plabel{
-    font-size:11px; color:var(--text-dim); text-transform:uppercase; margin-bottom:16px;
-  }
-  .power-track{
-    height:10px; width:100%; background:rgba(255,255,255,0.06);
-    border-radius:6px; overflow:hidden; margin-bottom:10px;
-  }
-  .power-fill{
-    height:100%; width:20%;
-    background:linear-gradient(90deg, var(--signal-dim), var(--signal));
-    border-radius:6px;
-  }
-  .power-note{ font-size:0.85rem; color:var(--text-dim); }
-
-  footer{
-    max-width:680px; margin:0 auto; padding:0 6vw 8vw;
-    border-top:1px solid var(--line); padding-top:32px;
-    font-size:0.9rem; color:var(--text-dim);
-  }
-  footer a{ color:var(--plasma); }
-
-  @media (max-width:600px){
-    .rrow{ flex-direction:column; align-items:flex-start; gap:4px; }
-  }
-</style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="A power-saving maneuver called the 'Big Bang' kept Voyager 2 running past its limits. Voyager 1 is next — and it's in worse shape." />
+<title>NASA Just Bought the Oldest Spacecraft Alive Another Year — BrainJoy</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#7C5CFC" />
+<link rel="apple-touch-icon" href="logo.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="BrainJoy" />
+<meta property="og:title" content="NASA Just Bought the Oldest Spacecraft Alive Another Year — BrainJoy" />
+<meta property="og:description" content="A power-saving maneuver called the 'Big Bang' kept Voyager 2 running past its limits. Voyager 1 is next — and it's in worse shape." />
+<meta property="og:image" content="https://brainjoy.site/logo.png" />
+<meta property="og:url" content="https://brainjoy.site/post-voyager-power-rescue.html" />
+<meta name="twitter:card" content="summary" />
 </head>
 <body>
 
-<div class="stars"></div>
-
-<nav>
-  <span class="craft">VGR-1 / VGR-2</span>
-  <span>SIGNAL ACQUIRED — AUG 08 2026</span>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand"><img src="logo.png" class="brand-mark" alt="BrainJoy logo"></a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="scholarships.html">Scholarships</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
 </nav>
 
-<header class="hero">
-  <div class="eyebrow">Deep Space Network Dispatch</div>
-  <h1>NASA just bought the <em>oldest spacecraft alive</em> another year.</h1>
-  <p class="dek">A quiet engineering trick called the "Big Bang" kept Voyager 2's instruments running past their power budget. Now mission control is about to try the same maneuver on its dying twin, 28 billion kilometers from home.</p>
-  <div class="byline">
-    <span><b>Filed from</b> Earth</span>
-    <span><b>Distance to Voyager 1</b> ~171 AU</span>
-    <span><b>Mission age</b> 49 years</span>
+<header class="post-head">
+  <div class="wrap">
+    <a href="index.html" class="back-link">← Back to BrainJoy</a>
+    <span class="card-cat">Space Exploration</span>
+    <h1>NASA just bought the oldest spacecraft alive another year</h1>
+    <p class="post-meta">5 min read &middot; Space Exploration</p>
   </div>
 </header>
 
-<div class="hero-image">
-  <figure>
-    <img src="https://d2pn8kiwq2w21t.cloudfront.net/original_images/jpegPIA21839.jpg" alt="Artist's concept of a Voyager spacecraft in deep space">
-    <figcaption>Artist's concept of a Voyager spacecraft, marking 40 years of continuous operation. Credit: NASA/JPL-Caltech</figcaption>
-  </figure>
-</div>
-
-<article>
-  <p class="lede">Two spacecraft launched in the summer of 1977 are still, somehow, phoning home. They have outlived their mission planners' wildest estimates, outlived several generations of the computers that talk to them, and are now doing something neither was really built for: running on fumes, on purpose, by design.</p>
+<article class="wrap post-body">
+  <p>Two spacecraft launched in the summer of 1977 are still, somehow, phoning home. They've outlived their mission planners' wildest estimates, outlived several generations of the computers that talk to them, and are now doing something neither was really built for: running on fumes, on purpose, by design.</p>
 
   <p>According to a NASA statement released on August 4, engineers pulled off a power-saving maneuver on Voyager 2 nicknamed the "Big Bang." It let the mission avoid shutting off one of the probe's three remaining science instruments later this year — a fate that had looked unavoidable just months ago.</p>
 
   <h2>What the "Big Bang" actually does</h2>
-
   <p>The idea is almost domestic in its simplicity: swap a group of power-hungry devices for lower-power alternatives, all at once, while making sure the spacecraft stays warm enough to keep functioning in the deep freeze of interstellar space. JPL described it this way in an April blog post explaining the plan before it was carried out.</p>
 
-  <blockquote>Turn some things off. Replace them with lower-power alternatives. Keep the spacecraft warm enough to keep gathering science.</blockquote>
+  <p class="pullquote">Turn some things off. Replace them with lower-power alternatives. Keep the spacecraft warm enough to keep gathering science.</p>
 
   <p>It sounds simple because the engineering underneath it is not. NASA spent months testing the procedure on Voyager 2 before flipping the switch in May and June. The August 4 statement confirmed the transfer worked — and that it should keep all three of Voyager 2's remaining instruments running for at least another year.</p>
 
-  <div class="power-bar-wrap">
-    <div class="plabel">Estimated remaining power budget, both probes</div>
-    <div class="power-track"><div class="power-fill"></div></div>
-    <div class="power-note">Both spacecraft lose roughly 4 watts a year as their plutonium power source naturally decays. Every instrument still running is a deliberate trade-off against that clock.</div>
-  </div>
-
-  <h2>Voyager 1 is next — and it's in worse shape</h2>
-
+  <h2>Voyager 1 is next, and it's in worse shape</h2>
   <p>Here's the part that makes this more than a nice engineering story: Voyager 1, the more famous of the two probes and humanity's most distant object, is not doing as well as its twin. An unexpected power drop in February followed a routine maneuver, and by April, mission scientists had to power down one of its last remaining science instruments. Only two of its original ten instruments are still switched on.</p>
 
   <p>NASA chose to run the Big Bang on Voyager 2 first, deliberately, because it's the healthier of the two and closer to home. Voyager 1's turn is coming within the next few months. If it works there the way it worked on Voyager 2, it could be the difference between one more year of interstellar science and none.</p>
 
-  <div class="inline-image">
-    <figure>
-      <img src="https://d2pn8kiwq2w21t.cloudfront.net/original_images/jpegPIA17462.jpg" alt="Artist's concept of Voyager 1 entering interstellar space, surrounded by orange interstellar plasma">
-      <figcaption>Voyager 1 crossed into interstellar space in 2012 — the plasma out here is nothing like the solar wind it grew up in. Credit: NASA/JPL-Caltech</figcaption>
-    </figure>
-  </div>
-
   <h2>Just how far out are we talking?</h2>
-
   <p>Numbers stop meaning much at this scale, but here's an attempt anyway. One astronomical unit (AU) is the distance from the Earth to the sun — about 150 million kilometers. Voyager 1 is currently about 171 of those away. Voyager 2 is close behind at roughly 143 AU. Both are the only working spacecraft operating past the heliopause, the boundary where the sun's influence gives way to true interstellar space.</p>
-
-  <div class="readout">
-    <div class="rlabel">Live distance readout</div>
-    <div class="rrow"><span class="rname">Voyager 1 from Earth</span><span class="rval">~171<span class="unit">AU</span></span></div>
-    <div class="rrow"><span class="rname">Voyager 2 from Earth</span><span class="rval">~143<span class="unit">AU</span></span></div>
-    <div class="rrow"><span class="rname">One-way signal delay to V1</span><span class="rval">~23.7<span class="unit">HOURS</span></span></div>
-    <div class="rrow"><span class="rname">Power lost per year (each craft)</span><span class="rval">~4<span class="unit">WATTS</span></span></div>
-    <div class="rrow"><span class="rname">Working science instruments, V1</span><span class="rval">2<span class="unit">OF 10</span></span></div>
-    <div class="rrow"><span class="rname">Working science instruments, V2</span><span class="rval">3<span class="unit">OF 10</span></span></div>
-  </div>
 
   <p>In November, Voyager 1 will cross a strange kind of milestone: a full "light day" from Earth, meaning a radio signal takes 24 hours to reach it one-way. Both spacecraft turn 50 in 2027 — assuming, as NASA carefully puts it, that they keep working.</p>
 
   <h2>A grand tour that just wouldn't end</h2>
-
   <p>The Voyagers owe their extraordinary reach to timing. A rare alignment of Jupiter, Saturn, Uranus, and Neptune — one that happens roughly once every 176 years — let both spacecraft slingshot from planet to planet using minimal fuel. Voyager 2 took the "grand tour," visiting all four outer planets and finishing its Neptune flyby in 1989. Voyager 1 flew above the plane of the solar system after its closest pass by Saturn in 1981, trading further planetary flybys for a more direct trajectory out.</p>
 
   <p>Each time a flyby ended, engineers shut off instruments that were no longer useful, stretching the mission a little further. That same philosophy — turn things off to keep the essentials running — is exactly what's powering the Big Bang maneuver almost half a century later.</p>
 
-  <div class="inline-image">
-    <figure>
-      <img src="https://science.nasa.gov/wp-content/uploads/2024/04/spacecraft-profile.jpg" alt="Side profile diagram of the Voyager spacecraft against a black background">
-      <figcaption>A side view of the Voyager spacecraft — the same basic design has now run for nearly 50 years. Credit: NASA/JPL-Caltech</figcaption>
-    </figure>
-  </div>
-
   <h2>Why any of this matters</h2>
-
   <p>There is no replacing these two spacecraft. Nothing else humanity has built is out where they are, sensing what they sense. Every extra year of power is an extra year of direct measurements from a region of space no textbook could otherwise describe. The Big Bang maneuver isn't a dramatic save — it's patient, unglamorous engineering, performed on machines older than most of the people currently operating them, from a control room light-days away.</p>
 
   <p>If it works on Voyager 1 the way it worked on Voyager 2, both probes could keep whispering data back across the dark for at least one more year. Given what they've already survived, betting against them seems unwise.</p>
+
+  <div class="tags">
+    <span class="tag">#Space</span>
+    <span class="tag">#NASA</span>
+    <span class="tag">#Voyager</span>
+    <span class="tag">#STEM</span>
+  </div>
 </article>
 
 <footer>
-  <p>Adapted from reporting by Elizabeth Howell, <a href="https://www.livescience.com" target="_blank" rel="noopener">Live Science</a>, published August 2026. Images credited to NASA/JPL-Caltech, used under NASA's public-domain media guidelines.</p>
+  <div class="wrap footer-inner">
+    <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="scholarships.html">Scholarships</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+  </div>
 </footer>
 
+<script src="scripts.js"></script>
 </body>
 </html>
