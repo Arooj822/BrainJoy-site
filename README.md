@@ -1,42 +1,70 @@
-# BrainJoy — Deployment Guide
+# Getting Started with Create React App
 
-This is a plain HTML/CSS site — no build step, no framework. You can host it for free and connect your existing domain.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Files
-- `index.html` — homepage
-- `post-phd-crisis.html`, `post-plastic-to-hydrogen.html` — sample blog posts
-- `about.html`, `contact.html`
-- `styles.css` — shared styling
+## Available Scripts
 
-To add a new post: duplicate one of the post HTML files, change the title/content, then add a card for it in `index.html`'s `.grid` section.
+In the project directory, you can run:
 
-## Option A: Netlify (easiest)
-1. Go to https://app.netlify.com and sign up free.
-2. Drag and drop this whole folder onto the Netlify dashboard ("Deploy manually").
-3. Your site goes live instantly on a netlify.app URL.
-4. Go to **Site settings → Domain management → Add a custom domain**, enter your domain.
-5. Netlify will show you DNS records to add. Log into wherever you bought your domain (e.g. Hostinger) and add those records under DNS settings.
-6. Wait 15 minutes–24 hours for DNS to propagate. Free SSL (https) is automatic.
+### `npm start`
 
-## Option B: GitHub Pages
-1. Create a free GitHub account and a new repository (e.g. `brainjoy-site`).
-2. Upload all the files in this folder to the repository.
-3. Go to **Settings → Pages**, set source to the `main` branch, root folder.
-4. Under **Settings → Pages → Custom domain**, enter your domain and save (this creates a `CNAME` file automatically).
-5. At your domain registrar, add a CNAME record pointing to `yourusername.github.io`, or the A records GitHub provides for apex domains.
-6. Enable "Enforce HTTPS" once DNS is verified.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-## Then: Google AdSense
-Once your site is live on your own domain with a few real posts, an About page, and a Contact page (all included here):
-1. Go to https://adsense.google.com and sign up with your domain.
-2. Add the AdSense verification snippet to the `<head>` of each HTML page when they give it to you.
-3. Wait for review — approval depends on original content and a working site, not on how you're hosting it.
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-## Your details (already set up in this version)
-- Domain: brainjoy.site
-- Contact email: info@brainjoy.site
-- Logo: `logo.png` is already wired in as both the nav logo and the site favicon.
+### `npm test`
 
-## Notes
-- Keep adding real, original posts regularly — AdSense and search traffic both reward consistency far more than volume.
-- When you add a new post file, make sure it also includes the `<link rel="icon" href="logo.png" ...>` line in the head, and the same nav/footer block, so the branding stays consistent site-wide. Easiest way: always start from `post-template.html`.
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

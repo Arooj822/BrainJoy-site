@@ -1,0 +1,49 @@
+.hero-section {
+  background-image: url('../assets/BrainJoy ELite Sticker Logo.png'); /* or use another hero image */
+  background-size: cover;
+  background-position: center;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-content {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 2rem 3rem;
+  border-radius: 20px;
+  max-width: 800px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1a365d;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+  color: #1a365d;
+  margin-bottom: 2rem;
+}
+
+.hero-cta {
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  border: none;
+  background-color: #a0e7e5;
+  color: #000;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.hero-cta:hover {
+  transform: scale(1.05);
+  background-color: #ffdac1;
+}
+

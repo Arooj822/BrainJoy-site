@@ -1,0 +1,49 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Button */
+.button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.button-primary { background-color: #14b8a6; color: white; }
+.button-primary:hover { background-color: #0f766e; }
+.button-red { background-color: #ef4444; color: white; }
+.button-red:hover { background-color: #b91c1c; }
+
+/* Cards */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Loading */
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #14b8a6;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 50px auto;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
