@@ -1526,13 +1526,46 @@
 
   // ===== CHAT =====
   function toggleChat() { const b = document.getElementById('chat-box'); b.style.display = (b.style.display === 'none' || !b.style.display) ? 'block' : 'none'; }
-  function sendChat() {
+
+  const BRAINJOY_AI_ENDPOINT = 'https://brainjoy-api.vercel.app/api/gemini-ai';
+
+  async function sendChat() {
     const input = document.getElementById('chat-input');
     const content = document.getElementById('chat-content');
-    if (!input.value.trim()) return;
-    const u = document.createElement('p'); u.textContent = '🧑 ' + input.value; u.style.color = 'var(--purple)'; u.style.marginBottom = '6px'; content.appendChild(u);
-    const r = document.createElement('p'); r.textContent = '🤖 BrainJoy AI: Great question! Sign in to get a full answer.'; r.style.color = '#555'; r.style.marginBottom = '6px'; content.appendChild(r);
+    const message = input.value.trim();
+    if (!message) return;
+
+    const u = document.createElement('p'); u.textContent = '🧑 ' + message; u.style.color = 'var(--purple)'; u.style.marginBottom = '6px'; content.appendChild(u);
     input.value = '';
+    content.scrollTop = content.scrollHeight;
+
+    const thinking = document.createElement('p');
+    thinking.textContent = '🤖 BrainJoy AI is thinking...';
+    thinking.style.color = '#999';
+    thinking.style.marginBottom = '6px';
+    content.appendChild(thinking);
+    content.scrollTop = content.scrollHeight;
+
+    try {
+      const response = await fetch(BRAINJOY_AI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: message })
+      });
+      const data = await response.json();
+      thinking.remove();
+      const r = document.createElement('p');
+      r.textContent = '🤖 BrainJoy AI: ' + (data.reply || "Sorry, I couldn't get an answer right now.");
+      r.style.color = '#555'; r.style.marginBottom = '6px';
+      content.appendChild(r);
+    } catch (err) {
+      thinking.remove();
+      const r = document.createElement('p');
+      r.textContent = '🤖 BrainJoy AI: Something went wrong reaching the AI. Please try again.';
+      r.style.color = '#c0392b'; r.style.marginBottom = '6px';
+      content.appendChild(r);
+    }
+
     content.scrollTop = content.scrollHeight;
   }
 
