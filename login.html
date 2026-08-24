@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainJoy – Log In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --purple: #6a0dad;
+      --purple-dark: #4a148c;
+      --purple-light: #9a5cff;
+      --purple-bg: #faf8ff;
+      --pink: #ff5ca2;
+      --border: #e8deff;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --shadow-md: 0 8px 24px rgba(106,13,173,0.14);
+      --shadow-lg: 0 16px 48px rgba(106,13,173,0.2);
+      --radius: 14px;
+      --radius-pill: 50px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #faf8ff 0%, #f0e8ff 40%, #ffe8f5 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      height: 64px;
+      background: linear-gradient(135deg, #4a148c 0%, #6a0dad 50%, #8a2be2 100%);
+      box-shadow: 0 2px 20px rgba(74,20,140,0.4);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-brand span {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .brain-emoji { font-size: 1.8rem; }
+
+    /* ===== MAIN ===== */
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(154,92,255,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .card-logo {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .card-logo .brain { font-size: 3rem; }
+
+    .card-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--purple);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    /* ===== VERIFIED BADGE (shown after email verify) ===== */
+    .verified-badge {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      color: #2e7d32;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .verified-badge.show { display: flex; }
+
+    /* ===== FORM ===== */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .field input {
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: 0.2s;
+      width: 100%;
+    }
+    .field input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(106,13,173,0.1);
+    }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.82rem;
+      color: var(--purple);
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: -8px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(106,13,173,0.25);
+    }
+    .btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(106,13,173,0.35); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+
+    .card-footer {
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .card-footer a {
+      color: var(--purple);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .card-footer a:hover { text-decoration: underline; }
+
+    /* ===== ERROR / SUCCESS MESSAGES ===== */
+    .msg {
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .msg.show { display: block; }
+    .msg.error { background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; }
+    .msg.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== PASSWORD TOGGLE ===== */
+    .pass-wrap { position: relative; }
+    .pass-wrap input { padding-right: 44px; }
+    .pass-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-muted);
+      padding: 0;
+    }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 480px) {
+      .login-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <span class="brain-emoji">🧠</span>
+    <span>BrainJoy</span>
+  </a>
+</nav>
+
+<div class="page-wrap">
+  <div class="login-card">
+
+    <div class="card-logo"><span class="brain">🧠</span></div>
+    <h1 class="card-title">Welcome Back 👋</h1>
+    <p class="card-sub">Log in to continue your learning journey</p>
+
+    <!-- shown when redirected from verify-email -->
+    <div class="verified-badge" id="verifiedBadge">
+      ✅ Email verified! Now log in to get started.
+    </div>
+
+    <div class="msg error" id="errMsg"></div>
+    <div class="msg success" id="successMsg"></div>
+
+    <div class="field">
+      <label for="loginEmail">Email address</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" />
+    </div>
+
+    <div class="field">
+      <label for="loginPassword">Password</label>
+      <div class="pass-wrap">
+        <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" />
+        <button class="pass-toggle" onclick="togglePass()" type="button" id="passToggle">👁</button>
+      </div>
+    </div>
+
+    <a class="forgot-link" onclick="handleForgot()">Forgot password?</a>
+
+    <button class="btn-login" id="loginBtn" onclick="loginUser()">Log In →</button>
+
+    <div class="divider"><span>Don't have an account?</span></div>
+
+    <div class="card-footer">
+      <a href="landing.html">Sign up free →</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="page-footer">© 2025 BrainJoy · <a href="#" style="color:var(--purple)">Privacy</a> · <a href="#" style="color:var(--purple)">Terms</a></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== SUPABASE =====
+  const SUPABASE_URL = 'https://kxqjyqohhjkggtqnwubd.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_sQjeQCi8f6J4iQgyP3jGSA_7fK1Noek';
+  const { createClient } = supabase;
+  const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ===== SHOW VERIFIED BADGE if redirected from email verification =====
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('verified') === 'true') {
+    document.getElementById('verifiedBadge').classList.add('show');
+  }
+
+  // ===== PASSWORD TOGGLE =====
+  function togglePass() {
+    const inp = document.getElementById('loginPassword');
+    const btn = document.getElementById('passToggle');
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁'; }
+  }
+
+  // ===== MESSAGES =====
+  function showErr(msg) {
+    const el = document.getElementById('errMsg');
+    el.textContent = '⚠️ ' + msg;
+    el.classList.add('show');
+    document.getElementById('successMsg').classList.remove('show');
+  }
+  function showSuccess(msg) {
+    const el = document.getElementById('successMsg');
+    el.textContent = msg;
+    el.classList.add('show');
+    document.getElementById('errMsg').classList.remove('show');
+  }
+  function clearMsgs() {
+    document.getElementById('errMsg').classList.remove('show');
+    document.getElementById('successMsg').classList.remove('show');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ===== LOGIN =====
+  async function loginUser() {
+    clearMsgs();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) { showErr('Please enter your email and password.'); return; }
+
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Logging in...';
+
+    try {
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      const role = data.user.user_metadata?.role || 'student';
+      const dest = {
+        student: 'student-dashboard.html',
+        teacher: 'teacher-dashboard.html',
+        parent:  'parent-dashboard.html',
+        admin:   'admin-dashboard.html'
+      }[role] || 'student-dashboard.html';
+      showToast('✅ Welcome back! Taking you to your dashboard...');
+      setTimeout(() => { window.location.href = dest; }, 1500);
+    } catch (err) {
+      showErr(err.message || 'Login failed. Please check your email and password.');
+      btn.disabled = false;
+      btn.textContent = 'Log In →';
+    }
+  }
+
+  // ===== FORGOT PASSWORD =====
+  async function handleForgot() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) { showErr('Enter your email above first, then click "Forgot password".'); return; }
+    try {
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/public/login.html'
+      });
+      if (error) throw error;
+      showSuccess('✅ Password reset email sent! Check your inbox.');
+    } catch (err) {
+      showErr(err.message || 'Could not send reset email.');
+    }
+  }
+
+  // ===== ENTER KEY =====
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') loginUser();
+  });
+
+  // ===== ALREADY LOGGED IN? =====
+  client.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      const role = data.session.user.user_metadata?.role || 'student';
+      const dest = {
+        student: 'student-dashboard.html',
+        teacher: 'teacher-dashboard.html',
+        parent:  'parent-dashboard.html',
+        admin:   'admin-dashboard.html'
+      }[role] || 'student-dashboard.html';
+      window.location.href = dest;
+    }
+  });
+</script>
+
+</body>
+</html>
