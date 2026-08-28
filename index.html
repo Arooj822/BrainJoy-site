@@ -310,14 +310,6 @@
     .pf-card p { margin: 0 0 12px; color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
     .pf-card .role-tag { position: absolute; top: 14px; right: 14px; }
 
-    /* ===== AI SEARCH BAR ===== */
-    .ai-search-wrap { max-width: 620px; margin: 0 auto 50px; position: relative; }
-    .ai-search-wrap input { width: 100%; padding: 16px 24px; border-radius: var(--radius-pill); border: 2px solid var(--border); font-size: 1rem; font-family: 'Poppins', sans-serif; outline: none; box-shadow: var(--shadow-sm); transition: 0.3s; }
-    .ai-search-wrap input:focus { border-color: var(--purple); box-shadow: 0 0 0 4px rgba(106,13,173,0.1); }
-    .ai-search-wrap button { position: absolute; right: 7px; top: 7px; background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; border: none; border-radius: var(--radius-pill); padding: 10px 22px; cursor: pointer; font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 0.9rem; transition: 0.2s; }
-    .ai-search-wrap button:hover { transform: scale(1.02); }
-    #brainjoyResponse { max-width: 700px; margin: 0 auto 34px; color: var(--purple); font-size: 0.95rem; min-height: 24px; }
-
     /* ===== CAROUSEL ===== */
     #learning-tools { padding: 80px 0; background: #f8f6ff; text-align: center; }
     #learning-tools h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; color: var(--purple-dark); margin-bottom: 36px; }
@@ -1035,11 +1027,6 @@
   <span class="section-eyebrow">Full Platform · Coming Soon</span>
   <h2 class="section-title">Everything you need, all in one place</h2>
   <p class="section-sub">AI tools, role hubs, and personalized learning for every subject — launching soon. Meanwhile enjoy our live posts, scholarships & AP Chemistry lessons.</p>
-  <div class="ai-search-wrap coming-soon-overlay">
-    <input id="brainjoyQuery" type="text" placeholder="Ask BrainJoy AI (e.g., Explain photosynthesis)" />
-    <button onclick="handleAISearch()">Ask AI 🤖</button>
-  </div>
-  <div id="brainjoyResponse"></div>
   <div class="pf-role-tabs">
     <button class="pf-role-btn" id="pf-btn-student" onclick="showBjToast('🚧 Student hub coming soon!')"><span>🎓</span> For Students <span class="coming-soon-badge">Soon</span></button>
     <button class="pf-role-btn" id="pf-btn-teacher" onclick="showBjToast('🚧 Teacher hub coming soon!')"><span>👩‍🏫</span> For Teachers <span class="coming-soon-badge">Soon</span></button>
@@ -1511,17 +1498,6 @@
       closeModal('loginModal');
       showBjToast('✅ Welcome back, ' + (data.user.user_metadata?.full_name || email) + '!');
     } catch(err) { alert('Login failed: ' + err.message); }
-  }
-
-  // ===== AI SEARCH =====
-  function handleAISearch() {
-    const q = document.getElementById('brainjoyQuery').value.trim();
-    const box = document.getElementById('brainjoyResponse');
-    if (!q) { box.innerHTML = "<span style='color:var(--pink)'>⚠️ Please type a question first!</span>"; return; }
-    box.innerHTML = "⏳ <span style='color:var(--purple)'>BrainJoy AI is thinking...</span>";
-    setTimeout(() => {
-      box.innerHTML = `🧠 <strong>BrainJoy AI:</strong> Great question about <em>${q}</em>! Sign in to get a full personalized explanation. <a href="#" onclick="openModal('signupModal')" style="color:var(--purple);font-weight:700;">Create free account →</a>`;
-    }, 1500);
   }
 
   // ===== CHAT =====
