@@ -1503,7 +1503,7 @@
   // ===== CHAT =====
   function toggleChat() { const b = document.getElementById('chat-box'); b.style.display = (b.style.display === 'none' || !b.style.display) ? 'block' : 'none'; }
 
-  const BRAINJOY_AI_ENDPOINT = 'https://brainjoy-53rlgzt49-arooj822s-projects.vercel.app/api/gemini-ai/';
+  const BRAINJOY_AI_ENDPOINT = '/api/gemini-ai';
   async function sendChat() {
     const input = document.getElementById('chat-input');
     const content = document.getElementById('chat-content');
