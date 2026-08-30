@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Acid-Base Titration — BrainJoy</title>
+<meta name="description" content="Interactive acid-base titration simulation — drip base into acid, watch the color change, and see the pH curve live." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .titration-canvas-wrap {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    background: linear-gradient(180deg, #f8f9ff 0%, #fff 100%);
+    position: relative;
+  }
+  .titration-canvas-wrap canvas {
+    width: 100%;
+    display: block;
+  }
+  .titration-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+  .titration-overlay span {
+    display: block;
+    margin-bottom: 2px;
+  }
+  .titration-overlay .big {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--purple-dark);
+  }
+  .endpoint-flash {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,0,128,0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    border-radius: var(--radius-lg);
+  }
+  .endpoint-flash.active {
+    opacity: 1;
+  }
+  .graph-panel {
+    margin-top: 20px;
+  }
+  .graph-panel h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .graph-canvas-wrap {
+    width: 100%;
+    height: 200px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    background: #fff;
+  }
+  .graph-canvas-wrap canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .drop-btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .titration-readouts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .treadout {
+    background: linear-gradient(135deg, var(--purple-50) 0%, #fff 100%);
+    border: 1px solid var(--purple-200);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+  }
+  .treadout .tlabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .treadout .tval {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--purple-dark);
+  }
+  .treadout .tunit {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .indicator-select {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ind-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ind-btn:hover {
+    border-color: var(--purple-200);
+    background: var(--purple-50);
+  }
+  .ind-btn.active {
+    border-color: var(--purple);
+    background: var(--purple-50);
+    color: var(--purple-dark);
+  }
+  .reset-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .reset-row .sbtn {
+    flex: 1;
+  }
+  .hint-box {
+    margin-top: 14px;
+    padding: 14px;
+    background: linear-gradient(135deg, #fff8e6 0%, #fff 100%);
+    border: 1.5px solid #ffe0a0;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: #856404;
+    line-height: 1.5;
+  }
+  .hint-box strong {
+    color: #856404;
+  }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon">🧠</div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/i.html">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow">Chemistry Sim &middot; Acid-Base Titration</p>
+  <h1>Drip base into acid, watch the <span class="gradient-text">color change.</span></h1>
+  <p class="hero-sub">Add base drop by drop and observe the pH curve. Find the equivalence point where the indicator flashes pink.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Titration apparatus</h2>
+        <p class="panel-note">The burette drips base into the acid flask. Watch the color and the pH curve.</p>
+      </div>
+
+      <div class="titration-canvas-wrap" id="canvasWrap">
+        <canvas id="titrationCanvas" width="500" height="380"></canvas>
+        <div class="endpoint-flash" id="endpointFlash"></div>
+        <div class="titration-overlay" id="overlay">
+          <span>pH <span class="big" id="phDisplay">1.00</span></span>
+          <span>Vol: <span id="volDisplay">0.00 mL</span></span>
+          <span>Status: <span id="statusDisplay">Acidic</span></span>
+        </div>
+      </div>
+
+      <div class="titration-readouts">
+        <div class="treadout">
+          <div class="tlabel">Acid Strength</div>
+          <div class="tval" id="acidStrengthDisplay">0.1 M</div>
+        </div>
+        <div class="treadout">
+          <div class="tlabel">Base Strength</div>
+          <div class="tval" id="baseStrengthDisplay">0.1 M</div>
+        </div>
+        <div class="treadout">
+          <div class="tlabel">Indicator</div>
+          <div class="tval" id="indicatorDisplay" style="font-size:0.95rem;">Phenolphthalein</div>
+        </div>
+        <div class="treadout">
+          <div class="tlabel">Drops Added</div>
+          <div class="tval" id="dropsDisplay">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">Adjust concentrations, choose an indicator, and add drops.</p>
+
+      <div class="field">
+        <label>Acid concentration <span class="val" id="acidLabel">0.10</span> M</label>
+        <input type="range" id="acidSlider" min="0.01" max="1.0" step="0.01" value="0.10">
+      </div>
+
+      <div class="field">
+        <label>Base concentration <span class="val" id="baseLabel">0.10</span> M</label>
+        <input type="range" id="baseSlider" min="0.01" max="1.0" step="0.01" value="0.10">
+      </div>
+
+      <div class="field">
+        <label>Indicator</label>
+        <div class="indicator-select" id="indicatorSelect">
+          <button class="ind-btn active" data-ind="phenol">Phenolphthalein</button>
+          <button class="ind-btn" data-ind="methyl">Methyl Orange</button>
+          <button class="ind-btn" data-ind="bromo">Bromothymol Blue</button>
+        </div>
+      </div>
+
+      <button class="sbtn sbtn-primary drop-btn" id="dropBtn">⬇ Add Drop</button>
+
+      <div class="reset-row">
+        <button class="sbtn sbtn-reset" id="resetBtn">Reset</button>
+        <button class="sbtn sbtn-reset" id="autoBtn">Auto Titration</button>
+      </div>
+
+      <div class="hint-box" id="hintBox">
+        <strong>Tip:</strong> <span id="hintText">Start by clicking "Add Drop" to add base one drop at a time. Watch for the color change — that's the endpoint!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel graph-panel">
+    <h3>pH Curve</h3>
+    <div class="graph-canvas-wrap">
+      <canvas id="graphCanvas" width="700" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>What is an equivalence point?</h3>
+      <p>The <strong>equivalence point</strong> is where moles of acid exactly equal moles of base. For a strong acid + strong base titration, this occurs at pH 7. The indicator changes color near this point to signal the <strong>endpoint</strong>.</p>
+    </div>
+    <div class="callout">
+      <h3>Why does the pH jump so fast?</h3>
+      <p>Near the equivalence point, the solution is a <strong>buffer</strong> that resists pH change — until it suddenly can't anymore. One extra drop of base causes a massive pH swing from ~3 to ~10. That's the steep part of the curve.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sim-wrap quiz-section">
+  <p class="section-label">Check yourself</p>
+  <h2>Titration quiz</h2>
+  <div id="quizList"></div>
+  <div class="score-card" id="scoreCard">
+    <h3 id="scoreTitle"></h3>
+    <p id="scoreSub"></p>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon">🧠</div>
+      <span>&copy; 2026 BrainJoy · brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const canvas = document.getElementById('titrationCanvas');
+  const ctx = canvas.getContext('2d');
+  const gCanvas = document.getElementById('graphCanvas');
+  const gCtx = gCanvas.getContext('2d');
+  const flash = document.getElementById('endpointFlash');
+
+  let acidConc = 0.10;
+  let baseConc = 0.10;
+  let volAcid = 25.0; // mL
+  let volBase = 0.0;   // mL added
+  let drops = 0;
+  let indicator = 'phenol';
+  let isAuto = false;
+  let autoInterval = null;
+
+  const dropVolume = 0.05; // mL per drop
+  const maxVolBase = 50.0;
+
+  // Indicator properties: [acid color, base color, transition pH low, high]
+  const indicators = {
+    phenol:  { acid: [255,255,255,0.1], base: [255,0,128,0.85], low: 8.2, high: 10.0, name: 'Phenolphthalein' },
+    methyl:  { acid: [255,100,0,0.85],  base: [255,200,0,0.85], low: 3.1, high: 4.4, name: 'Methyl Orange' },
+    bromo:   { acid: [255,200,0,0.85],  base: [0,100,255,0.85], low: 6.0, high: 7.6, name: 'Bromothymol Blue' }
+  };
+
+  function getPH() {
+    const molesAcid = acidConc * (volAcid / 1000);
+    const molesBase = baseConc * (volBase / 1000);
+    const totalVol = (volAcid + volBase) / 1000; // L
+    if (totalVol === 0) return 7;
+    const excess = molesAcid - molesBase;
+    if (Math.abs(excess) < 1e-10) return 7.0;
+    if (excess > 0) {
+      return -Math.log10(excess / totalVol);
+    } else {
+      return 14 + Math.log10(Math.abs(excess) / totalVol);
+    }
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function getIndicatorColor() {
+    const pH = getPH();
+    const ind = indicators[indicator];
+    let t = (pH - ind.low) / (ind.high - ind.low);
+    t = Math.max(0, Math.min(1, t));
+    const r = lerp(ind.acid[0], ind.base[0], t);
+    const g = lerp(ind.acid[1], ind.base[1], t);
+    const b = lerp(ind.acid[2], ind.base[2], t);
+    const a = lerp(ind.acid[3], ind.base[3], t);
+    return `rgba(${r|0},${g|0},${b|0},${a.toFixed(2)})`;
+  }
+
+  function drawApparatus() {
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background
+    ctx.fillStyle = '#f8f9ff';
+    ctx.fillRect(0, 0, w, h);
+
+    // Burette (top center)
+    const bx = w/2, by = 30, bw = 24, bh = 140;
+    ctx.fillStyle = '#e0e0e8';
+    ctx.beginPath();
+    ctx.roundRect(bx - bw/2, by, bw, bh, 6);
+    ctx.fill();
+    ctx.strokeStyle = '#c0c0d0';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Burette markings
+    ctx.fillStyle = '#999';
+    ctx.font = '10px Poppins';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 5; i++) {
+      const y = by + 10 + i * 24;
+      ctx.fillRect(bx + bw/2 + 2, y, 6, 1);
+      ctx.fillText((50 - i*10).toFixed(0), bx + bw/2 + 22, y + 3);
+    }
+
+    // Stopcock
+    ctx.fillStyle = '#888';
+    ctx.beginPath();
+    ctx.arc(bx, by + bh, 8, 0, Math.PI*2);
+    ctx.fill();
+
+    // Drop
+    if (drops > 0) {
+      const dropY = by + bh + 20 + (drops % 3) * 8;
+      ctx.fillStyle = 'rgba(0,191,165,0.7)';
+      ctx.beginPath();
+      ctx.ellipse(bx, dropY, 4, 6, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // Flask (center)
+    const fx = w/2, fy = 240, fw = 70, fh = 70;
+    ctx.fillStyle = '#e8e8f0';
+    ctx.beginPath();
+    ctx.moveTo(fx - 8, fy - 50);
+    ctx.lineTo(fx + 8, fy - 50);
+    ctx.lineTo(fx + fw/2, fy + fh - 20);
+    ctx.quadraticCurveTo(fx + fw/2, fy + fh, fx, fy + fh);
+    ctx.quadraticCurveTo(fx - fw/2, fy + fh, fx - fw/2, fy + fh - 20);
+    ctx.lineTo(fx - 8, fy - 50);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#b0b0c0';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Liquid in flask
+    const liquidH = 35 + Math.min(volBase / maxVolBase, 1) * 25;
+    ctx.fillStyle = getIndicatorColor();
+    ctx.beginPath();
+    ctx.moveTo(fx - fw/2 + 3, fy + fh - 20 - liquidH + 5);
+    ctx.lineTo(fx + fw/2 - 3, fy + fh - 20 - liquidH + 5);
+    ctx.lineTo(fx + fw/2 - 2, fy + fh - 3);
+    ctx.quadraticCurveTo(fx, fy + fh + 2, fx - fw/2 + 2, fy + fh - 3);
+    ctx.closePath();
+    ctx.fill();
+
+    // Flask neck
+    ctx.fillStyle = 'rgba(200,200,220,0.3)';
+    ctx.fillRect(fx - 6, fy - 55, 12, 8);
+
+    // Beaker label
+    ctx.fillStyle = '#888';
+    ctx.font = '11px Poppins';
+    ctx.textAlign = 'center';
+    ctx.fillText('Erlenmeyer Flask', fx, fy + fh + 22);
+
+    // Bubbles if reacting
+    if (volBase > 0 && volBase < maxVolBase * 0.9) {
+      for (let i = 0; i < 3; i++) {
+        const bx2 = fx + (Math.sin(Date.now()/300 + i*2) * 15);
+        const by2 = fy + fh - 15 - ((Date.now()/20 + i*30) % 30);
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.beginPath();
+        ctx.arc(bx2, by2, 2 + i, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+
+  let graphPoints = [];
+
+  function drawGraph() {
+    const w = gCanvas.width, h = gCanvas.height;
+    gCtx.clearRect(0, 0, w, h);
+
+    // Background
+    gCtx.fillStyle = '#fff';
+    gCtx.fillRect(0, 0, w, h);
+
+    // Grid
+    gCtx.strokeStyle = '#f0f0f5';
+    gCtx.lineWidth = 1;
+    for (let i = 0; i <= 10; i++) {
+      const x = 40 + i * (w - 60) / 10;
+      gCtx.beginPath(); gCtx.moveTo(x, 10); gCtx.lineTo(x, h - 30); gCtx.stroke();
+    }
+    for (let i = 0; i <= 14; i++) {
+      const y = h - 30 - i * (h - 50) / 14;
+      gCtx.beginPath(); gCtx.moveTo(40, y); gCtx.lineTo(w - 10, y); gCtx.stroke();
+    }
+
+    // Axes
+    gCtx.strokeStyle = '#999';
+    gCtx.lineWidth = 1.5;
+    gCtx.beginPath();
+    gCtx.moveTo(40, 10); gCtx.lineTo(40, h - 30);
+    gCtx.lineTo(w - 10, h - 30);
+    gCtx.stroke();
+
+    // Labels
+    gCtx.fillStyle = '#777';
+    gCtx.font = '11px Poppins';
+    gCtx.textAlign = 'center';
+    gCtx.fillText('Volume of base added (mL)', w/2 + 15, h - 8);
+    gCtx.save();
+    gCtx.translate(14, h/2);
+    gCtx.rotate(-Math.PI/2);
+    gCtx.fillText('pH', 0, 0);
+    gCtx.restore();
+
+    // Y-axis labels
+    gCtx.textAlign = 'right';
+    for (let i = 0; i <= 14; i += 2) {
+      const y = h - 30 - i * (h - 50) / 14;
+      gCtx.fillText(i.toFixed(0), 35, y + 3);
+    }
+
+    // X-axis labels
+    gCtx.textAlign = 'center';
+    for (let i = 0; i <= 5; i++) {
+      const x = 40 + i * (w - 60) / 5;
+      gCtx.fillText((i * 10).toFixed(0), x, h - 16);
+    }
+
+    // Curve
+    if (graphPoints.length > 1) {
+      gCtx.strokeStyle = 'var(--purple)';
+      gCtx.lineWidth = 2.5;
+      gCtx.beginPath();
+      const xScale = (w - 60) / maxVolBase;
+      const yScale = (h - 50) / 14;
+      graphPoints.forEach((pt, i) => {
+        const x = 40 + pt.vol * xScale;
+        const y = h - 30 - pt.ph * yScale;
+        if (i === 0) gCtx.moveTo(x, y);
+        else gCtx.lineTo(x, y);
+      });
+      gCtx.stroke();
+
+      // Points
+      graphPoints.forEach(pt => {
+        const x = 40 + pt.vol * xScale;
+        const y = h - 30 - pt.ph * yScale;
+        gCtx.fillStyle = '#fff';
+        gCtx.beginPath();
+        gCtx.arc(x, y, 4, 0, Math.PI*2);
+        gCtx.fill();
+        gCtx.strokeStyle = 'var(--purple)';
+        gCtx.lineWidth = 2;
+        gCtx.stroke();
+      });
+    }
+  }
+
+  function updateReadouts() {
+    const pH = getPH();
+    document.getElementById('phDisplay').textContent = pH.toFixed(2);
+    document.getElementById('volDisplay').textContent = volBase.toFixed(2) + ' mL';
+    document.getElementById('statusDisplay').textContent = pH < 6.9 ? 'Acidic' : (pH > 7.1 ? 'Basic' : 'Neutral');
+    document.getElementById('dropsDisplay').textContent = drops;
+    document.getElementById('acidStrengthDisplay').textContent = acidConc.toFixed(2) + ' M';
+    document.getElementById('baseStrengthDisplay').textContent = baseConc.toFixed(2) + ' M';
+    document.getElementById('indicatorDisplay').textContent = indicators[indicator].name;
+
+    const ind = indicators[indicator];
+    const t = (pH - ind.low) / (ind.high - ind.low);
+    if (t >= 0.5 && t <= 1.2) {
+      flash.classList.add('active');
+      setTimeout(() => flash.classList.remove('active'), 600);
+    }
+  }
+
+  function addDrop() {
+    if (volBase >= maxVolBase) return;
+    volBase += dropVolume;
+    drops++;
+    const pH = getPH();
+    graphPoints.push({ vol: volBase, ph: pH });
+    updateReadouts();
+    drawApparatus();
+    drawGraph();
+
+    const equivVol = (acidConc * volAcid) / baseConc;
+    if (Math.abs(volBase - equivVol) < 0.3) {
+      document.getElementById('hintText').textContent = "🎉 You hit the equivalence point! The color changed — that's the endpoint. Try a different concentration to see how the curve shifts.";
+    } else if (volBase > equivVol + 1) {
+      document.getElementById('hintText').textContent = "You've passed the equivalence point. The solution is now basic. Notice how the curve flattened out again.";
+    }
+  }
+
+  function reset() {
+    volBase = 0;
+    drops = 0;
+    graphPoints = [];
+    isAuto = false;
+    clearInterval(autoInterval);
+    document.getElementById('autoBtn').textContent = 'Auto Titration';
+    document.getElementById('hintText').textContent = 'Start by clicking "Add Drop" to add base one drop at a time. Watch for the color change!';
+    updateReadouts();
+    drawApparatus();
+    drawGraph();
+  }
+
+  document.getElementById('dropBtn').addEventListener('click', addDrop);
+  document.getElementById('resetBtn').addEventListener('click', reset);
+
+  document.getElementById('autoBtn').addEventListener('click', () => {
+    if (isAuto) {
+      isAuto = false;
+      clearInterval(autoInterval);
+      document.getElementById('autoBtn').textContent = 'Auto Titration';
+    } else {
+      isAuto = true;
+      document.getElementById('autoBtn').textContent = 'Stop Auto';
+      autoInterval = setInterval(() => {
+        if (volBase >= maxVolBase) { reset(); return; }
+        addDrop();
+      }, 200);
+    }
+  });
+
+  document.getElementById('acidSlider').addEventListener('input', (e) => {
+    acidConc = parseFloat(e.target.value);
+    document.getElementById('acidLabel').textContent = acidConc.toFixed(2);
+    reset();
+  });
+
+  document.getElementById('baseSlider').addEventListener('input', (e) => {
+    baseConc = parseFloat(e.target.value);
+    document.getElementById('baseLabel').textContent = baseConc.toFixed(2);
+    reset();
+  });
+
+  document.querySelectorAll('.ind-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ind-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      indicator = btn.dataset.ind;
+      reset();
+    });
+  });
+
+  // Animation loop
+  function animate() {
+    drawApparatus();
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  updateReadouts();
+  drawGraph();
+
+  // Quiz
+  const questions = [
+    { q:"What happens at the equivalence point in a strong acid-strong base titration?",
+      opts:["pH = 0","pH = 7","pH = 14","The flask explodes"], correct:1,
+      explain:"For a strong acid + strong base titration, the equivalence point occurs at pH 7 because the acid and base completely neutralize each other." },
+    { q:"Which indicator is best for a strong acid-strong base titration?",
+      opts:["Methyl orange (pH 3.1-4.4)","Phenolphthalein (pH 8.2-10.0)","Bromothymol blue (pH 6.0-7.6)","All of the above"], correct:3,
+      explain:"All can work! The pH jump at the equivalence point is so steep (~3 to ~10) that any indicator transitioning in that range will change color near the endpoint." },
+    { q:"What does a steeper pH curve mean?",
+      opts:["The reaction is slower","The pH changes rapidly with small volume","The acid is weaker","The base is weaker"], correct:1,
+      explain:"A steep curve means the pH changes dramatically with just a tiny addition of titrant — this happens near the equivalence point." },
+    { q:"If you increase the acid concentration, what happens to the equivalence volume?",
+      opts:["It decreases","It stays the same","It increases","It becomes zero"], correct:2,
+      explain:"More acid means you need more base to neutralize it. The equivalence volume increases proportionally." },
+    { q:"Why does phenolphthalein turn pink in base?",
+      opts:["It absorbs pink light","Its molecular structure changes in basic conditions","It reacts with water","It is a base itself"], correct:1,
+      explain:"Phenolphthalein is a weak acid. In basic conditions it loses a proton, changing its molecular structure — this new form absorbs light differently and appears pink." }
+  ];
+
+  const list = document.getElementById('quizList');
+  let score = 0, answered = 0;
+  questions.forEach((item, qi) => {
+    const card = document.createElement('div'); card.className = 'qcard';
+    const title = document.createElement('p'); title.className = 'qtitle'; title.textContent = (qi+1) + '. ' + item.q; card.appendChild(title);
+    const optsWrap = document.createElement('div'); optsWrap.className = 'qopts';
+    const explain = document.createElement('p'); explain.className = 'qexplain'; explain.textContent = item.explain;
+    item.opts.forEach((optText, oi) => {
+      const btn = document.createElement('button'); btn.className = 'qopt'; btn.textContent = optText;
+      btn.addEventListener('click', () => {
+        const buttons = optsWrap.querySelectorAll('.qopt');
+        if (buttons[0].disabled) return;
+        buttons.forEach((b, bi) => { b.disabled = true; if (bi === item.correct) b.classList.add('correct'); });
+        if (oi !== item.correct) btn.classList.add('incorrect'); else score++;
+        answered++; explain.style.display = 'block';
+        if (answered === questions.length){
+          document.getElementById('scoreTitle').textContent = score + '/' + questions.length + ' correct';
+          document.getElementById('scoreSub').textContent = score === questions.length
+            ? "Perfect! You understand titration inside and out."
+            : score >= 3 ? "Good grasp. Run the simulation again if any concept felt tricky."
+            : "Try the simulation again — watch the pH curve as you add drops.";
+          const card2 = document.getElementById('scoreCard');
+          card2.style.display = 'block';
+          card2.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      });
+      optsWrap.appendChild(btn);
+    });
+    card.appendChild(optsWrap); card.appendChild(explain); list.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
