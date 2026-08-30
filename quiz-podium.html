@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podium Ceremony | BrainJoy 🏆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bj-purple: #6a0dad;
+            --podium-bg: #0c0819;
+            --gold: #f1c40f;
+            --silver: #bdc3c7;
+            --bronze: #e67e22;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--podium-bg);
+            background-image: radial-gradient(circle at 50% 50%, #1a103d 0%, #0c0819 100%);
+            height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Confetti Effect */
+        #qp-confetti {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 100;
+        }
+
+        /* HEADER */
+        .qp-header {
+            text-align: center; margin-bottom: 50px; z-index: 10;
+        }
+        .qp-header h1 { font-size: 2.5rem; font-weight: 800; color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .qp-header p { font-size: 1.1rem; color: #a0aec0; margin-top: 5px; }
+
+        /* PODIUM STAGING */
+        .qp-stage {
+            display: flex; align-items: flex-end; justify-content: center;
+            gap: 20px; width: 100%; max-width: 900px; z-index: 10;
+        }
+
+        /* Step Styles */
+        .qp-step { text-align: center; position: relative; width: 1fr; flex: 1; transition: 0.5s; }
+        .qp-step-base {
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 3rem; color: rgba(255,255,255,0.4);
+            position: relative;
+        }
+
+        /* MEDAL OVERLAY */
+        .medal-icon {
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+            width: 70px; height: 70px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Specific Steps */
+        /* Gold (1st) */
+        .step-gold { order: 2; transform: translateY(-30px); }
+        .step-gold .qp-step-base { height: 260px; background: linear-gradient(135deg, #f1c40f, #f39c12); border: 2px solid #fff; }
+        .step-gold .medal-icon { background: #fff9e6; color: var(--gold); border: 4px solid #fff; }
+
+        /* Silver (2nd) */
+        .step-silver { order: 1; }
+        .step-silver .qp-step-base { height: 190px; background: linear-gradient(135deg, #bdc3c7, #95a5a6); border: 2px solid #fff; }
+        .step-silver .medal-icon { background: #f4f6f7; color: var(--silver); border: 4px solid #fff; }
+
+        /* Bronze (3rd) */
+        .step-bronze { order: 3; }
+        .step-bronze .qp-step-base { height: 150px; background: linear-gradient(135deg, #e67e22, #d35400); border: 2px solid #fff; }
+        .step-bronze .medal-icon { background: #fff0e6; color: var(--bronze); border: 4px solid #fff; }
+
+        /* PLAYER INFO */
+        .qp-player-name { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .qp-player-score { font-size: 0.9rem; color: #fff; font-weight: 600; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 999px; }
+
+        /* ANIMATIONS */
+        @keyframes winnerPop { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        .qp-pop { animation: winnerPop 0.5s ease forwards; }
+
+        /* FOOTER ACTIONS */
+        .qp-footer { margin-top: 50px; display: flex; gap: 15px; z-index: 10; }
+        .qp-btn {
+            background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .qp-btn:hover { background: #fff; color: var(--bj-purple); }
+    </style>
+</head>
+<body>
+
+    <canvas id="qp-confetti"></canvas>
+
+    <div class="qp-header">
+        <h1>Victory Ceremony</h1>
+        <p>BrainJoy Quiz Race: Final Standings</p>
+    </div>
+
+    <div class="qp-stage">
+        <div class="qp-step step-gold qp-pop" style="animation-delay: 1s;">
+            <div class="medal-icon">🥇</div>
+            <div style="margin-bottom: 50px;">
+                <div class="qp-player-name">Arooj James ⚡</div>
+                <div class="qp-player-score"><span class="score-animate">12,450</span> pts</div>
+            </div>
+            <div class="qp-step-base">1</div>
+        </div>
+
+        <div class="qp-step step-silver qp-pop" style="animation-delay: 0.5s;">
+            <div class="medal-icon">🥈</div>
+            <div style="margin-bottom: 20px;">
+                <div class="qp-player-name">Shoaib 🧠</div>
+                <div class="qp-player-score"><span class="score-animate">11,200</span> pts</div>
+            </div>
+            <div class="qp-step-base">2</div>
+        </div>
+
+        <div class="qp-step step-bronze qp-pop">
+            <div class="medal-icon">🥉</div>
+            <div style="margin-bottom: 10px;">
+                <div class="qp-player-name">BrainyBee 🦒</div>
+                <div class="qp-player-score"><span class="score-animate">9,800</span> pts</div>
+            </div>
+            <div class="qp-step-base">3</div>
+        </div>
+    </div>
+
+    <div class="qp-footer">
+        <button class="qp-btn" onclick="location.href='index.html'">➔ Back to Dashboard</button>
+        <button class="qp-btn" onclick="alert('Starting next round...')">⚡ Play Again</button>
+    </div>
+
+    <script>
+        // Placeholder for Victory Sound Effect
+        // function playFanfare() { const audio = new Audio('assets/sounds/victory_fanfare.mp3'); audio.play(); }
+        // playFanfare();
+
+        // Optional: Simplified Confetti Canvas Placeholder
+        const canvas = document.getElementById('qp-confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confetti = [];
+        const colors = ['#f1c40f', '#6a0dad', '#ff7e5f', '#ffffff'];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 8 + 4;
+                this.speedY = Math.random() * 3 + 2;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.y += this.speedY;
+                if(this.y > canvas.height) { this.y = 0 - this.size; this.x = Math.random() * canvas.width; }
+            }
+            draw() {
+                ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        for (let i = 0; i < 100; i++) { confetti.push(new Particle()); }
+
+        function animate() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            confetti.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

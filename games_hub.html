@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainJoy - Global Games Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fafafa;
+            overflow-x: hidden;
+        }
+
+        /* Custom BrainJoy Colors */
+        .bg-brainjoy-purple {
+            background-color: #7B1FA2;
+        }
+
+        .text-brainjoy-purple {
+            color: #7B1FA2;
+        }
+
+        .bg-brainjoy-pink {
+            background-color: #E91E63;
+        }
+
+        .hover-bg-brainjoy-pink:hover {
+            background-color: #D81B60;
+        }
+
+        /* 3D Button Effect for playful vibe */
+        .btn-3d-pink {
+            background-color: #E91E63;
+            color: white;
+            box-shadow: 0 4px 0 #AD1457;
+            transition: all 0.1s;
+        }
+
+        .btn-3d-pink:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #AD1457;
+        }
+
+        .btn-3d-purple {
+            background-color: #7B1FA2;
+            color: white;
+            box-shadow: 0 4px 0 #4A148C;
+            transition: all 0.1s;
+        }
+
+        .btn-3d-purple:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #4A148C;
+        }
+
+        /* Folder & Card Hover Effects */
+        .hover-scale {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(123, 31, 162, 0.15);
+        }
+
+        /* Folder Design CSS */
+        .folder-tab {
+            width: 40%;
+            height: 20px;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: -1px;
+        }
+
+        /* View Transitions */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gameplay Simulation Overlay */
+        #gameplay-overlay {
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800">
+
+    <!-- BrainJoy Navigation Bar -->
+    <nav class="bg-brainjoy-purple text-white px-4 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
+        <div class="flex items-center gap-4">
+            <button onclick="alert('Menu Opened!')" class="text-2xl hover:text-purple-200 transition-colors">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                    stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <button onclick="showView('dashboard')"
+                class="bg-white text-brainjoy-purple font-semibold px-4 py-1.5 rounded-full text-sm hover:bg-gray-100 transition-colors hidden sm:block">
+                Hub Home
+            </button>
+            <div class="relative hidden md:block">
+                <input type="text" placeholder="Search games..."
+                    class="pl-4 pr-10 py-1.5 rounded-full text-sm text-slate-800 w-48 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            </div>
+        </div>
+
+        <div onclick="showView('dashboard')"
+            class="flex items-center gap-2 cursor-pointer absolute left-1/2 transform -translate-x-1/2 hover:scale-105 transition-transform">
+            <span class="text-3xl">🧠</span>
+            <span class="font-extrabold text-xl tracking-tight hidden sm:block">BrainJoy</span>
+        </div>
+
+        <div class="flex items-center gap-3 md:gap-5 text-sm font-semibold">
+            <button onclick="showView('creator')"
+                class="hidden lg:flex items-center text-yellow-300 hover:text-yellow-100 transition-colors bg-purple-800/50 px-3 py-1 rounded-full">🧑‍🏫
+                Creator Studio</button>
+            <button onclick="alert('Redirecting to Pro Upgrade page...')"
+                class="hidden lg:flex items-center hover:text-yellow-300 transition-colors">Upgrade to Pro ✨</button>
+            <div class="hidden sm:flex items-center text-yellow-400">✨ Score: <span id="nav-score"
+                    class="ml-1">120</span></div>
+            <button onclick="alert('Opening Login Modal...')"
+                class="hover:text-purple-200 transition-colors">Login</button>
+            <button onclick="alert('Opening Sign Up Modal...')"
+                class="bg-brainjoy-pink hover-bg-brainjoy-pink text-white px-5 py-1.5 rounded-full transition-colors">
+                Sign Up
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-10 min-h-screen relative">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: DASHBOARD (SUBJECT FOLDERS)        -->
+        <!-- ========================================== -->
+        <div id="dashboard-view" class="view-section active">
+            <!-- Educator Promo Banner -->
+            <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-12 flex flex-col md:flex-row items-center justify-between border border-purple-200 shadow-sm cursor-pointer hover:shadow-md transition-all"
+                onclick="showView('creator')">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <span class="text-5xl">🛍️</span>
+                    <div>
+                        <h3 class="text-xl font-bold text-brainjoy-purple">Are you a Teacher? Sell your games!</h3>
+                        <p class="text-slate-600">Publish your interactive lessons to the global hub. You keep 80% of
+                            the revenue, BrainJoy takes 20%.</p>
+                    </div>
+                </div>
+                <button class="btn-3d-purple px-6 py-2 rounded-full font-bold whitespace-nowrap">Open Creator
+                    Studio</button>
+            </div>
+
+            <div class="text-center mb-12">
+                <div
+                    class="inline-block bg-purple-100 text-brainjoy-purple font-bold px-4 py-1 rounded-full text-sm mb-4">
+                    🌍 Worldwide Curriculums</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold text-brainjoy-purple mb-4">
+                    Choose Your Subject
+                </h1>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                    Dive into our massive library of interactive learning playgrounds. Select a curriculum folder to get
+                    started!
+                </p>
+            </div>
+
+            <!-- Folders Grid -->
+            <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
+                <!-- Folders injected dynamically via JavaScript -->
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: SUBJECT GAMES LIST                 -->
+        <!-- ========================================== -->
+        <div id="subject-view" class="view-section">
+            <button onclick="showView('dashboard')"
+                class="mb-6 flex items-center text-slate-500 hover:text-brainjoy-purple font-semibold transition-colors">
+                <span class="mr-2">←</span> Back to All Curriculums
+            </button>
+
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-slate-200 pb-4">
+                <div>
+                    <h1 id="subject-title" class="text-4xl md:text-5xl font-extrabold text-brainjoy-purple capitalize">
+                        Subject Games</h1>
+                    <p class="text-slate-500 mt-2">Select a game below to start learning.</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex gap-2">
+                    <button
+                        class="bg-white border border-slate-300 text-slate-600 px-4 py-1.5 rounded-full text-sm font-medium hover:bg-slate-50">Filter:
+                        Newest</button>
+                    <button
+                        class="bg-white border border-slate-300 text-slate-600 px-4 py-1.5 rounded-full text-sm font-medium hover:bg-slate-50">Grades
+                        9-12</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Games Grid -->
+            <div id="dynamic-games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Cards injected via JavaScript -->
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: CREATOR STUDIO (NEW)               -->
+        <!-- ========================================== -->
+        <div id="creator-view" class="view-section">
+            <button onclick="showView('dashboard')"
+                class="mb-6 flex items-center text-slate-500 hover:text-brainjoy-purple font-semibold transition-colors">
+                <span class="mr-2">←</span> Back to Hub Home
+            </button>
+
+            <div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="bg-brainjoy-purple p-8 text-white text-center relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-9xl opacity-10">🛠️</div>
+                    <h2 class="text-3xl font-extrabold mb-2 relative z-10">Teacher Creator Studio</h2>
+                    <p class="text-purple-200 relative z-10">Build, publish, and monetize your educational games
+                        instantly.</p>
+                </div>
+
+                <form id="create-game-form" onsubmit="publishGame(event)" class="p-8 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Game Title</label>
+                            <input type="text" id="new-game-title" required placeholder="e.g. Advanced Calculus Quest"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brainjoy-purple">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Curriculum / Subject</label>
+                            <select id="new-game-subject"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brainjoy-purple bg-white">
+                                <!-- Options injected via JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Short Description</label>
+                        <textarea id="new-game-desc" required placeholder="What will students learn in this game?"
+                            rows="3"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brainjoy-purple"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Game Icon (Emoji)</label>
+                            <input type="text" id="new-game-icon" required placeholder="e.g. 🌋" maxlength="2"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brainjoy-purple text-2xl">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Price ($ USD)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 font-bold text-slate-500">$</span>
+                                <input type="number" id="new-game-price" step="0.01" min="0" placeholder="0.00 for Free"
+                                    class="w-full pl-8 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brainjoy-purple">
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Leave at 0 to make it free. If paid, you keep 80%!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                        <span class="text-amber-500 text-xl mt-0.5">ℹ️</span>
+                        <p class="text-sm text-amber-800">By publishing, you agree to the BrainJoy Marketplace Terms.
+                            BrainJoy automatically deducts a 20% platform fee from all user purchases.</p>
+                    </div>
+
+                    <button type="submit" class="w-full btn-3d-pink text-xl py-4 rounded-xl font-bold mt-4 shadow-lg">
+                        Publish to Global Hub 🚀
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: SIMULATED GAME PLAYER              -->
+        <!-- ========================================== -->
+        <div id="gameplay-view" class="view-section fixed inset-0 z-[60] bg-slate-900/95 flex flex-col hidden">
+            <!-- Game Header Bar -->
+            <div class="bg-slate-800 text-white px-6 py-3 flex justify-between items-center shadow-lg">
+                <div class="flex items-center gap-4">
+                    <span id="player-icon" class="text-3xl">🎮</span>
+                    <h2 id="player-title" class="text-xl font-bold">Game Title</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-yellow-400 font-bold text-sm bg-slate-700 px-3 py-1 rounded-full">Score: <span
+                            id="player-score">0</span></span>
+                    <button onclick="closeGame()"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-1.5 rounded-full text-sm transition-colors">
+                        Exit Game
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Canvas Area -->
+            <div class="flex-1 flex items-center justify-center p-4 md:p-8">
+                <div
+                    class="w-full max-w-5xl h-full bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col items-center justify-center relative bg-gradient-to-br from-slate-100 to-slate-200 border-4 border-slate-700">
+
+                    <!-- Simulated Game Content -->
+                    <div id="simulated-game-content" class="text-center p-8">
+                        <div id="game-large-icon" class="text-9xl mb-6 animate-bounce">🎯</div>
+                        <h3 class="text-3xl font-extrabold text-slate-800 mb-4">Ready to Play?</h3>
+                        <p class="text-slate-500 mb-8 max-w-md mx-auto">This is where the actual interactive BrainJoy
+                            game engine (like the Kahoot-style quiz or drag-and-drop lab) will load.</p>
+
+                        <div class="flex justify-center gap-4">
+                            <button onclick="simulateEarnPoints()"
+                                class="btn-3d-purple px-8 py-3 rounded-full font-bold text-lg">
+                                Start Activity
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success State (Hidden initially) -->
+                    <div id="simulated-success" class="hidden text-center p-8">
+                        <div class="text-9xl mb-6">🏆</div>
+                        <h3 class="text-3xl font-extrabold text-emerald-600 mb-4">Level Completed!</h3>
+                        <p class="text-slate-600 font-bold mb-8">+ <span id="earned-pts-display">0</span> Points Added
+                            to Profile</p>
+                        <button onclick="closeGame()" class="btn-3d-pink px-8 py-3 rounded-full font-bold text-lg">
+                            Return to Hub
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Games Database & Logic -->
+    <script>
+        // Massive Database of Games structured by Subject
+        const gamesDatabase = {
+            science: [
+                { id: 's1', title: 'Concentration Quest', desc: 'Step into the lab! Calculate molarity, molality, and mass percent to complete your chemistry experiment.', icon: '⚗️', color: 'from-blue-400 to-emerald-400', pts: 50, price: 0, author: 'BrainJoy Official' },
+                { id: 's2', title: 'Orbital Mechanics PRO', desc: 'Design your own rocket and adjust thrust and mass to escape Earth gravity in this physics simulator.', icon: '🚀', color: 'from-slate-700 to-slate-900', pts: 100, price: 2.99, author: 'Prof. Anderson' },
+                { id: 's3', title: 'Cellular Explorer', desc: 'Dive into the microscopic world. Identify organelles and their functions to keep the cell alive.', icon: '🔬', color: 'from-green-400 to-teal-500', pts: 40, price: 0, author: 'BrainJoy Official' },
+                { id: 's4', title: 'Reaction Balancer', desc: 'Drag and drop coefficients to balance complex chemical equations before time runs out!', icon: '⚖️', color: 'from-yellow-400 to-orange-500', pts: 45, price: 0, author: 'BrainJoy Official' }
+            ],
+            math: [
+                { id: 'm1', title: 'Algebra Ninja', desc: 'Slice through complex equations! Use your mental math skills to solve for X.', icon: '🥷', color: 'from-purple-500 to-indigo-600', pts: 40, price: 0, author: 'BrainJoy Official' },
+                { id: 'm2', title: 'Calculus Climber Masterclass', desc: 'Find the derivatives to plot the correct path up the mountain peak. Includes video hints!', icon: '⛰️', color: 'from-slate-500 to-slate-700', pts: 150, price: 4.99, author: 'Mr. Davis' },
+                { id: 'm3', title: 'Geometry Dash-board', desc: 'Calculate area, perimeter, and volume to build bridges and guide your character to safety.', icon: '📐', color: 'from-blue-500 to-cyan-500', pts: 50, price: 0, author: 'BrainJoy Official' }
+            ],
+            geography: [
+                { id: 'g1', title: 'Capital City Crawler', desc: 'Drop the pin! Test your knowledge of world capitals from Tokyo to Buenos Aires.', icon: '🗺️', color: 'from-green-400 to-blue-600', pts: 30, price: 0, author: 'BrainJoy Official' },
+                { id: 'g2', title: 'Tectonic Titan', desc: 'Shift tectonic plates to recreate historical supercontinents like Pangea.', icon: '🌋', color: 'from-orange-600 to-red-800', pts: 50, price: 0, author: 'BrainJoy Official' }
+            ],
+            language: [
+                { id: 'l1', title: 'Vocab Voyage: French', desc: 'Stroll through the streets of Paris while building your vocabulary through interactive conversations.', icon: '🗼', color: 'from-blue-400 to-red-400', pts: 35, price: 0, author: 'BrainJoy Official' },
+                { id: 'l2', title: 'Kanji Quest Premium', desc: 'Trace characters and learn meanings to unlock the doors of the ancient temple. Full 500 Kanji set.', icon: '⛩️', color: 'from-red-600 to-rose-800', pts: 200, price: 5.99, author: 'Sensei Tanaka' }
+            ]
+        };
+
+        // --- NEW: Comprehensive 29 Subjects List ---
+        const subjectsList = [
+            { key: 'math', name: 'Mathematics', icon: '➗', tab: 'bg-blue-500', grad: 'from-blue-500 to-indigo-600' },
+            { key: 'science', name: 'Science', icon: '🧪', tab: 'bg-emerald-500', grad: 'from-emerald-400 to-teal-600' },
+            { key: 'english', name: 'English Language & Literature', icon: '📖', tab: 'bg-rose-500', grad: 'from-rose-400 to-pink-600' },
+            { key: 'languages', name: 'World Languages', icon: '🌍', tab: 'bg-amber-500', grad: 'from-amber-400 to-orange-500' },
+            { key: 'social', name: 'Social Studies / Humanities', icon: '🧭', tab: 'bg-yellow-600', grad: 'from-yellow-500 to-amber-700' },
+            { key: 'arts', name: 'Visual & Performing Arts', icon: '🎭', tab: 'bg-purple-500', grad: 'from-purple-400 to-fuchsia-600' },
+            { key: 'pe', name: 'Physical Education / Sports', icon: '⚽', tab: 'bg-green-500', grad: 'from-green-400 to-emerald-600' },
+            { key: 'ict', name: 'ICT & Digital Literacy', icon: '💻', tab: 'bg-cyan-500', grad: 'from-cyan-400 to-blue-500' },
+            { key: 'cs', name: 'Computer Science & AI', icon: '🤖', tab: 'bg-slate-700', grad: 'from-slate-600 to-slate-800' },
+            { key: 'engineering', name: 'Engineering Fields', icon: '⚙️', tab: 'bg-orange-500', grad: 'from-orange-400 to-red-500' },
+            { key: 'business', name: 'Business & Economics', icon: '💼', tab: 'bg-indigo-500', grad: 'from-indigo-400 to-purple-600' },
+            { key: 'medicine', name: 'Medicine & Nursing', icon: '🩺', tab: 'bg-red-500', grad: 'from-red-400 to-rose-600' },
+            { key: 'psychology', name: 'Psychology & Sociology', icon: '🧠', tab: 'bg-pink-500', grad: 'from-pink-400 to-rose-500' },
+            { key: 'law', name: 'Law & Criminology', icon: '⚖️', tab: 'bg-slate-600', grad: 'from-slate-500 to-gray-700' },
+            { key: 'accounting', name: 'Accounting & Finance', icon: '🧾', tab: 'bg-emerald-600', grad: 'from-emerald-500 to-green-700' },
+            { key: 'architecture', name: 'Architecture & Design', icon: '🏛', tab: 'bg-stone-500', grad: 'from-stone-400 to-stone-600' },
+            { key: 'agriculture', name: 'Agriculture & Env. Science', icon: '🌾', tab: 'bg-lime-500', grad: 'from-lime-400 to-green-500' },
+            { key: 'exams', name: 'Professional Exams', icon: '📘', tab: 'bg-blue-600', grad: 'from-blue-500 to-blue-700' },
+            { key: 'trades', name: 'Vocational Trades & Skills', icon: '🛠', tab: 'bg-amber-600', grad: 'from-amber-500 to-orange-600' },
+            { key: 'hospitality', name: 'Hospitality & Tourism', icon: '🍽', tab: 'bg-teal-500', grad: 'from-teal-400 to-cyan-600' },
+            { key: 'media', name: 'Media, Film & Creative', icon: '🎥', tab: 'bg-fuchsia-500', grad: 'from-fuchsia-400 to-purple-600' },
+            { key: 'culinary', name: 'Culinary Arts & Food', icon: '🍳', tab: 'bg-orange-400', grad: 'from-orange-300 to-orange-500' },
+            { key: 'fashion', name: 'Fashion Design & Textiles', icon: '👗', tab: 'bg-pink-400', grad: 'from-pink-300 to-rose-400' },
+            { key: 'life', name: 'Life Skills & Well-being', icon: '🌱', tab: 'bg-green-400', grad: 'from-green-300 to-emerald-500' },
+            { key: 'career', name: 'Career Development & Leadership', icon: '🚀', tab: 'bg-indigo-400', grad: 'from-indigo-300 to-blue-500' },
+            { key: 'entrepreneurship', name: 'Entrepreneurship', icon: '💡', tab: 'bg-yellow-400', grad: 'from-yellow-300 to-amber-400' },
+            { key: 'religion', name: 'Religious & Ethical Studies', icon: '🕊', tab: 'bg-sky-500', grad: 'from-sky-400 to-blue-500' },
+            { key: 'sustainability', name: 'Sustainability & Climate', icon: '🌍', tab: 'bg-emerald-500', grad: 'from-emerald-400 to-green-600' },
+            { key: 'other', name: 'Other Specialized Subjects', icon: '💬', tab: 'bg-gray-500', grad: 'from-gray-400 to-slate-500' }
+        ];
+
+        // UI State Variables
+        let globalScore = 120;
+        let currentGamePts = 0;
+
+        // Populate the Subjects Grid and Creator Studio Dropdown
+        function initApp() {
+            const grid = document.getElementById('subjects-grid');
+            const select = document.getElementById('new-game-subject');
+
+            if (!grid || !select) return;
+
+            grid.innerHTML = '';
+            select.innerHTML = '';
+
+            subjectsList.forEach(sub => {
+                // If games exist in DB use length, otherwise invent a random realistic number of games for the UI
+                const count = gamesDatabase[sub.key] ? gamesDatabase[sub.key].length : Math.floor(Math.random() * 45) + 10;
+
+                // Add to Dashboard Grid
+                grid.innerHTML += `
+                    <div onclick="openSubject('${sub.key}')" class="cursor-pointer group hover-scale">
+                        <div class="folder-tab ${sub.tab}"></div>
+                        <div class="bg-gradient-to-br ${sub.grad} rounded-b-2xl rounded-tr-2xl p-6 text-white h-48 flex flex-col justify-between shadow-lg relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 text-8xl opacity-20 group-hover:scale-110 transition-transform duration-500">${sub.icon}</div>
+                            <h2 class="text-2xl font-extrabold relative z-10 leading-tight">${sub.name}</h2>
+                            <div class="relative z-10 flex justify-between items-end mt-4">
+                                <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">${count} Games</span>
+                                <span class="text-2xl">➔</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add to Creator Form Select
+                select.innerHTML += `<option value="${sub.key}">${sub.icon} ${sub.name}</option>`;
+            });
+        }
+
+        // Initialize immediately
+        initApp();
+
+        // Function to switch between main views
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+                if (view.id === 'gameplay-view') view.classList.add('hidden'); // strict hide for overlay
+            });
+
+            const activeView = document.getElementById(viewId + '-view');
+            if (activeView) {
+                if (viewId === 'gameplay') {
+                    activeView.classList.remove('hidden');
+                } else {
+                    activeView.classList.add('active');
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Function to open a specific subject folder
+        function openSubject(subjectKey) {
+            const subject = subjectsList.find(s => s.key === subjectKey);
+
+            // Set Title
+            document.getElementById('subject-title').innerText = subject ? subject.name : 'Curriculum';
+
+            // Render Games Grid
+            const grid = document.getElementById('dynamic-games-grid');
+            grid.innerHTML = ''; // clear old
+
+            let games = gamesDatabase[subjectKey] || [];
+
+            // Generate mock games if the category is empty so the page doesn't look broken
+            if (games.length === 0 && subject) {
+                games = [
+                    { id: 'mock1', title: `Intro to ${subject.name}`, desc: `A complete beginner's guide to the fundamentals of ${subject.name}. Interactive learning at its best!`, icon: subject.icon, color: subject.grad, pts: 40, price: 0, author: 'BrainJoy Official' },
+                    { id: 'mock2', title: `Mastering ${subject.name} PRO`, desc: `Advanced curriculum covering complex concepts. Built for top performing students.`, icon: '🌟', color: 'from-slate-700 to-slate-900', pts: 150, price: 5.99, author: 'Global Educator' }
+                ];
+            }
+
+            games.forEach(game => {
+                // Determine if game is free or paid to change UI buttons
+                const isPaid = game.price > 0;
+                const priceBadge = isPaid
+                    ? `<span class="absolute top-3 left-3 bg-brainjoy-pink text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 z-10">Premium: $${game.price.toFixed(2)}</span>`
+                    : `<span class="absolute top-3 left-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 z-10">Free</span>`;
+
+                const actionButton = isPaid
+                    ? `<button onclick="purchaseGame('${game.title}', ${game.price})" class="btn-3d-purple px-6 py-2 font-bold rounded-full text-sm">Buy $${game.price.toFixed(2)}</button>`
+                    : `<button onclick="launchGame('${game.title}', '${game.icon}', ${game.pts})" class="btn-3d-pink px-6 py-2 font-bold rounded-full text-sm">Play Now</button>`;
+
+                const cardHTML = `
+                    <div class="hover-scale bg-white rounded-3xl overflow-hidden border border-slate-100 flex flex-col w-full relative">
+                        ${priceBadge}
+                        <div class="h-48 bg-gradient-to-br ${game.color} flex items-center justify-center relative">
+                            <span class="text-7xl drop-shadow-lg transform transition-transform group-hover:scale-110">${game.icon}</span>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <h3 class="text-2xl font-extrabold text-slate-800 mb-1">${game.title}</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">By: ${game.author}</p>
+                            <p class="text-slate-500 mb-6 flex-1">${game.desc}</p>
+                            <div class="flex justify-between items-center mt-auto border-t border-slate-100 pt-4">
+                                <span class="text-sm font-bold text-yellow-500 bg-yellow-50 px-3 py-1 rounded-lg border border-yellow-200">🏆 +${game.pts} Pts</span>
+                                ${actionButton}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+
+            // Switch view
+            showView('subject');
+        }
+
+        // --- NEW MARKETPLACE FUNCTIONS ---
+
+        // Simulates publishing a new game from the Creator Studio
+        function publishGame(event) {
+            event.preventDefault(); // Prevent page reload
+
+            const title = document.getElementById('new-game-title').value;
+            const desc = document.getElementById('new-game-desc').value;
+            const subject = document.getElementById('new-game-subject').value;
+            const icon = document.getElementById('new-game-icon').value || '🎮';
+            const price = parseFloat(document.getElementById('new-game-price').value) || 0;
+
+            // Ensure array exists for this subject
+            if (!gamesDatabase[subject]) {
+                gamesDatabase[subject] = [];
+            }
+
+            // Add the new game to the top of the selected curriculum database
+            gamesDatabase[subject].unshift({
+                id: 'custom-' + Date.now(),
+                title: title,
+                desc: desc,
+                icon: icon,
+                color: 'from-pink-400 to-purple-600', // Highlight creator games with a specific gradient
+                pts: 100, // Standard points for custom games
+                price: price,
+                author: 'You (Teacher)'
+            });
+
+            // Show success message with revenue split info
+            const splitMsg = price > 0
+                ? `\n\nMarketplace Info:\nIf a student buys this, you earn $${(price * 0.8).toFixed(2)} per sale (80%). BrainJoy retains $${(price * 0.2).toFixed(2)} (20%).`
+                : `\n\nYour game is free for all students!`;
+
+            alert(`✅ Success! "${title}" has been published to the ${subject} curriculum!` + splitMsg);
+
+            // Clear form and open the subject to view the new game
+            document.getElementById('create-game-form').reset();
+            openSubject(subject);
+        }
+
+        // Simulates a student purchasing a premium teacher game
+        function purchaseGame(title, price) {
+            const creatorCut = (price * 0.8).toFixed(2);
+            const brainjoyCut = (price * 0.2).toFixed(2);
+
+            const confirmPurchase = confirm(`🛒 Purchase "${title}" for $${price.toFixed(2)}?\n\n(Behind the scenes revenue split: Creator gets $${creatorCut}, BrainJoy gets $${brainjoyCut})\n\nClick OK to simulate purchase and unlock.`);
+
+            if (confirmPurchase) {
+                alert(`🎉 Purchase Successful! "${title}" is now unlocked in your library.`);
+                // In a real app, this would update the user's unlocked games database, 
+                // but for this demo we'll just simulate launching it.
+                launchGame(title, '🎮', 100);
+            }
+        }
+
+        // Function to launch the simulated game player
+        function launchGame(title, icon, pts) {
+            currentGamePts = pts;
+            document.getElementById('player-title').innerText = title;
+            document.getElementById('player-icon').innerText = icon;
+            document.getElementById('game-large-icon').innerText = icon;
+
+            // Reset simulator UI
+            document.getElementById('simulated-game-content').classList.remove('hidden');
+            document.getElementById('simulated-success').classList.add('hidden');
+
+            showView('gameplay');
+            document.body.style.overflow = 'hidden'; // prevent background scrolling
+        }
+
+        // Function to close the game player
+        function closeGame() {
+            showView('subject');
+            document.body.style.overflow = 'auto'; // restore scrolling
+        }
+
+        // Function to simulate winning a game and earning points
+        function simulateEarnPoints() {
+            document.getElementById('simulated-game-content').classList.add('hidden');
+            document.getElementById('simulated-success').classList.remove('hidden');
+
+            document.getElementById('earned-pts-display').innerText = currentGamePts;
+
+            // Update Global Score
+            globalScore += currentGamePts;
+            document.getElementById('nav-score').innerText = globalScore;
+            document.getElementById('player-score').innerText = globalScore;
+        }
+
+    </script>
+</body>
+
+</html>

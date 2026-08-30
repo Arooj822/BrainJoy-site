@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrainJoy — Science that sparks joy, not stress · Mastery driven by AI</title>
+  <meta name="description" content="Study tips, science & career news, and AI-powered learning for every subject and curriculum — explained simply for students worldwide. Scholarships, AP Chemistry, and more." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <meta name="theme-color" content="#6a0dad" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="BrainJoy" />
+  <meta property="og:title" content="BrainJoy — Science that sparks joy, not stress" />
+  <meta property="og:description" content="Study tips, science & career news, and AI-powered learning for every subject and curriculum — for students worldwide. Plus AI learning tools coming soon." />
+  <meta property="og:image" content="https://brainjoy.site/logo.png" />
+  <meta property="og:url" content="https://brainjoy.site/index.html" />
+  <meta name="twitter:card" content="summary" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --purple: #6a0dad;
+      --purple-dark: #4a148c;
+      --purple-light: #9a5cff;
+      --purple-bg: #faf8ff;
+      --pink: #ff5ca2;
+      --gold: #ffb400;
+      --teal: #00bfa5;
+      --white: #ffffff;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --border: #e8deff;
+      --shadow-sm: 0 2px 8px rgba(106,13,173,0.08);
+      --shadow-md: 0 8px 24px rgba(106,13,173,0.14);
+      --shadow-lg: 0 16px 48px rgba(106,13,173,0.2);
+      --radius: 14px;
+      --radius-lg: 24px;
+      --radius-pill: 50px;
+      --student-color: #2e7d32;
+      --student-bg: #e8f5e9;
+      --student-border: #a5d6a7;
+      --teacher-color: #1565c0;
+      --teacher-bg: #e3f2fd;
+      --teacher-border: #90caf9;
+      --parent-color: #e65100;
+      --parent-bg: #fff3e0;
+      --parent-border: #ffcc80;
+      --admin-color: #6a0dad;
+      --admin-bg: #f3e5f5;
+      --admin-border: #ce93d8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text);
+      background: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      min-height: 100%;
+      height: auto;
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+    }
+
+    /* ===== ROLE BADGE SYSTEM ===== */
+    .role-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    .role-tag.student  { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .role-tag.teacher  { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .role-tag.parent   { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+    .role-tag.admin    { background: #f3e5f5; color: #6a0dad; border: 1px solid #ce93d8; }
+    .role-tag.all      { background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; }
+
+    /* ===== ROLE FILTER ===== */
+    body.role-student .role-only-teacher, body.role-student .role-only-parent, body.role-student .role-only-admin { opacity: 0.3; filter: grayscale(0.5); pointer-events: none; transition: all 0.4s; }
+    body.role-teacher .role-only-student, body.role-teacher .role-only-parent, body.role-teacher .role-only-admin { opacity: 0.3; filter: grayscale(0.5); pointer-events: none; transition: all 0.4s; }
+    body.role-parent .role-only-student, body.role-parent .role-only-teacher, body.role-parent .role-only-admin { opacity: 0.3; filter: grayscale(0.5); pointer-events: none; transition: all 0.4s; }
+    body.role-admin .role-only-student, body.role-admin .role-only-teacher, body.role-admin .role-only-parent { opacity: 0.3; filter: grayscale(0.5); pointer-events: none; transition: all 0.4s; }
+    .role-only-student, .role-only-teacher, .role-only-parent, .role-only-admin { transition: all 0.4s; }
+
+    /* ===== ROLE INDICATOR BAR ===== */
+    #role-indicator { display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 999; padding: 8px 24px; font-size: 0.85rem; font-weight: 600; text-align: center; animation: slideDown 0.3s ease; align-items: center; justify-content: center; gap: 12px; }
+    #role-indicator.show { display: flex; }
+    #role-indicator.student { background: #e8f5e9; color: #2e7d32; border-bottom: 2px solid #a5d6a7; }
+    #role-indicator.teacher { background: #e3f2fd; color: #1565c0; border-bottom: 2px solid #90caf9; }
+    #role-indicator.parent  { background: #fff3e0; color: #e65100; border-bottom: 2px solid #ffcc80; }
+    #role-indicator.admin   { background: #f3e5f5; color: #6a0dad; border-bottom: 2px solid #ce93d8; }
+    #role-indicator button { background: currentColor; color: #fff; border: none; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; opacity: 1; font-family: 'Poppins', sans-serif; }
+    #role-indicator .clear-btn { background: transparent; color: currentColor; border: 1px solid currentColor; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; opacity: 0.7; }
+    @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* ===== AUTH NOTICE ===== */
+    .auth-notice { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: linear-gradient(135deg, #6a0dad, #9a5cff); color: #fff; padding: 14px 28px; border-radius: var(--radius-pill); font-weight: 600; font-size: 0.95rem; box-shadow: var(--shadow-lg); z-index: 999999; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; display: flex; align-items: center; gap: 10px; }
+    .auth-notice.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: all; }
+
+    /* ===== NAVBAR ===== */
+    .navbar { position: sticky; top: 0; z-index: 1000; display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 16px; padding: 0 24px; height: 68px; background: linear-gradient(135deg, #4a148c 0%, #6a0dad 50%, #8a2be2 100%); box-shadow: 0 2px 20px rgba(74,20,140,0.4); }
+    .nav-left { display: flex; align-items: center; gap: 14px; min-width: 0; grid-column: 1; }
+    .nav-center { display: flex; align-items: center; justify-content: center; gap: 10px; grid-column: 2; flex-shrink: 0; }
+    .nav-center .brand-name { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .logo { width: 42px; height: 42px; animation: bounce-soft 3s ease-in-out infinite; }
+    .nav-right { display: flex; align-items: center; gap: 12px; grid-column: 3; flex-shrink: 0; justify-self: end; }
+    .hamburger { cursor: pointer; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+    .hamburger div { width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
+    .hamburger.open div:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open div:nth-child(2) { opacity: 0; }
+    .hamburger.open div:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+    .nav-search { padding: 8px 16px; border-radius: var(--radius-pill); border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-size: 0.9rem; width: 180px; outline: none; transition: 0.3s; }
+    .nav-search::placeholder { color: rgba(255,255,255,0.7); }
+    .nav-search:focus { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.6); width: 220px; }
+    .nav-links { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.88rem; text-decoration: none; padding: 6px 14px; border-radius: var(--radius-pill); transition: 0.2s; cursor: pointer; }
+    .nav-links a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-links a.subjects-active { background: rgba(255,255,255,0.2); color: #fff; }
+    .btn { cursor: pointer; border: none; font-family: 'Poppins', sans-serif; font-weight: 600; transition: all 0.2s; }
+    .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.7); color: #fff; padding: 8px 20px; border-radius: var(--radius-pill); font-size: 0.88rem; }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.15); }
+    .btn-white { background: #fff; color: var(--purple); padding: 8px 20px; border-radius: var(--radius-pill); font-size: 0.88rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .btn-white:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+    .upgrade-link { color: var(--gold); font-weight: 700; font-size: 0.88rem; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+    .score-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: var(--gold); font-weight: 700; font-size: 0.85rem; padding: 6px 12px; border-radius: var(--radius-pill); }
+
+    /* ===== SUBJECTS PANEL ===== */
+    #subjects-panel {
+      display: none;
+      background: #fff;
+      border-bottom: 2px solid #e8deff;
+      box-shadow: 0 8px 32px rgba(106,13,173,0.15);
+      position: sticky;
+      top: 68px;
+      z-index: 998;
+    }
+    #subjects-panel .sp-inner {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      max-width: 1100px;
+      margin: 0 auto;
+      min-height: 420px;
+    }
+    #subjects-panel .sp-left {
+      background: #faf8ff;
+      border-right: 1.5px solid #e8deff;
+      padding: 16px 10px;
+      overflow-y: auto;
+      max-height: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    #subjects-panel .sp-left::-webkit-scrollbar { width: 4px; }
+    #subjects-panel .sp-left::-webkit-scrollbar-thumb { background: #e8deff; border-radius: 4px; }
+    #subjects-panel .sp-label { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 8px; margin-bottom: 6px; }
+    #subjects-panel .sp-right { padding: 28px 32px; overflow-y: auto; max-height: 480px; }
+
+    /* ===== SUBJECT ITEMS ===== */
+    .subject-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: none; background: transparent; border-radius: 10px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 500; color: var(--text); text-align: left; transition: 0.2s; width: 100%; }
+    .subject-item:hover, .subject-item.subject-active { background: #ede7ff; color: var(--purple); }
+    .subject-icon { font-size: 1rem; width: 22px; text-align: center; flex-shrink: 0; }
+
+    /* ===== CURRICULUM LIST ===== */
+    .curriculum-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .curriculum-list li { padding: 10px 16px; background: #faf8ff; border-radius: 10px; font-size: 0.9rem; color: var(--text); border: 1px solid #e8deff; }
+    .placeholder { color: #6b7280; font-style: italic; background: transparent !important; border: none !important; }
+
+    /* ===== AUTH GATE HINT ===== */
+    .curriculum-auth-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #faf4ff, #fff0f8);
+      border: 1.5px dashed #d8b0ff;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: var(--purple);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .ns-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9000; opacity: 0; pointer-events: none; transition: 0.3s; }
+    .ns-overlay.active { opacity: 1; pointer-events: all; }
+    .ns-sidebar { position: fixed; left: -340px; top: 0; bottom: 0; width: 320px; background: #fff; z-index: 9001; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); transition: left 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); overflow-y: auto; }
+    .ns-sidebar.active { left: 0; }
+    .ns-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 16px; background: linear-gradient(135deg, #4a148c, #6a0dad); color: #fff; }
+    .ns-logo { display: flex; align-items: center; gap: 10px; }
+    .ns-logo img { width: 36px; height: 36px; }
+    .ns-logo span { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; }
+    .ns-close { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
+    .ns-role-container { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .ns-role-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px; }
+    .ns-role-select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--purple); background: var(--purple-bg); outline: none; cursor: pointer; }
+    .ns-nav { padding: 12px 0; flex: 1; }
+    .ns-section { display: none; }
+    .ns-section.active { display: block; }
+    .ns-section-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 20px 6px; }
+    .ns-menu-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: var(--text); text-decoration: none; font-size: 0.92rem; font-weight: 500; transition: 0.2s; }
+    .ns-menu-item:hover { background: var(--purple-bg); color: var(--purple); }
+    .ns-menu-icon { font-size: 1.1rem; width: 24px; text-align: center; }
+    .ns-badge { background: var(--pink); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: auto; }
+    .ns-global { padding: 16px 20px; border-top: 1px solid var(--border); }
+    .ns-global-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .ns-global-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ns-global-btn { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--purple-bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--purple); text-decoration: none; font-size: 0.82rem; font-weight: 600; transition: 0.2s; }
+    .ns-global-btn:hover { background: #ede7ff; }
+
+    /* ===== HERO ===== */
+    .hero { min-height: 88vh; display: flex; align-items: center; justify-content: center; gap: 60px; padding: 60px 40px; background: linear-gradient(135deg, #faf8ff 0%, #f0e8ff 40%, #ffe8f5 100%); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(106,13,173,0.07) 0%, transparent 70%); top: -200px; right: -100px; border-radius: 50%; }
+    .hero-image { width: 260px; height: 260px; border-radius: 50%; object-fit: cover; box-shadow: var(--shadow-lg); border: 4px solid #fff; animation: float 4s ease-in-out infinite; flex-shrink: 0; }
+    .hero-text { max-width: 780px; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #ede7ff, #fce4ec); border: 1px solid #d8b0ff; color: var(--purple); font-size: 0.82rem; font-weight: 700; padding: 6px 16px; border-radius: var(--radius-pill); margin-bottom: 20px; }
+    .hero-text h1 { font-family: 'Baloo 2', cursive; font-size: 3.4rem; font-weight: 800; line-height: 1.15; color: var(--purple-dark); margin-bottom: 18px; }
+    .hero-text h1 span { color: var(--pink); }
+    .hero-text p { font-size: 1.05rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 28px; }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .btn-hero-primary { background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; padding: 14px 32px; border-radius: var(--radius-pill); font-size: 1rem; box-shadow: 0 8px 24px rgba(106,13,173,0.3); }
+    .btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(106,13,173,0.4); }
+    .btn-hero-secondary { background: #fff; color: var(--purple); padding: 14px 32px; border-radius: var(--radius-pill); font-size: 1rem; border: 2px solid var(--border); }
+    .btn-hero-secondary:hover { border-color: var(--purple); transform: translateY(-2px); }
+
+    /* ===== CHOOSE YOUR PATH ===== */
+    .path-section { padding: 80px 40px; background: linear-gradient(135deg, #1a0030 0%, #2d0060 60%, #4a148c 100%); text-align: center; position: relative; overflow: hidden; }
+    .path-section::before { content: ''; position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(154,92,255,0.15) 0%, transparent 70%); top: -100px; left: -100px; border-radius: 50%; }
+    .path-section::after { content: ''; position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,92,162,0.1) 0%, transparent 70%); bottom: -100px; right: -100px; border-radius: 50%; }
+    .path-eyebrow { display: inline-block; color: var(--gold); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+    .path-section h2 { font-family: 'Baloo 2', cursive; font-size: 2.6rem; font-weight: 800; color: #fff; margin-bottom: 12px; position: relative; z-index: 1; }
+    .path-section > p { color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 48px; position: relative; z-index: 1; }
+    .path-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+    .path-card { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); border-radius: var(--radius-lg); padding: 32px 24px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden; text-align: left; }
+    .path-card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; border-radius: var(--radius-lg); }
+    .path-card.student-card::before { background: linear-gradient(135deg, rgba(46,125,50,0.3), rgba(46,125,50,0.1)); }
+    .path-card.teacher-card::before { background: linear-gradient(135deg, rgba(21,101,192,0.3), rgba(21,101,192,0.1)); }
+    .path-card.parent-card::before  { background: linear-gradient(135deg, rgba(230,81,0,0.3), rgba(230,81,0,0.1)); }
+    .path-card.admin-card::before   { background: linear-gradient(135deg, rgba(106,13,173,0.4), rgba(106,13,173,0.1)); }
+    .path-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.3); }
+    .path-card:hover::before { opacity: 1; }
+    .path-card.active-path { transform: translateY(-8px); border-width: 2px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .path-card.student-card.active-path  { border-color: #66bb6a; box-shadow: 0 20px 40px rgba(46,125,50,0.3); }
+    .path-card.teacher-card.active-path  { border-color: #64b5f6; box-shadow: 0 20px 40px rgba(21,101,192,0.3); }
+    .path-card.parent-card.active-path   { border-color: #ffa726; box-shadow: 0 20px 40px rgba(230,81,0,0.3); }
+    .path-card.admin-card.active-path    { border-color: #ce93d8; box-shadow: 0 20px 40px rgba(106,13,173,0.3); }
+    .path-card-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+    .path-card h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .path-card p { font-size: 0.88rem; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 20px; }
+    .path-card-features { list-style: none; padding: 0; margin-bottom: 20px; }
+    .path-card-features li { font-size: 0.82rem; color: rgba(255,255,255,0.8); padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+    .path-card-features li::before { content: '✓'; font-weight: 700; font-size: 0.75rem; }
+    .path-card.student-card .path-card-features li::before { color: #66bb6a; }
+    .path-card.teacher-card .path-card-features li::before { color: #64b5f6; }
+    .path-card.parent-card  .path-card-features li::before { color: #ffa726; }
+    .path-card.admin-card   .path-card-features li::before { color: #ce93d8; }
+    .path-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 700; padding: 10px 22px; border-radius: var(--radius-pill); border: none; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.2s; width: 100%; justify-content: center; }
+    .path-card.student-card .path-cta { background: #2e7d32; color: #fff; }
+    .path-card.teacher-card .path-cta { background: #1565c0; color: #fff; }
+    .path-card.parent-card  .path-cta { background: #e65100; color: #fff; }
+    .path-card.admin-card   .path-cta { background: #6a0dad; color: #fff; }
+    .path-cta:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .path-active-msg { margin-top: 32px; padding: 16px 28px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius-pill); color: #fff; font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; position: relative; z-index: 1; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+    .path-active-msg.visible { opacity: 1; transform: translateY(0); }
+    .path-active-msg button { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; }
+
+    /* ===== FOR SECTION ===== */
+    .for-section { padding: 80px 40px; background: #fff; text-align: center; }
+    .section-eyebrow { display: inline-block; color: var(--purple); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .section-title { font-family: 'Baloo 2', cursive; font-size: 2.4rem; font-weight: 800; color: var(--purple-dark); margin-bottom: 12px; }
+    .section-sub { color: var(--text-muted); font-size: 1.05rem; max-width: 560px; margin: 0 auto 48px; line-height: 1.7; }
+    .role-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; max-width: 1040px; margin: 0 auto; }
+    .role-card { padding: 32px 24px; border-radius: var(--radius-lg); border: 2px solid transparent; text-align: left; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
+    .role-card.student  { background: linear-gradient(145deg, #f0faf0, #e8f5e9); border-color: #c8e6c9; }
+    .role-card.teacher  { background: linear-gradient(145deg, #f0f8ff, #e3f2fd); border-color: #bbdefb; }
+    .role-card.parent   { background: linear-gradient(145deg, #fffaf0, #fff3e0); border-color: #ffe0b2; }
+    .role-card.admin    { background: linear-gradient(145deg, #fdf0ff, #f3e5f5); border-color: #e1bee7; }
+    .role-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+    .role-card-icon { font-size: 2.8rem; margin-bottom: 16px; display: block; }
+    .role-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .role-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+    .role-card .card-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 700; padding: 9px 20px; border-radius: var(--radius-pill); text-decoration: none; transition: 0.2s; }
+    .role-card.student .card-cta  { background: #2e7d32; color: #fff; }
+    .role-card.teacher .card-cta  { background: #1565c0; color: #fff; }
+    .role-card.parent  .card-cta  { background: #e65100; color: #fff; }
+    .role-card.admin   .card-cta  { background: var(--purple); color: #fff; }
+
+    /* ===== ROLE FEATURE PANELS ===== */
+    #role-features { padding: 80px 40px; background: var(--purple-bg); text-align: center; }
+    .pf-role-tabs { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+    .pf-role-btn { display: flex; align-items: center; gap: 8px; background: #fff; border: 2px solid var(--border); color: var(--purple); padding: 12px 28px; border-radius: var(--radius-pill); font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.3s; }
+    .pf-role-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .pf-role-btn.active { background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; border-color: transparent; box-shadow: var(--shadow-md); }
+    .pf-panels { max-width: 1000px; margin: 0 auto; text-align: left; }
+    .pf-panel { display: none; animation: fade-up 0.4s ease forwards; }
+    .pf-panel.active { display: block; }
+    .pf-panel-header { text-align: center; margin-bottom: 32px; }
+    .pf-panel-header h3 { font-size: 1.9rem; color: var(--text); margin-bottom: 8px; font-family: 'Baloo 2', cursive; }
+    .pf-panel-header p { color: var(--text-muted); font-size: 1rem; }
+    .pf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+    .pf-card { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 22px; cursor: pointer; transition: all 0.3s; position: relative; }
+    .pf-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #d8b0ff; }
+    .pf-card-icon { font-size: 2rem; margin-bottom: 14px; background: var(--purple-bg); width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+    .pf-card h4 { margin: 0 0 6px; font-size: 1.05rem; color: var(--text); }
+    .pf-card p { margin: 0 0 12px; color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+    .pf-card .role-tag { position: absolute; top: 14px; right: 14px; }
+
+    /* ===== CAROUSEL ===== */
+    #learning-tools { padding: 80px 0; background: #f8f6ff; text-align: center; }
+    #learning-tools h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; color: var(--purple-dark); margin-bottom: 36px; }
+    .carousel-container { position: relative; overflow: hidden; padding: 0 60px; }
+    .carousel-track { display: flex; gap: 20px; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); padding: 10px 0 20px; }
+    .tool-card { min-width: 220px; border-radius: var(--radius-lg); padding: 24px 20px; flex-shrink: 0; box-shadow: var(--shadow-sm); transition: 0.3s; }
+    .tool-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .tool-card h3 { font-size: 1rem; margin-bottom: 6px; font-weight: 700; }
+    .tool-card p { font-size: 0.82rem; color: rgba(0,0,0,0.6); }
+    .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: #fff; border: 2px solid var(--border); color: var(--purple); width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1rem; z-index: 10; transition: 0.2s; box-shadow: var(--shadow-sm); }
+    .carousel-btn:hover { background: var(--purple); color: #fff; }
+    .carousel-btn.prev { left: 10px; }
+    .carousel-btn.next { right: 10px; }
+
+    /* ===== QUIZZES ===== */
+    #quizzes { padding: 80px 40px; text-align: center; background: #fff; }
+    #quizzes h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; color: var(--purple); margin-bottom: 8px; }
+    .quiz-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 24px; }
+    .quiz-card { background: var(--purple-bg); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 28px 22px; min-width: 220px; max-width: 260px; flex: 1; transition: 0.3s; position: relative; }
+    .quiz-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #d8b0ff; }
+    .quiz-icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .quiz-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .quiz-players { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px; }
+    .quiz-tag { font-size: 0.78rem; color: var(--purple); font-weight: 600; margin-top: 8px; }
+    .btn-join { background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; padding: 9px 20px; border-radius: var(--radius-pill); font-size: 0.85rem; font-weight: 700; font-family: 'Poppins', sans-serif; border: none; cursor: pointer; transition: 0.2s; width: 100%; }
+    .btn-join:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(106,13,173,0.3); }
+
+    /* ===== VIDEOS ===== */
+    #videos { padding: 60px 40px; background: var(--purple-bg); text-align: center; }
+    .video-card { background: #fff; border-radius: var(--radius-lg); padding: 20px; width: 280px; box-shadow: var(--shadow-sm); transition: 0.3s; }
+    .video-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .video-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--purple-dark); }
+    .video-list { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+
+    /* ===== WHY BRAINJOY ===== */
+    #why-brainjoy { padding: 80px 40px; background: #fff; text-align: center; }
+    .cards { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; margin-top: 36px; }
+    .card { background: var(--purple-bg); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 32px 24px; max-width: 300px; flex: 1; min-width: 240px; transition: 0.3s; }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .card-icon { font-size: 2.5rem; margin-bottom: 16px; }
+    .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+    .card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ===== SPLIT SECTIONS ===== */
+    .split-section { padding: 80px 60px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 60px; }
+    .split-section.alt { background: var(--purple-bg); }
+    .split-img { width: 240px; animation: float 3s ease-in-out infinite; }
+    .split-text { flex: 1 1 400px; max-width: 500px; }
+    .split-text h2 { font-family: 'Baloo 2', cursive; font-size: 2rem; color: var(--purple-dark); margin-bottom: 14px; }
+    .split-text p { color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 24px; }
+    .split-btns { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .btn-primary { background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; padding: 12px 28px; border-radius: var(--radius-pill); font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 14px rgba(106,13,173,0.25); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(106,13,173,0.35); }
+    .btn-secondary { background: #fff; color: var(--purple); padding: 12px 28px; border-radius: var(--radius-pill); font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 700; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; }
+    .btn-secondary:hover { border-color: var(--purple); transform: translateY(-1px); }
+
+    /* ===== LESSON PLANNER ===== */
+    .planner-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .planner-field label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .planner-field input { padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'Poppins', sans-serif; font-size: 0.95rem; outline: none; transition: 0.2s; }
+    .planner-field input:focus { border-color: var(--purple); }
+    .planner-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+    #output { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); min-height: 100px; font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+
+    /* ===== ADMIN CONSOLE ===== */
+    #admin-console { padding: 80px 40px; background: linear-gradient(135deg, #f3e5f5, #ede7ff); text-align: center; }
+
+    /* ===== TEACHING GAMES ===== */
+    #teaching-games { padding: 80px 40px; background: linear-gradient(135deg, #fff0ff, #fff3ff); text-align: center; }
+    .feature-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 36px 0; }
+    .feature-card { background: #fff; border: 1.5px solid #ffd6f0; border-radius: var(--radius-lg); padding: 24px 22px; min-width: 180px; max-width: 210px; flex: 1; box-shadow: var(--shadow-sm); transition: 0.3s; }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
+    .feature-card p { font-size: 0.88rem; color: var(--text-muted); }
+
+    /* ===== STATS ===== */
+    #stats { padding: 80px 40px; background: linear-gradient(135deg, #f2e6ff, #ffe6f9); text-align: center; }
+    #stats h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; color: var(--purple); margin-bottom: 40px; }
+    .stats-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 60px; }
+    .stat-item h3 { font-size: 3.2rem; font-weight: 800; margin-bottom: 6px; }
+    .stat-item p { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+
+    /* ===== GROWTH BANNER ===== */
+    .growth-banner { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--purple), var(--purple-light), var(--pink)); color: #fff; padding: 60px 40px; text-align: center; }
+    .growth-banner h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; margin-bottom: 14px; }
+    .growth-banner p { font-size: 1.05rem; max-width: 580px; margin: 0 auto 28px; opacity: 0.9; line-height: 1.7; }
+    .btn-growth { background: #fff; color: var(--purple); padding: 15px 36px; font-size: 1rem; border-radius: var(--radius-pill); font-family: 'Poppins', sans-serif; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.2); transition: 0.2s; }
+    .btn-growth:hover { transform: translateY(-2px); }
+
+    /* ===== PRICING ===== */
+    #pricing { padding: 80px 40px; background: #fff; text-align: center; }
+    .pricing-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; max-width: 1020px; margin: 48px auto 0; }
+    .pricing-card { background: var(--purple-bg); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 36px 28px; flex: 1; min-width: 260px; max-width: 310px; position: relative; transition: 0.3s; }
+    .pricing-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .pricing-card.popular { border-color: var(--purple); background: linear-gradient(145deg, #ede7ff, #fce4ec20); }
+    .pricing-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 16px; border-radius: var(--radius-pill); white-space: nowrap; }
+    .price-text { font-size: 2.6rem; font-weight: 800; color: var(--purple-dark); margin: 14px 0 4px; }
+    .price-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; }
+    .pricing-features { list-style: none; padding: 0; text-align: left; margin-bottom: 24px; }
+    .pricing-features li { font-size: 0.88rem; padding: 6px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+    .pricing-cta { width: 100%; padding: 13px; border-radius: var(--radius-pill); font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
+    .pricing-cta:hover { transform: translateY(-1px); }
+
+    /* ===== NEWSLETTER ===== */
+    #newsletter { background: linear-gradient(135deg, #f2e6ff, #ffe6f9, #fff3cc); padding: 80px 40px; text-align: center; position: relative; overflow: hidden; }
+    #newsletter h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; color: var(--purple); margin-bottom: 12px; }
+    #newsletter p { color: var(--purple-dark); font-size: 1rem; margin-bottom: 28px; }
+    .newsletter-form { max-width: 580px; margin: 0 auto; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .newsletter-form input { flex: 1 1 260px; padding: 14px 22px; border-radius: var(--radius-pill); border: 2px solid #d8b0ff; font-family: 'Poppins', sans-serif; font-size: 0.95rem; outline: none; }
+    .newsletter-form button { background: var(--purple); color: #fff; padding: 14px 28px; border-radius: var(--radius-pill); font-family: 'Poppins', sans-serif; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
+    .newsletter-form button:hover { background: var(--purple-dark); }
+
+    /* ===== PARTNERS ===== */
+    #partners { background: linear-gradient(135deg, #f8f6ff, #f2e6ff); padding: 80px 40px; text-align: center; }
+    #partners h2 { font-family: 'Baloo 2', cursive; font-size: 2.2rem; color: var(--purple-dark); margin-bottom: 12px; }
+    .partner-cards { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 24px; max-width: 1040px; margin: 36px auto 0; }
+    .partner-card { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px 30px; box-shadow: var(--shadow-sm); transition: 0.2s; }
+    .partner-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .partner-card img { max-width: 100px; max-height: 50px; object-fit: contain; }
+
+    /* ===== FOOTER ===== */
+    footer { background: linear-gradient(135deg, #1a0030, #2d0060); color: rgba(255,255,255,0.85); padding: 60px 40px 28px; }
+    footer h3 { color: #fff; font-family: 'Baloo 2', cursive; margin-bottom: 14px; }
+    footer ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .footer-link { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; transition: 0.2s; }
+    .footer-link:hover { color: #fff; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 48px; justify-content: space-between; }
+    .footer-col { flex: 1 1 200px; min-width: 180px; }
+    .footer-col p { font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+    .btn-donate { background: var(--pink); color: #fff; padding: 11px 24px; border-radius: var(--radius-pill); font-weight: 700; font-family: 'Poppins', sans-serif; border: none; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+    .btn-donate:hover { background: #ff2d7e; }
+    .footer-bottom { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.82rem; color: rgba(255,255,255,0.5); }
+
+    /* ===== AUTH MODALS ===== */
+    .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 100000; }
+    .auth-overlay.open { display: flex; }
+    .auth-modal { background: #fff; width: 100%; max-width: 460px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 36px; position: relative; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    .auth-close { position: absolute; top: 16px; right: 18px; background: var(--purple-bg); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; color: var(--purple); }
+    .auth-logo { text-align: center; margin-bottom: 20px; }
+    .auth-logo img { width: 52px; }
+    .auth-title { text-align: center; font-family: 'Baloo 2', cursive; font-size: 1.8rem; color: var(--purple); margin-bottom: 6px; }
+    .auth-sub { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+    .auth-input { width: 100%; padding: 13px 16px; margin-bottom: 14px; border-radius: var(--radius); border: 1.5px solid var(--border); font-family: 'Poppins', sans-serif; font-size: 0.95rem; outline: none; display: block; transition: 0.2s; }
+    .auth-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(106,13,173,0.1); }
+    .auth-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; border: none; border-radius: var(--radius); font-weight: 700; font-size: 1rem; font-family: 'Poppins', sans-serif; cursor: pointer; margin-bottom: 12px; transition: 0.2s; }
+    .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(106,13,173,0.3); }
+    .auth-footer { text-align: center; font-size: 0.88rem; color: var(--text-muted); }
+    .auth-footer a { color: var(--purple); font-weight: 600; cursor: pointer; }
+    .role-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .role-select-btn { padding: 14px 10px; border: 2px solid var(--border); border-radius: var(--radius); background: var(--purple-bg); cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text); transition: 0.2s; text-align: center; }
+    .role-select-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .role-select-btn.selected { border-color: var(--purple); background: #ede7ff; color: var(--purple); }
+
+    /* ===== TOAST ===== */
+    #bj-global-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(90deg, #6a0dad, #f50057); color: #fff; padding: 12px 24px; border-radius: var(--radius-pill); font-weight: 700; box-shadow: var(--shadow-lg); opacity: 0; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 999999; pointer-events: none; font-size: 0.9rem; }
+    #bj-global-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
+
+    /* ===== SECTION ROLE BANNERS ===== */
+    .section-role-banner { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 20px; border-radius: var(--radius-pill); font-size: 0.82rem; font-weight: 700; margin: 0 auto 20px; width: fit-content; }
+    .section-role-banner.for-student { background: #e8f5e9; color: #2e7d32; border: 1.5px solid #a5d6a7; }
+    .section-role-banner.for-teacher { background: #e3f2fd; color: #1565c0; border: 1.5px solid #90caf9; }
+    .section-role-banner.for-parent  { background: #fff3e0; color: #e65100; border: 1.5px solid #ffcc80; }
+    .section-role-banner.for-admin   { background: #f3e5f5; color: #6a0dad; border: 1.5px solid #ce93d8; }
+    .section-role-banner.for-all     { background: #fce4ec; color: #880e4f; border: 1.5px solid #f48fb1; }
+
+    /* ===== ADMIN CONSOLE MODAL ===== */
+    .admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 100000; padding: 24px; }
+    .admin-modal-overlay.open { display: flex; }
+    .admin-modal { background: #f3e5f5; background: linear-gradient(135deg, #f3e5f5, #ede7ff); width: 100%; max-width: 880px; max-height: 88vh; overflow-y: auto; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 48px 40px; position: relative; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); text-align: center; }
+    .admin-modal-close { position: absolute; top: 18px; right: 20px; background: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; color: var(--purple); box-shadow: var(--shadow-sm); }
+
+    /* ===== COMING SOON BADGE ===== */
+    .coming-soon-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: linear-gradient(135deg, #fff3cd, #ffe8a1);
+      color: #856404; font-size: 0.7rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid #ffd666;
+      text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+    }
+    .coming-soon-overlay {
+      position: relative;
+    }
+    .coming-soon-overlay::after {
+      content: 'Coming Soon';
+      position: absolute; top: 12px; right: 12px;
+      background: linear-gradient(135deg, #fff3cd, #ffe8a1);
+      color: #856404; font-size: 0.68rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid #ffd666;
+      text-transform: uppercase; letter-spacing: 0.3px; z-index: 2;
+    }
+
+    /* ===== LATEST SPARKS (from published site) ===== */
+    #latest-sparks { padding: 80px 40px; background: #fff; text-align: center; }
+    #latest-sparks .section-label { display: inline-block; color: var(--purple); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .sparks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1040px; margin: 36px auto 0; text-align: left; }
+    .spark-card { display: block; background: var(--purple-bg); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-decoration: none; color: inherit; transition: all 0.3s; position: relative; overflow: hidden; }
+    .spark-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: #d8b0ff; }
+    .spark-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .spark-tile { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; line-height: 1.1; }
+    .spark-tile.teal { background: linear-gradient(135deg, #00bfa5, #26c6da); }
+    .spark-tile .tnum { font-size: 0.75rem; opacity: 0.9; }
+    .spark-tile .tsym { font-size: 0.85rem; }
+    .spark-cat { font-size: 0.75rem; font-weight: 700; color: var(--purple); background: #ede7ff; padding: 4px 10px; border-radius: 20px; }
+    .spark-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.35; }
+    .spark-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 16px; }
+    .spark-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text-muted); }
+    .spark-meta .readmore { color: var(--purple); font-weight: 700; }
+
+    /* ===== LIVE LINKS BAR (published pages) ===== */
+    .live-links-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 24px 0 0; }
+    .live-link-btn { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 2px solid var(--border); color: var(--purple); padding: 10px 20px; border-radius: var(--radius-pill); font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: 0.2s; font-family: 'Poppins', sans-serif; }
+    .live-link-btn:hover { border-color: var(--purple); background: var(--purple-bg); transform: translateY(-2px); }
+    .live-link-btn.teal { border-color: #00bfa5; color: #00897b; }
+    .live-link-btn.teal:hover { background: #e0f7f5; }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+    @keyframes bounce-soft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes pop-in { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .hero { flex-direction: column; text-align: center; padding: 40px 24px; gap: 32px; min-height: auto; }
+      .hero-text h1 { font-size: 2rem; }
+      .hero-btns { justify-content: center; }
+      .hero-image { width: 180px; height: 180px; }
+      .nav-search { display: none; }
+      .nav-links { display: none; }
+      .upgrade-link { display: none; }
+      #subjects-panel .sp-inner { grid-template-columns: 1fr; }
+      .split-section { padding: 50px 24px; gap: 32px; }
+      .path-section { padding: 50px 24px; }
+      .path-section h2 { font-size: 1.8rem; }
+      .path-grid { grid-template-columns: 1fr 1fr; }
+      .nav-center .brand-name { font-size: 1.2rem; }
+    }
+    @media (max-width: 480px) {
+      .path-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+<base target="_blank">
+</head>
+
+<div id="pricingModal" class="auth-overlay">
+  <div class="auth-modal" style="max-width:900px;width:95%;padding:40px;overflow-y:auto;max-height:90vh;">
+    <button class="auth-close" onclick="closeModal('pricingModal')">&times;</button>
+    <div style="text-align:center;margin-bottom:32px;">
+      <span class="section-eyebrow">Simple Pricing</span>
+      <h2 class="section-title">Transparent. Accessible. Powerful.</h2>
+      <p class="section-sub">World-class education for everyone. Unlock your full potential with Pro.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div style="font-size:2rem;margin-bottom:10px;">🌱</div>
+        <span class="role-tag all" style="margin-bottom:10px;display:inline-block;">👥 All Users</span>
+        <h3 style="font-size:1.4rem;color:var(--text);margin-bottom:4px;">Free Forever</h3>
+        <div class="price-text">$0</div>
+        <div class="price-sub">Always free for everyone, anywhere.</div>
+        <ul class="pricing-features">
+          <li>✅ Basic Study Tools & Quizzes</li>
+          <li>✅ Standard Core Curriculums</li>
+          <li>✅ Limited BrainJoy AI Access</li>
+          <li>✅ Join Live Games</li>
+          <li style="color:var(--text-muted);">❌ Advanced AI Generation</li>
+        </ul>
+        <button class="pricing-cta" style="background:var(--purple-bg);color:var(--purple);border:2px solid var(--border);" onclick="closeModal('pricingModal');openModal('signupModal')">Get Started Free</button>
+      </div>
+      <div class="pricing-card popular">
+        <div class="pricing-badge">⭐ MOST POPULAR</div>
+        <div style="font-size:2rem;margin-bottom:10px;">🚀</div>
+        <span class="role-tag all" style="margin-bottom:10px;display:inline-block;">👥 All Users</span>
+        <h3 style="font-size:1.4rem;color:var(--purple);margin-bottom:4px;">BrainJoy Pro</h3>
+        <div class="price-text">$7<span style="font-size:1rem;color:var(--text-muted)">/mo</span></div>
+        <div class="price-sub">Billed $84 annually</div>
+        <ul class="pricing-features">
+          <li>✨ <strong>Unlimited</strong> BrainJoy AI Assistant</li>
+          <li>✨ Advanced AI Note Maker & Quizzes</li>
+          <li>✨ Premium Animated Avatars</li>
+          <li>✨ Ad-free focused experience</li>
+          <li>✨ Priority support</li>
+        </ul>
+        <button class="pricing-cta" style="background:linear-gradient(135deg,var(--purple),var(--purple-light));color:#fff;" onclick="requireAuthAction()">Upgrade to Pro ✨</button>
+      </div>
+      <div class="pricing-card">
+        <div style="font-size:2rem;margin-bottom:10px;">🏫</div>
+        <span class="role-tag admin" style="margin-bottom:10px;display:inline-block;">🏛 Schools & Admins</span>
+        <h3 style="font-size:1.4rem;color:var(--text);margin-bottom:4px;">For Schools</h3>
+        <div class="price-text">Custom</div>
+        <div class="price-sub">Empower your entire district.</div>
+        <ul class="pricing-features">
+          <li>🏢 Everything in Pro</li>
+          <li>🏢 Mass Student Import (CSV/Clever)</li>
+          <li>🏢 School-wide Analytics Dashboard</li>
+          <li>🏢 Advanced Teacher Controls</li>
+          <li>🏢 Dedicated Success Manager</li>
+        </ul>
+        <button class="pricing-cta" style="background:#fff;border:2px solid var(--purple);color:var(--purple);" onclick="requireAuthAction()">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN & SCHOOL CONSOLE MODAL ===== -->
+<div id="adminConsoleModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <button class="admin-modal-close" onclick="closeModal('adminConsoleModal')">&times;</button>
+    <span class="role-tag admin" style="display:inline-block;margin-bottom:16px;">🏛 For Admins</span>
+    <h2 style="font-family:'Baloo 2',cursive;font-size:2.4rem;color:var(--purple-dark);margin-bottom:12px;">🏛 Admin & School Console</h2>
+    <p style="max-width:740px;margin:0 auto 28px;color:var(--purple);font-size:0.95rem;">Manage your entire school district with powerful insights — built for school leaders and administrators.</p>
+    <div class="feature-cards">
+      <div class="feature-card" onclick="requireAuthAction()" style="cursor:pointer;"><h3>🏛 District Overview</h3><p>School-wide analytics, health dashboards & reports.</p></div>
+      <div class="feature-card" onclick="requireAuthAction()" style="cursor:pointer;"><h3>👥 Mass Import</h3><p>Sync students via Clever, CSV, or Google Workspace.</p></div>
+      <div class="feature-card" onclick="requireAuthAction()" style="cursor:pointer;"><h3>🧰 Teacher Controls</h3><p>Manage staff access, curriculum, and permissions.</p></div>
+      <div class="feature-card" onclick="requireAuthAction()" style="cursor:pointer;"><h3>📉 Engagement Reports</h3><p>Detailed ROI, usage metrics & engagement data.</p></div>
+    </div>
+    <div style="max-width:700px;margin:36px auto 0;background:#fff;border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-sm);text-align:left;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:1.8rem;">🏫</span>
+        <h3 style="font-family:'Baloo 2',cursive;color:var(--purple-dark);font-size:1.3rem;">For Schools</h3>
+      </div>
+      <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:16px;">Custom pricing — empower your entire district.</p>
+      <ul class="pricing-features" style="margin-bottom:20px;">
+        <li>🏢 Everything in Pro</li>
+        <li>🏢 Mass Student Import (CSV/Clever)</li>
+        <li>🏢 School-wide Analytics Dashboard</li>
+        <li>🏢 Advanced Teacher Controls</li>
+        <li>🏢 Dedicated Success Manager</li>
+      </ul>
+      <button class="btn-primary" onclick="requireAuthAction()">Contact Sales</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STUDENT LEARNING HUB MODAL ===== -->
+<div id="studentHubModal" class="admin-modal-overlay">
+  <div class="admin-modal" style="background:var(--purple-bg);">
+    <button class="admin-modal-close" onclick="closeModal('studentHubModal')">&times;</button>
+    <h2 style="font-family:'Baloo 2',cursive;font-size:1.9rem;color:var(--text);margin-bottom:8px;">🎓 Student Learning Hub</h2>
+    <p style="color:var(--text-muted);font-size:1rem;margin-bottom:32px;">Master any subject, track your progress, and play fun games.</p>
+    <div class="pf-grid" style="text-align:left;">
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">📚</div><h4>Study Guides</h4><p>Quick outlines & core concepts for any subject.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🤖</div><h4>BrainJoy AI Tutor</h4><p>AI-powered 24/7 homework help — ask anything.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🗂</div><h4>Flashcards</h4><p>Visual learning cards for fast recall and revision.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🎮</div><h4>Games & Quizzes</h4><p>Play challenges and join live class games.</p></div>
+    </div>
+    <div style="max-width:700px;margin:36px auto 0;background:#fff;border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-sm);text-align:center;">
+      <div class="section-role-banner for-student" style="margin:0 auto 16px;">🎓 For Students — Gamified Challenges</div>
+      <h3 style="font-family:'Baloo 2',cursive;color:var(--purple-dark);font-size:1.4rem;margin-bottom:8px;">🎮 Gamified Quizzes & Challenges</h3>
+      <p style="color:var(--purple-dark);margin-bottom:24px;font-size:0.92rem;">Join live games, daily challenges, and subject-based quizzes — for students of all levels.</p>
+      <div class="quiz-grid">
+        <div class="quiz-card"><div style="position:absolute;top:12px;right:12px"><span class="role-tag student">🎓 Students</span></div><div class="quiz-icon">➗</div><div class="quiz-title">Math Mania</div><div class="quiz-players">1K+ Players</div><button class="btn-join" onclick="requireAuthAction()">Join Game</button><div class="quiz-tag">🏆 Live Leaderboard</div></div>
+        <div class="quiz-card"><div style="position:absolute;top:12px;right:12px"><span class="role-tag student">🎓 Students</span></div><div class="quiz-icon">🧪</div><div class="quiz-title">Science Sparks</div><div class="quiz-players">800+ Players</div><button class="btn-join" onclick="requireAuthAction()">Join Game</button><div class="quiz-tag">🔥 Daily Challenge</div></div>
+        <div class="quiz-card"><div style="position:absolute;top:12px;right:12px"><span class="role-tag student">🎓 Students</span></div><div class="quiz-icon">✏️</div><div class="quiz-title">English Challenge</div><div class="quiz-players">500+ Players</div><button class="btn-join" onclick="requireAuthAction()">Join Game</button><div class="quiz-tag">💰 Earn XP & Badges</div></div>
+      </div>
+      <div class="quiz-grid" style="margin-top:20px;">
+        <div class="quiz-card"><div style="position:absolute;top:12px;right:12px"><span class="role-tag student">🎓 Students</span></div><div class="quiz-icon">🌍</div><div class="quiz-title">Language Quiz</div><div class="quiz-players">400+ Players</div><button class="btn-join" onclick="requireAuthAction()">Join Game</button><div class="quiz-tag">💬 Vocabulary Boost</div></div>
+        <div class="quiz-card"><div style="position:absolute;top:12px;right:12px"><span class="role-tag student">🎓 Students</span></div><div class="quiz-icon">🧭</div><div class="quiz-title">World Knowledge Quiz</div><div class="quiz-players">300+ Players</div><button class="btn-join" onclick="requireAuthAction()">Join Game</button><div class="quiz-tag">🌍 History & Geography</div></div>
+        <div class="quiz-card"><div style="position:absolute;top:12px;right:12px"><span class="role-tag student">🎓 Students</span></div><div class="quiz-icon">🩺</div><div class="quiz-title">IELTS · OET · NCLEX</div><div class="quiz-players">900+ Players</div><button class="btn-join" onclick="requireAuthAction()">Join Game</button><div class="quiz-tag">🎯 Real test-style practice</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TEACHER COMMAND CENTER MODAL ===== -->
+<div id="teacherHubModal" class="admin-modal-overlay">
+  <div class="admin-modal" style="background:var(--purple-bg);">
+    <button class="admin-modal-close" onclick="closeModal('teacherHubModal')">&times;</button>
+    <h2 style="font-family:'Baloo 2',cursive;font-size:1.9rem;color:var(--text);margin-bottom:8px;">👩‍🏫 Teacher Command Center</h2>
+    <p style="color:var(--text-muted);font-size:1rem;margin-bottom:32px;">Create dynamic lessons, monitor students, and free up your time.</p>
+    <div class="pf-grid" style="text-align:left;">
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📝</div><h4>AI Lesson Planner</h4><p>Generate complete lesson plans in seconds with AI.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">🎯</div><h4>Live Review Game</h4><p>Host whole-class interactive quizzes live.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">🧮</div><h4>Quiz Builder AI</h4><p>Auto-generate tests from any topic or curriculum.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📂</div><h4>Classroom Dashboard</h4><p>Organize assignments, grades & student groups.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📊</div><h4>Student Analytics</h4><p>Real-time progress tracking & early alerts.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">⚡</div><h4>BrainBlast Mode</h4><p>High-energy whole-class review sessions.</p></div>
+    </div>
+
+    <!-- Make Your Own Teaching Games -->
+    <div style="max-width:760px;margin:36px auto 0;background:linear-gradient(135deg,#fff0ff,#fff3ff);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-sm);">
+      <span class="role-tag teacher" style="display:inline-block;margin-bottom:14px;">👩‍🏫 For Teachers</span>
+      <h3 style="font-family:'Baloo 2',cursive;font-size:1.7rem;color:var(--pink);margin-bottom:10px;">🎉 Make Your Own Teaching Games!</h3>
+      <p style="max-width:600px;margin:0 auto 22px;color:var(--purple);font-size:0.9rem;">Join teachers creating interactive, joyful classroom games with BrainJoy — no tech skills needed.</p>
+      <button class="btn-primary" onclick="requireAuthAction()" style="margin-bottom:28px;padding:13px 32px;border-radius:var(--radius-pill);font-size:0.95rem;">🎮 Play Games</button>
+      <div class="feature-cards">
+        <div class="feature-card"><h3>🖥️ Less Tech</h3><p>One screen, whole class plays together.</p></div>
+        <div class="feature-card"><h3>📝 Less Prep</h3><p>Millions of ready-made games waiting.</p></div>
+        <div class="feature-card"><h3>🎨 More Fun</h3><p>Interactive, playful & memorable.</p></div>
+        <div class="feature-card"><h3>🏆 More Play</h3><p>Great for review, warm-ups & challenges.</p></div>
+      </div>
+    </div>
+
+    <!-- AI Lesson Planner -->
+    <div style="max-width:700px;margin:24px auto 0;background:#fff;border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-sm);text-align:left;">
+      <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px;">
+        <span class="role-tag teacher">👩‍🏫 For Teachers</span>
+      </div>
+      <h3 style="text-align:center;font-family:'Baloo 2',cursive;color:var(--purple-dark);font-size:1.8rem;margin-bottom:6px;">🧾 AI Lesson Planner</h3>
+      <p style="text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:28px;">Generate a complete, curriculum-aligned lesson plan in seconds.</p>
+      <div class="planner-field"><label>Subject</label><input id="subject" type="text" placeholder="e.g., Science"></div>
+      <div class="planner-field"><label>Grade Level</label><input id="grade" type="text" placeholder="e.g., Year 3"></div>
+      <div class="planner-field"><label>Topic</label><input id="topic" type="text" placeholder="e.g., Forces and Motion"></div>
+      <div class="planner-btns">
+        <button id="generateBtn" class="btn-primary">✨ Generate Lesson Plan</button>
+        <button id="viewLessonsBtn" class="btn-secondary">📂 View Saved Lessons</button>
+      </div>
+      <div id="output"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PARENT INSIGHTS PORTAL MODAL ===== -->
+<div id="parentHubModal" class="admin-modal-overlay">
+  <div class="admin-modal" style="background:var(--purple-bg);">
+    <button class="admin-modal-close" onclick="closeModal('parentHubModal')">&times;</button>
+    <h2 style="font-family:'Baloo 2',cursive;font-size:1.9rem;color:var(--text);margin-bottom:8px;">👪 Parent Insights Portal</h2>
+    <p style="color:var(--text-muted);font-size:1rem;margin-bottom:32px;">Stay connected with your child's learning journey.</p>
+    <div class="pf-grid" style="text-align:left;">
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag parent">👪 Parents</span><div class="pf-card-icon">📈</div><h4>Progress Reports</h4><p>Weekly insights on your child's strengths & gaps.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag parent">👪 Parents</span><div class="pf-card-icon">🎯</div><h4>Curriculum Guide</h4><p>Understand exactly what your child is learning.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag parent">👪 Parents</span><div class="pf-card-icon">🎁</div><h4>Reward System</h4><p>Set learning goals & unlock real-world rewards.</p></div>
+      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag parent">👪 Parents</span><div class="pf-card-icon">⏳</div><h4>Screen Time Limits</h4><p>Set healthy learning boundaries for your child.</p></div>
+    </div>
+  </div>
+</div>
+
+<body>
+
+<!-- ===== ROLE INDICATOR BAR ===== -->
+<div id="role-indicator">
+  <span id="role-indicator-text"></span>
+  <button id="role-indicator-cta" onclick="handleIndicatorCta()"></button>
+  <button class="clear-btn" onclick="clearRole()">✕ Show all</button>
+</div>
+
+<!-- ===== AUTH NOTICE ===== -->
+<div class="auth-notice" id="authNotice">
+  🔒 Please sign in or create a free account to continue
+  <button onclick="openModal('signupModal')" style="background:#fff;color:var(--purple);border:none;border-radius:20px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.82rem;">Sign Up Free</button>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar">
+  <div class="nav-left">
+    <div class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
+      <div></div><div></div><div></div>
+    </div>
+    <input class="nav-search" type="text" placeholder="Search courses..." />
+    <div class="nav-links">
+      <a href="#choose-path">Explore</a>
+      <a href="javascript:void(0)" id="subjects-nav-btn" onclick="toggleSubjectsPanel()">Subjects <span class="coming-soon-badge" style="margin-left:4px;font-size:0.6rem;">Soon</span></a>
+      <a href="#latest-sparks">Latest Posts</a>
+      <a href="simulations.html">Simulations</a>
+      <a href="scholarships.html">Scholarships</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+  <div class="nav-center">
+    <img src="assets/happy-brain.png" alt="BrainJoy Logo" class="logo">
+    <span class="brand-name">BrainJoy</span>
+  </div>
+  <div class="nav-right">
+    <a href="javascript:void(0)" class="upgrade-link" onclick="openModal('pricingModal')">✨ Upgrade to Pro</a>
+    <span class="score-badge">✨ Score: <span id="nav-score">0</span></span>
+    <button class="btn btn-outline-white" onclick="openModal('loginModal')">Log In</button>
+    <button class="btn btn-white" onclick="openModal('signupModal')">Sign Up Free</button>
+  </div>
+</header>
+
+<!-- ===== SUBJECTS PANEL ===== -->
+<div id="subjects-panel">
+  <div class="sp-inner">
+    <div class="sp-left">
+      <div class="sp-label">Browse by Subject</div>
+      <button class="subject-item subject-active" data-target="math" onclick="handlePanelSubject(this)"><span class="subject-icon">➗</span><span>Mathematics</span></button>
+      <button class="subject-item" data-target="science" onclick="handlePanelSubject(this)"><span class="subject-icon">🧪</span><span>Science</span></button>
+      <button class="subject-item" data-target="english" onclick="handlePanelSubject(this)"><span class="subject-icon">📖</span><span>English Language & Literature</span></button>
+      <button class="subject-item" data-target="languages" onclick="handlePanelSubject(this)"><span class="subject-icon">🌍</span><span>World Languages</span></button>
+      <button class="subject-item" data-target="social" onclick="handlePanelSubject(this)"><span class="subject-icon">🧭</span><span>Social Studies / Humanities</span></button>
+      <button class="subject-item" data-target="arts" onclick="handlePanelSubject(this)"><span class="subject-icon">🎭</span><span>Visual & Performing Arts</span></button>
+      <button class="subject-item" data-target="pe" onclick="handlePanelSubject(this)"><span class="subject-icon">⚽</span><span>Physical Education / Sports</span></button>
+      <button class="subject-item" data-target="ict" onclick="handlePanelSubject(this)"><span class="subject-icon">💻</span><span>ICT & Digital Literacy</span></button>
+      <button class="subject-item" data-target="computing" onclick="handlePanelSubject(this)"><span class="subject-icon">🤖</span><span>Computer Science & AI</span></button>
+      <button class="subject-item" data-target="engineering" onclick="handlePanelSubject(this)"><span class="subject-icon">⚙️</span><span>Engineering Fields</span></button>
+      <button class="subject-item" data-target="business" onclick="handlePanelSubject(this)"><span class="subject-icon">💼</span><span>Business & Economics</span></button>
+      <button class="subject-item" data-target="medicine" onclick="handlePanelSubject(this)"><span class="subject-icon">🩺</span><span>Medicine & Nursing</span></button>
+      <button class="subject-item" data-target="psychology" onclick="handlePanelSubject(this)"><span class="subject-icon">🧠</span><span>Psychology & Sociology</span></button>
+      <button class="subject-item" data-target="law" onclick="handlePanelSubject(this)"><span class="subject-icon">⚖️</span><span>Law & Criminology</span></button>
+      <button class="subject-item" data-target="accounting" onclick="handlePanelSubject(this)"><span class="subject-icon">🧾</span><span>Accounting & Finance</span></button>
+      <button class="subject-item" data-target="pro-exams" onclick="handlePanelSubject(this)"><span class="subject-icon">📘</span><span>Professional Exams (IELTS · OET · NCLEX)</span></button>
+      <button class="subject-item" data-target="life" onclick="handlePanelSubject(this)"><span class="subject-icon">🌱</span><span>Life Skills & Well-being</span></button>
+      <button class="subject-item" data-target="careers" onclick="handlePanelSubject(this)"><span class="subject-icon">🚀</span><span>Career Development & Leadership</span></button>
+      <button class="subject-item" data-target="other" onclick="handlePanelSubject(this)"><span class="subject-icon">💬</span><span>Other Specializations</span></button>
+    </div>
+    <div class="sp-right">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <span id="panel-curriculum-icon" style="font-size:2rem;">➗</span>
+        <h3 id="panel-curriculum-title" style="font-size:1.3rem;color:#4a148c;font-weight:700;">Mathematics Curriculums</h3>
+      </div>
+      <p style="color:#6b7280;font-size:0.88rem;margin-bottom:20px;">Browse global curriculums from every country and exam board.</p>
+      <ul id="panel-curriculum-list" class="curriculum-list"></ul>
+      <button onclick="toggleSubjectsPanel()" style="margin-top:24px;background:none;border:1.5px solid #e8deff;color:#6a0dad;padding:8px 20px;border-radius:50px;cursor:pointer;font-family:'Poppins',sans-serif;font-size:0.85rem;font-weight:600;">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="ns-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<aside class="ns-sidebar" id="bjSidebar">
+  <div class="ns-header">
+    <div class="ns-logo">
+      <img src="assets/happy-brain.png" alt="BrainJoy">
+      <span>BrainJoy</span>
+    </div>
+    <button class="ns-close" onclick="closeSidebar()">&times;</button>
+  </div>
+  <div class="ns-role-container">
+    <label class="ns-role-label">Product View</label>
+    <select class="ns-role-select" id="bjRoleSelect" onchange="nsSwitchRole(this.value)">
+      <option value="teacher">👩‍🏫 Teacher Studio</option>
+      <option value="student">🎓 Student Experience</option>
+      <option value="parent">👪 Parent Portal</option>
+      <option value="admin">🏛 Admin Console</option>
+    </select>
+  </div>
+  <nav class="ns-nav">
+    <div class="ns-section" id="ns-menu-student">
+      <div class="ns-section-title">🎓 Student — Learning Core</div>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">🏠</span> Dashboard</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar(); openModal('studentHubModal')"><span class="ns-menu-icon">🤖</span> AI Tutor <span class="ns-badge">For Students</span></a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar(); openModal('studentHubModal')"><span class="ns-menu-icon">🗂</span> Flashcards</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('student', () => { closeSidebar(); openModal('studentHubModal'); })"><span class="ns-menu-icon">📝</span> Practice Tests</a>
+      <div class="ns-section-title" style="margin-top:16px;">Gamification</div>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('student', () => { closeSidebar(); openModal('studentHubModal'); })"><span class="ns-menu-icon">🎯</span> Daily Quests <span class="ns-badge">NEW</span></a>
+      <a href="#why-brainjoy" class="ns-menu-item" onclick="requireAuth('student', closeSidebar)"><span class="ns-menu-icon">🌳</span> Skill Tree</a>
+      <a href="#stats" class="ns-menu-item" onclick="requireAuth('student', closeSidebar)"><span class="ns-menu-icon">🏆</span> Achievements</a>
+    </div>
+    <div class="ns-section active" id="ns-menu-teacher">
+      <div class="ns-section-title">👩‍🏫 Teacher — Teaching Core</div>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">🏠</span> Dashboard</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🏫</span> My Classrooms</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">📋</span> Assignment Tracker</a>
+      <div class="ns-section-title" style="margin-top:16px;">AI & Engagement</div>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🪄</span> Create Quiz (AI)</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🧾</span> AI Lesson Planner</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🎮</span> Live Game</a>
+      <a href="#stats" class="ns-menu-item" onclick="requireAuth('teacher', closeSidebar)"><span class="ns-menu-icon">📊</span> Analytics</a>
+    </div>
+    <div class="ns-section" id="ns-menu-parent">
+      <div class="ns-section-title">👪 Parent — Insights</div>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">🏠</span> Dashboard</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('parent', () => { closeSidebar(); openModal('parentHubModal'); })"><span class="ns-menu-icon">📈</span> Progress Reports</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('parent', () => { closeSidebar(); openModal('parentHubModal'); })"><span class="ns-menu-icon">🎯</span> Curriculum Guide</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('parent', () => { closeSidebar(); openModal('parentHubModal'); })"><span class="ns-menu-icon">🎁</span> Reward System</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('parent', () => { closeSidebar(); openModal('parentHubModal'); })"><span class="ns-menu-icon">⏳</span> Screen Time Limits</a>
+    </div>
+    <div class="ns-section" id="ns-menu-admin">
+      <div class="ns-section-title">🏛 Admin — Controls</div>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">🏠</span> Dashboard</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('admin', () => { closeSidebar(); openModal('adminConsoleModal'); })"><span class="ns-menu-icon">🏛</span> District Overview</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('admin', () => { closeSidebar(); openModal('adminConsoleModal'); })"><span class="ns-menu-icon">👥</span> Mass Import</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('admin', () => { closeSidebar(); openModal('adminConsoleModal'); })"><span class="ns-menu-icon">🧰</span> Teacher Controls</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('admin', () => { closeSidebar(); openModal('adminConsoleModal'); })"><span class="ns-menu-icon">📉</span> Engagement Reports</a>
+    </div>
+  </nav>
+  <div class="ns-global">
+    <div class="ns-global-title">Global Settings</div>
+    <div class="ns-global-grid">
+      <a href="#" class="ns-global-btn" onclick="requireAuth('all', null)"><span>🔔</span> Notifications</a>
+      <a href="#" class="ns-global-btn" onclick="requireAuth('all', null)"><span>🤖</span> AI Assistant</a>
+      <a href="#" class="ns-global-btn" onclick="requireAuth('all', null)"><span>💎</span> Rewards</a>
+      <a href="#" class="ns-global-btn"><span>🌙</span> Dark Mode</a>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">All Subjects · Careers · Campus Life · AI Learning</div>
+    <h1>Science that sparks <span>joy</span>,<br>not stress.</h1>
+    <p>Study tips, exam survival guides, and honest talk about careers — covering every subject and curriculum, for students worldwide who want it explained simply. Plus a full AI-powered learning platform for students, teachers & parents <strong>(coming soon)</strong>.</p>
+    <div class="hero-btns">
+      <a href="#latest-sparks" class="btn btn-hero-primary" style="text-decoration:none;">Read the latest posts</a>
+      <a href="scholarships.html" class="btn btn-hero-secondary" style="text-decoration:none;">🎓 Find a scholarship</a>
+      <a href="ap-chemistry/i.html" class="btn btn-hero-secondary" style="text-decoration:none;">🧪 AP Chemistry lessons</a>
+    </div>
+    <div class="live-links-bar">
+      <a href="about.html" class="live-link-btn">About BrainJoy</a>
+      <a href="contact.html" class="live-link-btn">Contact</a>
+      <a href="#choose-path" class="live-link-btn" onclick="document.getElementById('choose-path').scrollIntoView({behavior:'smooth'})">Explore full platform →</a>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:24px;flex-wrap:wrap;">
+      <span style="font-size:0.82rem;color:var(--text-muted);">✅ Free study tips & career posts live now</span>
+      <span style="font-size:0.82rem;color:var(--text-muted);">✅ Scholarships & AP Chem available</span>
+      <span style="font-size:0.82rem;color:var(--text-muted);">⏳ Full AI platform coming soon</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LATEST SPARKS (from published site — LIVE) ===== -->
+<section id="latest-sparks">
+  <span class="section-label">Latest sparks · Live now</span>
+  <h2 class="section-title">Science news & career insights</h2>
+  <p class="section-sub">Real stories explained simply — the content that's already live on BrainJoy. More subjects and curriculums are being added all the time.</p>
+  <div class="sparks-grid">
+    <a href="post-dark-matter-force.html" class="spark-card">
+      <div class="spark-card-top">
+        <div class="spark-tile"><span class="tnum">03</span><span class="tsym">DM</span></div>
+        <span class="spark-cat">Astrophysics</span>
+      </div>
+      <h3>Dark matter may carry a hidden force, and it could be slowing the universe down</h3>
+      <p>New theoretical work suggests dark matter particles pull on each other through a force of their own. The strange part: more attraction doesn't mean faster growth.</p>
+      <div class="spark-meta"><span>5 min read</span><span class="readmore">Read more →</span></div>
+    </a>
+    <a href="post-phd-crisis.html" class="spark-card">
+      <div class="spark-card-top">
+        <div class="spark-tile"><span class="tnum">01</span><span class="tsym">Ph</span></div>
+        <span class="spark-cat">Science Careers</span>
+      </div>
+      <h3>61% of chemistry PhD students have thought about quitting. Here's why.</h3>
+      <p>A major new survey of chemistry PhD students uncovers a workload and mental-health crisis hiding behind the lab coats, and what needs to change.</p>
+      <div class="spark-meta"><span>6 min read</span><span class="readmore">Read more →</span></div>
+    </a>
+    <a href="post-plastic-to-hydrogen.html" class="spark-card">
+      <div class="spark-card-top">
+        <div class="spark-tile teal"><span class="tnum">02</span><span class="tsym">H₂</span></div>
+        <span class="spark-cat">Breakthroughs</span>
+      </div>
+      <h3>Scientists just turned unsorted trash into clean hydrogen fuel</h3>
+      <p>No washing. No sorting. Chemists found a way to turn everyday mixed plastic waste straight into high-purity hydrogen — here's how it works.</p>
+      <div class="spark-meta"><span>5 min read</span><span class="readmore">Read more →</span></div>
+    </a>
+  </div>
+  <div class="live-links-bar" style="margin-top:36px;">
+    <a href="scholarships.html" class="live-link-btn teal">🎓 Find a scholarship</a>
+    <a href="ap-chemistry/i.html" class="live-link-btn teal">🧪 AP Chemistry lessons</a>
+    <a href="about.html" class="live-link-btn">About BrainJoy</a>
+    <a href="contact.html" class="live-link-btn">Contact</a>
+  </div>
+</section>
+
+<!-- ===== CHOOSE YOUR PATH (platform features — mostly Coming Soon) ===== -->
+<section class="path-section" id="choose-path">
+  <div class="path-eyebrow">✦ Full Platform · Coming Soon</div>
+  <h2>Who are you? Choose your path.</h2>
+  <p>The full AI learning platform for students, teachers, parents & admins is on the way. Explore what’s coming.</p>
+  <div class="path-grid">
+    <div class="path-card student-card coming-soon-overlay" id="path-student" onclick="activatePath('student')">
+      <span class="path-card-icon">🎓</span>
+      <h3>I'm a Student</h3>
+      <p>Master any subject with your own personal AI tutor, flashcards, and gamified challenges.</p>
+      <ul class="path-card-features">
+        <li>AI Tutor — 24/7 homework help</li>
+        <li>Flashcards & practice tests</li>
+        <li>Daily quests & leaderboards</li>
+        <li>Progress tracking</li>
+      </ul>
+      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Student platform coming soon! Meanwhile, check Latest Posts & Scholarships.')">Coming Soon →</button>
+    </div>
+    <div class="path-card teacher-card coming-soon-overlay" id="path-teacher" onclick="activatePath('teacher')">
+      <span class="path-card-icon">👩‍🏫</span>
+      <h3>I'm a Teacher</h3>
+      <p>Build lesson plans in seconds, host live games, and track every student's progress.</p>
+      <ul class="path-card-features">
+        <li>AI Lesson Planner</li>
+        <li>Live review games</li>
+        <li>Quiz builder (AI-powered)</li>
+        <li>Student analytics dashboard</li>
+      </ul>
+      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Teacher tools coming soon!')">Coming Soon →</button>
+    </div>
+    <div class="path-card parent-card coming-soon-overlay" id="path-parent" onclick="activatePath('parent')">
+      <span class="path-card-icon">👪</span>
+      <h3>I'm a Parent</h3>
+      <p>Stay connected with your child's learning. Get weekly reports and set healthy goals.</p>
+      <ul class="path-card-features">
+        <li>Weekly progress reports</li>
+        <li>Curriculum overview</li>
+        <li>Screen time controls</li>
+        <li>Reward system</li>
+      </ul>
+      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Parent portal coming soon!')">Coming Soon →</button>
+    </div>
+    <div class="path-card admin-card coming-soon-overlay" id="path-admin" onclick="activatePath('admin')">
+      <span class="path-card-icon">🏛</span>
+      <h3>I'm an Admin</h3>
+      <p>Manage your entire school or district with powerful analytics and teacher controls.</p>
+      <ul class="path-card-features">
+        <li>District-wide analytics</li>
+        <li>Mass student import</li>
+        <li>Teacher permissions</li>
+        <li>Engagement reports</li>
+      </ul>
+      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Admin console coming soon!')">Coming Soon →</button>
+    </div>
+  </div>
+  <div class="path-active-msg" id="path-active-msg">
+    <span id="path-active-msg-text"></span>
+    <button onclick="clearRole()">✕ Show everything</button>
+  </div>
+</section>
+
+<!-- ===== ROLE FEATURE PANELS (Coming Soon) ===== -->
+<section id="role-features">
+  <span class="section-eyebrow">Full Platform · Coming Soon</span>
+  <h2 class="section-title">Everything you need, all in one place</h2>
+  <p class="section-sub">AI tools, role hubs, and personalized learning for every subject — launching soon. Meanwhile enjoy our live posts, scholarships & AP Chemistry lessons.</p>
+  <div class="pf-role-tabs">
+    <button class="pf-role-btn" id="pf-btn-student" onclick="showBjToast('🚧 Student hub coming soon!')"><span>🎓</span> For Students <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-teacher" onclick="showBjToast('🚧 Teacher hub coming soon!')"><span>👩‍🏫</span> For Teachers <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-parent" onclick="showBjToast('🚧 Parent portal coming soon!')"><span>👪</span> For Parents <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-admin" onclick="showBjToast('🚧 Admin console coming soon!')"><span>🏛</span> For Admins <span class="coming-soon-badge">Soon</span></button>
+  </div>
+</section>
+
+<!-- ===== VIDEOS (Coming Soon) ===== -->
+<section id="videos">
+  <div class="section-role-banner for-all" style="margin:0 auto 20px;">👥 For Everyone — Free Video Lessons <span class="coming-soon-badge" style="margin-left:8px;">Coming Soon</span></div>
+  <h2 class="section-title" style="text-align:center;">Free Video Lessons</h2>
+  <p style="text-align:center;color:var(--text-muted);margin-bottom:36px;">Video library coming soon, covering every subject. For now, check our <a href="#latest-sparks" style="color:var(--purple);font-weight:700;">latest posts</a> and <a href="ap-chemistry/i.html" style="color:var(--purple);font-weight:700;">AP Chemistry lessons</a>.</p>
+  <div class="video-list">
+    <div class="video-card"><h3>Algebra Basics</h3><video controls src="https://www.w3schools.com/html/mov_bbb.mp4" style="width:100%;border-radius:10px;margin-top:8px"></video></div>
+    <div class="video-card"><h3>Physics Fundamentals</h3><video controls src="https://www.w3schools.com/html/mov_bbb.mp4" style="width:100%;border-radius:10px;margin-top:8px"></video></div>
+    <div class="video-card"><h3>Chemistry 101</h3><video controls src="https://www.w3schools.com/html/mov_bbb.mp4" style="width:100%;border-radius:10px;margin-top:8px"></video></div>
+  </div>
+</section>
+
+<!-- ===== WHY BRAINJOY ===== -->
+<section id="why-brainjoy">
+  <span class="section-eyebrow">Why Choose BrainJoy</span>
+  <h2 class="section-title">Why BrainJoy Works</h2>
+  <div class="cards">
+    <div class="card"><div class="card-icon">✨</div><h3>Learning without the stress</h3><p>Study tips, exam guides and career stories explained simply — covering all subjects and curriculums, for students worldwide.</p></div>
+    <div class="card"><div class="card-icon">🎓</div><h3>Scholarships for every subject</h3><p>Find scholarships worldwide and start AP Chemistry lessons today, with more subjects coming. Practical help for real students.</p></div>
+    <div class="card coming-soon-overlay"><div class="card-icon">🤖</div><h3>AI Learning Platform</h3><p>Personalized tutors, teacher tools, parent insights and admin console — full platform coming soon.</p></div>
+  </div>
+</section>
+
+<!-- ===== STATS (Coming Soon targets) ===== -->
+<section id="stats">
+  <h2>🌍 Our Growing Impact <span class="coming-soon-badge" style="font-size:0.75rem;vertical-align:middle;">Targets</span></h2>
+  <div class="stats-grid">
+    <div class="stat-item"><h3 style="color:var(--pink)" id="stat1">0</h3><p>Students Empowered</p></div>
+    <div class="stat-item"><h3 style="color:var(--purple)" id="stat2">0</h3><p>Teachers Joined</p></div>
+    <div class="stat-item"><h3 style="color:var(--gold)" id="stat3">0</h3><p>Games Created</p></div>
+    <div class="stat-item"><h3 style="color:var(--teal)" id="stat4">0</h3><p>Countries Reached</p></div>
+  </div>
+</section>
+
+<!-- ===== REFERRAL BANNER (Coming Soon) ===== -->
+<div class="growth-banner coming-soon-overlay">
+  <div style="position:absolute;top:-20px;left:-20px;font-size:8rem;opacity:0.08;transform:rotate(-15deg);">🎁</div>
+  <div style="position:absolute;bottom:-20px;right:-20px;font-size:8rem;opacity:0.08;transform:rotate(15deg);">🚀</div>
+  <span class="role-tag all" style="display:inline-block;margin-bottom:16px;background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.3);color:#fff;">👥 For Everyone · Coming Soon</span>
+  <h2>Invite Friends, Earn Premium!</h2>
+  <p>Learning is better together. Invite 3 friends to BrainJoy and you all get a <strong>FREE month of BrainJoy Pro</strong> plus exclusive avatar unlocks!</p>
+  <button class="btn-growth" onclick="showBjToast('🚧 Referral program coming soon!')">🔗 Coming Soon</button>
+  <p style="font-size:0.82rem;margin-top:14px;opacity:0.75;">Referral rewards will launch with the full platform.</p>
+</div>
+
+<!-- ===== NEWSLETTER ===== -->
+<section id="newsletter">
+  <h2>💌 Join the BrainJoy Movement!</h2>
+  <p>Get AI tools, free lessons, and global teaching ideas every week — free for all.</p>
+  <form class="newsletter-form" id="newsletterForm">
+    <input id="emailInput" type="email" required placeholder="Enter your email address...">
+    <button type="submit">Subscribe ✨</button>
+  </form>
+  <div id="subscribeMsg" style="margin-top:14px;color:var(--purple);font-weight:600;font-size:0.9rem;"></div>
+</section>
+
+<!-- ===== PARTNERS ===== -->
+<section id="partners">
+  <h2>🏫 Trusted by Schools Worldwide</h2>
+  <p style="color:var(--purple-dark);margin-bottom:0;">From Dubai to London — BrainJoy inspires joyful learning everywhere.</p>
+  <div class="partner-cards">
+    <div class="partner-card"><img src="assets/partner1.png" alt="Partner 1"></div>
+    <div class="partner-card"><img src="assets/partner2.png" alt="Partner 2"></div>
+    <div class="partner-card"><img src="assets/partner3.png" alt="Partner 3"></div>
+    <div class="partner-card"><img src="assets/partner4.png" alt="Partner 4"></div>
+    <div class="partner-card"><img src="assets/partner5.png" alt="Partner 5"></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h3>Our Mission</h3>
+      <p>Science that sparks joy, not stress. Free study tips, career insights & resources for all subjects and curriculums, worldwide — plus an AI learning platform coming soon for students, teachers & parents.</p>
+      <button class="btn-donate" onclick="openModal('donateModal')">💜 Donate Now</button>
+    </div>
+    <div class="footer-col">
+      <h3>Live Now</h3>
+      <ul>
+        <li><a class="footer-link" href="#latest-sparks">✨ Latest Posts</a></li>
+        <li><a class="footer-link" href="scholarships.html">🎓 Scholarships</a></li>
+        <li><a class="footer-link" href="ap-chemistry/i.html">🧪 AP Chemistry</a></li>
+        <li><a class="footer-link" href="about.html">🏠 About BrainJoy</a></li>
+        <li><a class="footer-link" href="contact.html">📬 Contact</a></li>
+        <li><a class="footer-link" href="privacy.html">🔒 Privacy Policy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Coming Soon</h3>
+      <ul>
+        <li><a class="footer-link" href="#choose-path">🎓 Student Platform</a></li>
+        <li><a class="footer-link" href="#choose-path">👩‍🏫 Teacher Tools</a></li>
+        <li><a class="footer-link" href="#choose-path">👪 Parent Portal</a></li>
+        <li><a class="footer-link" href="#choose-path">🏛 Admin Console</a></li>
+        <li><a class="footer-link" href="#newsletter">💌 Newsletter</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Support</h3>
+      <ul>
+        <li><a class="footer-link" href="contact.html">Help / Contact</a></li>
+        <li><a class="footer-link" href="#">Support Community <span class="coming-soon-badge">Soon</span></a></li>
+        <li><a class="footer-link" href="#">Download Apps <span class="coming-soon-badge">Soon</span></a></li>
+        <li><a class="footer-link" href="#">🌐 Language: English</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 BrainJoy · brainjoy.site · Terms · Privacy · Cookies · Accessibility</div>
+</footer>
+
+<div id="bj-global-toast"></div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ===== SUPABASE =====
+  const SUPABASE_URL = 'https://kxqjyqohhjkggtqnwubd.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_sQjeQCi8f6J4iQgyP3jGSA_7fK1Noek';
+  let supabaseClient = null;
+  try {
+    const { createClient } = supabase;
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) { console.warn('Supabase not loaded:', e); }
+
+  let currentUser = null;
+  let activeRole = null;
+
+  // ===== ROLE PATH SYSTEM =====
+  const roleConfig = {
+    student: { label: '🎓 Showing student experience', cta: 'Sign Up as Student', msgText: '🎓 You\'re viewing the Student experience', indicatorClass: 'student', modal: 'studentHubModal' },
+    teacher: { label: '👩‍🏫 Showing teacher experience', cta: 'Sign Up as Teacher', msgText: '👩‍🏫 You\'re viewing the Teacher experience', indicatorClass: 'teacher', modal: 'teacherHubModal' },
+    parent:  { label: '👪 Showing parent experience',  cta: 'Sign Up as Parent',  msgText: '👪 You\'re viewing the Parent experience',  indicatorClass: 'parent',  modal: 'parentHubModal'  },
+    admin:   { label: '🏛 Showing admin experience',   cta: 'Contact Sales',      msgText: '🏛 You\'re viewing the Admin experience',   indicatorClass: 'admin',   modal: 'adminConsoleModal' }
+  };
+
+  function activatePath(role) {
+    activeRole = role;
+    const cfg = roleConfig[role];
+    ['student','teacher','parent','admin'].forEach(r => {
+      const card = document.getElementById('path-' + r);
+      if (card) card.classList.toggle('active-path', r === role);
+    });
+    document.body.className = document.body.className.replace(/role-\w+/g, '').trim();
+    document.body.classList.add('role-' + role);
+    const bar = document.getElementById('role-indicator');
+    bar.className = 'role-indicator show ' + cfg.indicatorClass;
+    document.getElementById('role-indicator-text').textContent = cfg.label;
+    document.getElementById('role-indicator-cta').textContent = cfg.cta;
+    const msg = document.getElementById('path-active-msg');
+    document.getElementById('path-active-msg-text').textContent = cfg.msgText;
+    msg.classList.add('visible');
+
+    // Every role now opens its hub/console as a modal popup
+    openModal(cfg.modal);
+
+    document.getElementById('bjRoleSelect').value = role;
+  }
+
+  function clearRole() {
+    activeRole = null;
+    document.body.className = document.body.className.replace(/role-\w+/g, '').trim();
+    ['student','teacher','parent','admin'].forEach(r => {
+      const card = document.getElementById('path-' + r);
+      if (card) card.classList.remove('active-path');
+    });
+    document.getElementById('role-indicator').className = 'role-indicator';
+    document.getElementById('path-active-msg').classList.remove('visible');
+  }
+
+  function handleIndicatorCta() {
+    if (!activeRole) return;
+    if (activeRole === 'admin') { openModal('adminConsoleModal'); return; }
+    openSignupWithRole(activeRole);
+  }
+
+  // ===== SUBJECTS PANEL =====
+  const curriculums = {
+    math: ["British: IGCSE, A-Levels","American: Common Core, SAT, AP","IB: MYP, DP","UAE MOE","Indian: CBSE, ICSE","Pakistan: Federal, O-Level","Singapore Math","Australian Curriculum"],
+    science: ["NGSS (US)","Cambridge Science","Edexcel","CBSE Science","UAE MOE Science","IB Sciences","Pak Federal Board","Canadian Curriculum"],
+    english: ["Cambridge IGCSE English","AQA GCSE","Common Core ELA","IB Language A","CBSE English","UK National Curriculum"],
+    languages: ["Arabic","French","Spanish","Urdu","Mandarin","Hindi","German","Japanese","Swahili"],
+    social: ["US History","Geography (Cambridge)","Civics & Ethics (UAE)","Global Perspectives (IGCSE)","Economics (IB)"],
+    arts: ["Music","Drama","Visual Arts","Design & Technology","Photography"],
+    pe: ["Physical Education","Sports Science","Health & Fitness","GCSE PE"],
+    ict: ["Cambridge ICT","GCSE Computer Science","Common Sense Media Digital Literacy","UAE ICT Curriculum"],
+    computing: ["A-Level Computer Science","AP Computer Science","IB CS","AI & Robotics","Cyber Security","Python for Beginners"],
+    engineering: ["Mechanical Engineering","Civil Engineering","Electrical Engineering","Software Engineering","Robotics STEM"],
+    business: ["IGCSE Business Studies","A-Level Economics","IB Business Management","AP Microeconomics","Entrepreneurship"],
+    medicine: ["USMLE Prep","NCLEX-RN Review","OET Medicine","Anatomy & Physiology","Pharmacology Basics"],
+    psychology: ["AP Psychology","IB Psychology","A-Level Psychology","GCSE Sociology"],
+    law: ["A-Level Law","Introduction to Criminal Law","GCSE Criminology","Law School Prep"],
+    accounting: ["IGCSE Accounting","A-Level Accounting","AAT Foundation","CPA Prep","ACCA"],
+    "pro-exams": ["IELTS Academic & General","TOEFL iBT","OET (Occupational English)","NCLEX-RN","USMLE Step 1 & 2","SAT / ACT","GRE / GMAT"],
+    life: ["Health & Wellbeing","Social-Emotional Learning","Critical Thinking","Mindfulness & Resilience","Financial Literacy"],
+    careers: ["Resume & Interview Skills","Leadership Development","Project Management","Time Management"],
+    other: ["Philosophy & Ethics","Cultural Studies","Environmental Science","Architecture & Design"]
+  };
+
+  function toggleSubjectsPanel() {
+    const panel = document.getElementById('subjects-panel');
+    const btn = document.getElementById('subjects-nav-btn');
+    const isOpen = panel.style.display === 'block';
+    panel.style.display = isOpen ? 'none' : 'block';
+    if (btn) btn.classList.toggle('subjects-active', !isOpen);
+    if (!isOpen) {
+      const firstBtn = panel.querySelector('.subject-item');
+      if (firstBtn) handlePanelSubject(firstBtn);
+    }
+  }
+
+  function handlePanelSubject(btn) {
+    document.querySelectorAll('#subjects-panel .subject-item').forEach(b => b.classList.remove('subject-active'));
+    btn.classList.add('subject-active');
+    const target = btn.getAttribute('data-target');
+    const list = curriculums[target] || [];
+    const label = btn.querySelector('span:last-child').textContent.trim();
+    const icon = btn.querySelector('.subject-icon').textContent;
+    document.getElementById('panel-curriculum-icon').textContent = icon;
+    document.getElementById('panel-curriculum-title').textContent = label + ' Curriculums';
+
+    // ── AUTH GATE: curriculum items require login ──
+    if (list.length) {
+      if (!currentUser) {
+        // Show items with a lock icon — clicking any one prompts signup
+        document.getElementById('panel-curriculum-list').innerHTML =
+          list.map(c =>
+            `<li onclick="handleCurriculumClick(event)"
+                 style="cursor:pointer;transition:all 0.18s;display:flex;align-items:center;justify-content:space-between;"
+                 onmouseover="this.style.background='#ede7ff';this.style.borderColor='#d8b0ff'"
+                 onmouseout="this.style.background='';this.style.borderColor=''">
+               📘 ${c}
+               <span style="font-size:0.72rem;color:#9a5cff;white-space:nowrap;margin-left:8px;flex-shrink:0;">🔒 Sign in</span>
+             </li>`
+          ).join('') +
+          `<li class="curriculum-auth-hint">
+             🔒 Sign in or create a free account to access curriculum content
+             <button onclick="handleCurriculumClick(event)" style="margin-left:auto;background:var(--purple);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap;">Sign Up Free</button>
+           </li>`;
+      } else {
+        // Logged in — show items normally (content coming soon)
+        document.getElementById('panel-curriculum-list').innerHTML =
+          list.map(c =>
+            `<li onclick="showBjToast('🚧 ${c} content coming soon!')"
+                 style="cursor:pointer;transition:all 0.18s;display:flex;align-items:center;justify-content:space-between;"
+                 onmouseover="this.style.background='#ede7ff';this.style.borderColor='#d8b0ff'"
+                 onmouseout="this.style.background='';this.style.borderColor=''">
+               📘 ${c}
+               <span style="font-size:0.72rem;color:#9a5cff;white-space:nowrap;margin-left:8px;">→</span>
+             </li>`
+          ).join('');
+      }
+    } else {
+      document.getElementById('panel-curriculum-list').innerHTML = '<li class="placeholder">No curriculums listed yet.</li>';
+    }
+  }
+
+  // ===== CURRICULUM CLICK AUTH GATE =====
+  function handleCurriculumClick(e) {
+    if (e) e.stopPropagation();
+    if (!currentUser) {
+      // Close subjects panel, then open signup modal
+      const panel = document.getElementById('subjects-panel');
+      const navBtn = document.getElementById('subjects-nav-btn');
+      if (panel) panel.style.display = 'none';
+      if (navBtn) navBtn.classList.remove('subjects-active');
+      setTimeout(() => openModal('signupModal'), 180);
+    } else {
+      showBjToast('🚧 Full curriculum content coming soon!');
+    }
+  }
+
+  // ===== AUTH GUARD =====
+  function requireAuthAction() {
+    if (!currentUser) { showAuthNotice(); return false; }
+    return true;
+  }
+  function requireAuth(role, callback) {
+    if (!currentUser) { event && event.preventDefault(); showAuthNotice(); return false; }
+    if (callback) callback();
+    return true;
+  }
+  function showAuthNotice() {
+    const n = document.getElementById('authNotice');
+    n.classList.add('show');
+    setTimeout(() => n.classList.remove('show'), 4000);
+  }
+
+  // ===== SIDEBAR =====
+  function toggleSidebar() {
+    const sidebar = document.getElementById('bjSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const btn = document.getElementById('hamburgerBtn');
+    if (sidebar.classList.contains('active')) { closeSidebar(); }
+    else { sidebar.classList.add('active'); overlay.classList.add('active'); btn.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  }
+  function closeSidebar() {
+    document.getElementById('bjSidebar').classList.remove('active');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+    document.getElementById('hamburgerBtn').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function nsSwitchRole(role) {
+    ['student','teacher','parent','admin'].forEach(s => {
+      const el = document.getElementById('ns-menu-' + s);
+      if (el) el.classList.remove('active');
+    });
+    const t = document.getElementById('ns-menu-' + role);
+    if (t) t.classList.add('active');
+
+    const modalMap = { student: 'studentHubModal', teacher: 'teacherHubModal', parent: 'parentHubModal', admin: 'adminConsoleModal' };
+    if (modalMap[role]) openModal(modalMap[role]);
+  }
+
+  // ===== MODALS =====
+  let currentSignupRole = '';
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('open');
+    if (id === 'signupModal') {
+      showSignupStep(1);
+      document.querySelectorAll('.role-select-btn').forEach(b => b.classList.remove('selected'));
+      currentSignupRole = '';
+      ['signupName','signupEmail','signupPassword'].forEach(f => { const el = document.getElementById(f); if(el) el.value=''; });
+    }
+  }
+  function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
+  function openSignupWithRole(role) { openModal('signupModal'); setTimeout(() => selectRole(role), 100); }
+  function showSignupStep(n) { [1,2,3].forEach(i => { const el = document.getElementById('signupStep' + i); if (el) el.style.display = (i === n) ? 'block' : 'none'; }); }
+  document.querySelectorAll('.auth-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
+  });
+  document.querySelectorAll('.admin-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.auth-overlay.open').forEach(m => closeModal(m.id));
+      document.querySelectorAll('.admin-modal-overlay.open').forEach(m => closeModal(m.id));
+      closeSidebar();
+      document.getElementById('subjects-panel').style.display = 'none';
+      const btn = document.getElementById('subjects-nav-btn');
+      if (btn) btn.classList.remove('subjects-active');
+    }
+  });
+
+  // ===== SIGNUP ROLE =====
+  function selectRole(role) {
+    currentSignupRole = role;
+    document.querySelectorAll('.role-select-btn').forEach(b => b.classList.remove('selected'));
+    const btn = document.getElementById('roleBtn-' + role);
+    if (btn) btn.classList.add('selected');
+    const labels = { student: '🎓 Create Student Account', teacher: '👩‍🏫 Create Teacher Account', parent: '👪 Create Parent Account', admin: '🏛 Create Admin Account' };
+    document.getElementById('signupRoleTitle').textContent = labels[role] || 'Create Your Account';
+    setTimeout(() => showSignupStep(2), 300);
+  }
+
+  // ===== AUTH ACTIONS =====
+  async function signupUser() {
+    if (!currentSignupRole) { alert('Please select a role first.'); return; }
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    if (!name || !email || !password) { alert('Please fill in all fields.'); return; }
+    if (!supabaseClient) { currentUser = { name, email, role: currentSignupRole }; showSignupStep(3); return; }
+    try {
+      const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, role: currentSignupRole } } });
+      if (error) throw error;
+      currentUser = data.user;
+      showSignupStep(3);
+    } catch(err) { alert('Sign up failed: ' + (err.message || 'Unknown error')); }
+  }
+
+  async function loginUser() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) { alert('Please enter your email and password.'); return; }
+    if (!supabaseClient) { currentUser = { email, role: 'user' }; closeModal('loginModal'); showBjToast('✅ Logged in as ' + email); return; }
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      currentUser = data.user;
+      closeModal('loginModal');
+      showBjToast('✅ Welcome back, ' + (data.user.user_metadata?.full_name || email) + '!');
+    } catch(err) { alert('Login failed: ' + err.message); }
+  }
+
+  // ===== CAROUSEL =====
+  const track = document.querySelector('.carousel-track');
+  const cards = track ? Array.from(track.children) : [];
+  let idx = 0;
+  function updateCarousel() {
+    if (!cards.length) return;
+    const w = cards[0].getBoundingClientRect().width + 20;
+    track.style.transform = `translateX(-${idx * w}px)`;
+  }
+  document.querySelector('.next')?.addEventListener('click', () => { idx = (idx+1) % cards.length; updateCarousel(); });
+  document.querySelector('.prev')?.addEventListener('click', () => { idx = (idx-1+cards.length) % cards.length; updateCarousel(); });
+  setInterval(() => { idx = (idx+1) % cards.length; updateCarousel(); }, 4000);
+
+  // ===== LESSON PLANNER =====
+  document.getElementById('generateBtn')?.addEventListener('click', () => {
+    if (!requireAuthAction()) return;
+    const subject = document.getElementById('subject').value.trim();
+    const grade = document.getElementById('grade').value.trim();
+    const topic = document.getElementById('topic').value.trim();
+    const output = document.getElementById('output');
+    if (!subject || !grade || !topic) { output.textContent = '⚠️ Please fill in all fields!'; return; }
+    output.textContent = '🧠 Generating lesson plan...\n\nLesson for ' + subject + ' (' + grade + '): ' + topic + '\n\n📌 Objectives:\n• Understand the core concepts of ' + topic + '\n• Apply learning through collaborative activity\n\n📋 Activities:\n• Warm-up: quick recall quiz (5 mins)\n• Group discussion: key ideas (15 mins)\n• Individual task: worksheet / flashcard creation (20 mins)\n• Wrap-up: exit ticket question (5 mins)\n\n🎯 Assessment: peer review + teacher check';
+    let saved = JSON.parse(localStorage.getItem('lessons') || '[]');
+    saved.push({ subject, grade, topic, plan: output.textContent });
+    localStorage.setItem('lessons', JSON.stringify(saved));
+  });
+  document.getElementById('viewLessonsBtn')?.addEventListener('click', () => {
+    const output = document.getElementById('output');
+    const saved = JSON.parse(localStorage.getItem('lessons') || '[]');
+    if (!saved.length) { output.textContent = 'No lessons saved yet. Generate your first one above!'; return; }
+    output.textContent = saved.map(d => `Subject: ${d.subject}\nGrade: ${d.grade}\nTopic: ${d.topic}\n\n${d.plan}\n\n──────────────────\n`).join('\n');
+  });
+
+  // ===== NEWSLETTER =====
+  document.getElementById('newsletterForm')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value.trim();
+    const msg = document.getElementById('subscribeMsg');
+    if (!email) { msg.textContent = '⚠️ Please enter your email!'; return; }
+    msg.textContent = '🎉 Thanks ' + email + '! You\'re officially part of BrainJoy 💜';
+    e.target.reset();
+  });
+
+  // ===== STATS COUNTER =====
+  let statsStarted = false;
+  function animateValue(id, start, end, duration) {
+    const obj = document.getElementById(id);
+    if (!obj) return;
+    let current = start;
+    const step = Math.max(1, Math.floor((end-start)/(duration/30)));
+    const timer = setInterval(() => {
+      current = Math.min(current + step, end);
+      obj.textContent = current.toLocaleString() + (end >= 1000 ? '+' : '');
+      if (current >= end) clearInterval(timer);
+    }, 30);
+  }
+  window.addEventListener('scroll', () => {
+    const s = document.getElementById('stats');
+    if (!statsStarted && s && s.getBoundingClientRect().top < window.innerHeight) {
+      statsStarted = true;
+      animateValue('stat1', 0, 5000, 2000);
+      animateValue('stat2', 0, 1200, 2000);
+      animateValue('stat3', 0, 850, 2000);
+      animateValue('stat4', 0, 42, 2000);
+    }
+  });
+
+  // ===== DONATION =====
+  const STRIPE_DONATE_LINK = 'https://buy.stripe.com/YOUR_PAYMENT_LINK';
+  function donateWithStripe() { if (STRIPE_DONATE_LINK.includes('YOUR_PAYMENT')) { alert('Configure your Stripe link first.'); return; } window.open(STRIPE_DONATE_LINK, '_blank'); }
+
+  // ===== TOAST =====
+  function showBjToast(msg) {
+    const t = document.getElementById('bj-global-toast');
+    if (msg) t.innerHTML = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ===== SCORE =====
+  const navScore = document.getElementById('nav-score');
+  if (navScore) navScore.innerText = localStorage.getItem('brainPoints') || 0;
+</script>
+</body>
+</html>

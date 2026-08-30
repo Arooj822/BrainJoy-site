@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Game | BrainJoy 🧠</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Inserting your provided CSS -->
+    <style>
+        :root {
+            --bj-purple: #6a0dad;
+            --bj-accent: #ff7e5f;
+            --bj-bg: #f8faff;
+            --bj-glass: rgba(255, 255, 255, 0.9);
+            --bj-border: #e2e8f0;
+            --bj-shadow: 0 10px 30px rgba(106, 13, 173, 0.08);
+            --bj-light: #fcfaff;
+            --bj-success: #28a745;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #6a0dad 0%, #4a097a 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .jg-topbar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .jg-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .jg-back-btn {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .jg-back-btn:hover { background: #fff; color: var(--bj-purple); }
+
+        .jg-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--bj-glass);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+        }
+
+        .jg-setup { padding: 40px; border-right: 1px solid #edf2f7; }
+        .jg-header { margin-bottom: 30px; }
+        .jg-header h1 { font-size: 2.2rem; font-weight: 800; color: #2d3748; }
+        .jg-header p { color: #718096; font-size: 1rem; margin-top: 5px; }
+
+        .jg-section { margin-bottom: 35px; }
+        .jg-section h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--bj-purple); margin-bottom: 15px; font-weight: 700; }
+
+        .jg-input-group { display: flex; gap: 15px; }
+        .jg-input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 2px solid #edf2f7;
+            background: #f7fafc;
+            font-size: 1rem;
+            transition: 0.3s;
+            outline: none;
+        }
+        .jg-input:focus { border-color: var(--bj-purple); background: #fff; box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.1); }
+
+        .jg-avatar-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px; }
+        .jg-avatar-circle {
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            background: #fff;
+            border: 2px solid #edf2f7;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .jg-avatar-circle:hover { transform: translateY(-5px) scale(1.1); border-color: var(--bj-purple); }
+        
+        .jg-avatar-circle.selected { 
+            background: var(--bj-purple); 
+            border-color: #fff; 
+            box-shadow: 0 0 20px rgba(106, 13, 173, 0.6); 
+            color: white; 
+            transform: scale(1.15); 
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(106, 13, 173, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(106, 13, 173, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(106, 13, 173, 0.4); }
+        }
+
+        .jg-mascot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .jg-mascot-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 20px;
+            border: 2px solid #edf2f7;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+        .jg-mascot-card.selected { 
+            border-color: var(--bj-purple); 
+            background: var(--bj-light); 
+            box-shadow: 0 10px 20px rgba(106, 13, 173, 0.15);
+            transform: translateY(-2px);
+        }
+        .jg-mascot-card.selected::after { content: '✓'; position: absolute; top: 10px; right: 10px; color: var(--bj-purple); font-weight: bold; }
+
+        .jg-lobby-side { background: #fcfaff; padding: 40px; display: flex; flex-direction: column; }
+        
+        .jg-pin-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid var(--bj-border);
+            box-shadow: var(--bj-shadow);
+            margin-bottom: 30px;
+        }
+        .jg-pin-label { font-size: 0.75rem; color: #a0aec0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
+        .jg-pin-code { font-size: 2.2rem; font-weight: 800; color: var(--bj-purple); letter-spacing: 8px; }
+
+        .jg-player-list { flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; gap: 10px; }
+        .jg-player-tag {
+            background: #fff;
+            border: 1px solid var(--bj-border);
+            padding: 12px 18px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .jg-join-btn {
+            width: 100%;
+            padding: 22px;
+            border-radius: 20px;
+            background: var(--bj-accent);
+            color: #fff;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 126, 95, 0.3);
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        .jg-join-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 126, 95, 0.4); background: #ff6b47; }
+        .jg-join-btn:disabled { opacity: 0.8; cursor: not-allowed; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .jg-join-animate { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        @media (max-width: 900px) {
+            .jg-container { grid-template-columns: 1fr; }
+            .jg-setup { border-right: none; border-bottom: 1px solid #edf2f7; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="jg-topbar">
+        <div class="jg-logo">🧠 BrainJoy</div>
+        <button class="jg-back-btn" onclick="location.href='index.html'">⬅ Exit to Dashboard</button>
+    </div>
+
+    <div class="jg-container">
+        <!-- Setup Column -->
+        <div class="jg-setup">
+            <div class="jg-header">
+                <h1>Ready to Play?</h1>
+                <p>Join thousands of students in live subject challenges.</p>
+            </div>
+
+            <div class="jg-section">
+                <h3>1. Personal Identity</h3>
+                <div class="jg-input-group">
+                    <input id="pinIn" class="jg-input" placeholder="6-Digit PIN" maxlength="6" style="flex: 0.4;">
+                    <input id="nameIn" class="jg-input" placeholder="Your Nickname" style="flex: 1;">
+                </div>
+            </div>
+
+            <div class="jg-section">
+                <h3>2. Choose Your Avatar</h3>
+                <div class="jg-avatar-grid" id="avatarPicker">
+                    <div class="jg-avatar-circle selected" data-av="🧠">🧠</div>
+                    <div class="jg-avatar-circle" data-av="🐱">🐱</div>
+                    <div class="jg-avatar-circle" data-av="🐯">🐯</div>
+                    <div class="jg-avatar-circle" data-av="🐼">🐼</div>
+                    <div class="jg-avatar-circle" data-av="🐧">🐧</div>
+                    <div class="jg-avatar-circle" data-av="🦄">🦄</div>
+                </div>
+            </div>
+
+            <div class="jg-section">
+                <h3>3. Choose Your Companion</h3>
+                <div class="jg-mascot-grid">
+                    <div class="jg-mascot-card selected" onclick="setMascot(this)">
+                        <strong>🧠 Brainy</strong><br>
+                        <span style="font-size: 0.8rem; color: #718096;">Accuracy bonuses.</span>
+                    </div>
+                    <div class="jg-mascot-card" onclick="setMascot(this)">
+                        <strong>⚡ Sparky</strong><br>
+                        <span style="font-size: 0.8rem; color: #718096;">Speed multipliers.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lobby Column -->
+        <div class="jg-lobby-side">
+            <div class="jg-pin-box">
+                <div class="jg-pin-label">Active Game PIN</div>
+                <div class="jg-pin-code" id="pinDisplay">------</div>
+            </div>
+
+            <div class="jg-section" style="flex-grow: 1;">
+                <h3>Live Lobby Status</h3>
+                <div class="jg-player-list" id="playerList"></div>
+            </div>
+
+            <button class="jg-join-btn" id="joinBtn" onclick="joinArena()">Enter Arena 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedAv = "🧠";
+
+        // Sync PIN Input with Display
+        const pinIn = document.getElementById('pinIn');
+        const pinDisplay = document.getElementById('pinDisplay');
+        pinIn.addEventListener('input', (e) => {
+            pinDisplay.textContent = e.target.value.padEnd(6, "-");
+        });
+
+        // Avatar Selection
+        document.querySelectorAll('.jg-avatar-circle').forEach(el => {
+            el.addEventListener('click', () => {
+                document.querySelectorAll('.jg-avatar-circle').forEach(c => c.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedAv = el.dataset.av;
+            });
+        });
+
+        // Mascot Selection
+        function setMascot(el) {
+            document.querySelectorAll('.jg-mascot-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // Logic to Join and Redirect
+        function joinArena() {
+            const pin = pinIn.value;
+            const name = document.getElementById('nameIn').value.trim();
+            const btn = document.getElementById('joinBtn');
+
+            if (pin.length < 6 || !name) {
+                alert("Please enter both the 6-digit PIN and your nickname! ✨");
+                return;
+            }
+
+            // Visual feedback
+            const tag = document.createElement('div');
+            tag.className = 'jg-player-tag jg-join-animate';
+            tag.innerHTML = `<span>${selectedAv}</span> ${name}`;
+            document.getElementById('playerList').prepend(tag);
+
+            btn.textContent = "Joining...";
+            btn.disabled = true;
+
+            // Redirect to student-game.html after short delay
+            setTimeout(() => {
+                window.location.href = 'student-game.html';
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Quiz | BrainJoy 🧠</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bj-purple: #6a0dad;
+            --bj-bg: #0f0a1e;
+            --bj-card: rgba(255, 255, 255, 0.1);
+            --option-a: #e91e63;
+            --option-b: #2196f3;
+            --option-c: #ff9800;
+            --option-d: #4caf50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bj-bg);
+            background-image: radial-gradient(circle at 50% 50%, #1a103d 0%, #0f0a1e 100%);
+            height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* TOP HUD */
+        .qe-hud {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .qe-player-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .qe-p-avatar { font-size: 1.5rem; }
+        .qe-p-name { font-weight: 700; color: #fff; }
+
+        .qe-stats { display: flex; gap: 30px; }
+        .qe-stat-box { text-align: center; }
+        .qe-stat-label { font-size: 0.7rem; color: #a0aec0; text-transform: uppercase; font-weight: 800; }
+        .qe-stat-val { font-size: 1.2rem; font-weight: 800; }
+
+        /* TIMER BAR */
+        .qe-timer-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); }
+        #qe-timer-fill { 
+            width: 100%; height: 100%; 
+            background: linear-gradient(90deg, #6a0dad, #ff7e5f); 
+            transition: width 0.1s linear; 
+        }
+
+        /* QUESTION AREA */
+        .qe-main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .qe-question-box {
+            background: var(--bj-card);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 40px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .qe-question-box h2 { font-size: 2.2rem; line-height: 1.3; }
+
+        /* ANSWER OPTIONS GRID */
+        .qe-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .qe-option {
+            padding: 25px;
+            border-radius: 20px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qe-option:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .opt-a { background: var(--option-a); box-shadow: 0 8px 0 #ad1457; }
+        .opt-b { background: var(--option-b); box-shadow: 0 8px 0 #1565c0; }
+        .opt-c { background: var(--option-c); box-shadow: 0 8px 0 #ef6c00; }
+        .opt-d { background: var(--option-d); box-shadow: 0 8px 0 #2e7d32; }
+
+        .opt-shape {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="qe-hud">
+        <div class="qe-player-badge">
+            <span class="qe-p-avatar" id="displayAvatar">👤</span>
+            <span class="qe-p-name" id="displayName">Guest</span>
+        </div>
+
+        <div class="qe-stats">
+            <div class="qe-stat-box">
+                <div class="qe-stat-label">Score</div>
+                <div class="qe-stat-val" id="scoreDisplay">0</div>
+            </div>
+            <div class="qe-stat-box">
+                <div class="qe-stat-label">Streak</div>
+                <div class="qe-stat-val">🔥 <span id="streakVal">0</span></div>
+            </div>
+        </div>
+
+        <div class="qe-stat-box">
+            <div class="qe-stat-label">Question</div>
+            <div class="qe-stat-val">1 / 10</div>
+        </div>
+    </div>
+
+    <div class="qe-timer-container">
+        <div id="qe-timer-fill"></div>
+    </div>
+
+    <div class="qe-main">
+        <div class="qe-question-box">
+            <h2 id="questionText">Which element has the atomic number 1?</h2>
+        </div>
+
+        <div class="qe-options-grid">
+            <button class="qe-option opt-a" onclick="checkAnswer('A')">
+                <div class="opt-shape">▲</div> <span id="optA">Helium</span>
+            </button>
+            <button class="qe-option opt-b" onclick="checkAnswer('B')">
+                <div class="opt-shape">■</div> <span id="optB">Hydrogen</span>
+            </button>
+            <button class="qe-option opt-c" onclick="checkAnswer('C')">
+                <div class="opt-shape">●</div> <span id="optC">Lithium</span>
+            </button>
+            <button class="qe-option opt-d" onclick="checkAnswer('D')">
+                <div class="opt-shape">◆</div> <span id="optD">Oxygen</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL VARIABLES ---
+        let score = 0;
+        let timeLeft = 100;
+        const timerFill = document.getElementById('qe-timer-fill');
+
+        // --- 1. THE RECEIVER LOGIC ---
+        // Runs on load to fetch data from join.html
+        window.onload = function() {
+            const savedName = localStorage.getItem('playerNickname');
+            const savedAvatar = localStorage.getItem('playerAvatar');
+
+            if (savedName) document.getElementById('displayName').textContent = savedName;
+            if (savedAvatar) document.getElementById('displayAvatar').textContent = savedAvatar;
+        };
+
+        // --- 2. TIMER LOGIC ---
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft -= 0.5;
+                timerFill.style.width = timeLeft + "%";
+                if (timeLeft < 30) timerFill.style.background = "#ff4757";
+            }
+        }, 100);
+
+        // --- 3. CHECK ANSWER LOGIC ---
+        function checkAnswer(choice) {
+            // Correct answer is Hydrogen (Option B)
+            if (choice === 'B') {
+                score += 800;
+                document.getElementById('scoreDisplay').textContent = score.toLocaleString();
+                alert("🎯 Correct! +800 XP");
+            } else {
+                alert("Oops! Keep going! 💪");
+            }
+
+            // Reset UI for "next" question simulation
+            timeLeft = 100;
+            timerFill.style.background = "linear-gradient(90deg, #6a0dad, #ff7e5f)";
+            document.getElementById('questionText').textContent = "Next Question Loading...";
+        }
+    </script>
+</body>
+</html>

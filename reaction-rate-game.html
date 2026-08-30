@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Rate | BrainJoy 🧪</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bj-dark: #0a0e17;
+            --bj-accent: #00d2ff;
+            --bj-correct: #00b894;
+            --bj-wrong: #ff4757;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background: var(--bj-dark);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOP HUD */
+        .game-hud {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            border-bottom: 2px solid var(--bj-accent);
+            z-index: 10;
+        }
+
+        .question-banner {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--bj-accent);
+            padding: 15px 30px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            max-width: 80%;
+            z-index: 5;
+        }
+
+        #game-canvas {
+            flex-grow: 1;
+            cursor: crosshair;
+        }
+
+        .score-val { font-size: 1.5rem; font-weight: 800; color: var(--bj-accent); }
+
+        /* MULTIPLIER GLOW */
+        .multiplier-glow {
+            text-shadow: 0 0 10px var(--bj-accent);
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="game-hud">
+        <div>
+            <p style="font-size: 0.7rem; color: #aaa;">MISSION</p>
+            <p style="font-weight: 800;">REACTION RATE: KINETICS</p>
+        </div>
+        <div style="text-align: center;">
+            <p style="font-size: 0.7rem; color: #aaa;">SCORE</p>
+            <div class="score-val" id="score">0</div>
+        </div>
+        <div style="text-align: right;">
+            <p style="font-size: 0.7rem; color: #aaa;">STREAK</p>
+            <div id="streak" style="font-weight: 800;">🔥 0</div>
+        </div>
+    </div>
+
+    <div class="question-banner">
+        <h2 id="current-question">Click the molecule representing: <span style="color: var(--bj-accent);">Oxygen (O₂)</span></h2>
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const streakEl = document.getElementById('streak');
+
+        let score = 0;
+        let streak = 0;
+        let molecules = [];
+        const targetAnswer = "O₂";
+        const decoyAnswers = ["CO₂", "H₂", "NaCl", "CH₄", "He"];
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Molecule {
+            constructor(text, isCorrect) {
+                this.text = text;
+                this.isCorrect = isCorrect;
+                this.radius = 45;
+                this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius;
+                this.y = Math.random() * (canvas.height - this.radius * 2) + this.radius;
+                this.dx = (Math.random() - 0.5) * 4;
+                this.dy = (Math.random() - 0.5) * 4;
+                this.color = isCorrect ? '#00d2ff' : '#6a0dad';
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.fill();
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = "white";
+                ctx.font = "bold 16px Outfit";
+                ctx.textAlign = "center";
+                ctx.fillText(this.text, this.x, this.y + 6);
+            }
+
+            update() {
+                if (this.x + this.radius > canvas.width || this.x - this.radius < 0) this.dx = -this.dx;
+                if (this.y + this.radius > canvas.height || this.y - this.radius < 0) this.dy = -this.dy;
+                this.x += this.dx;
+                this.y += this.dy;
+                this.draw();
+            }
+        }
+
+        function spawnMolecules() {
+            molecules = [];
+            // Spawn 1 correct answer
+            molecules.push(new Molecule(targetAnswer, true));
+            // Spawn 5 decoys
+            for(let i=0; i<5; i++) {
+                molecules.push(new Molecule(decoyAnswers[Math.floor(Math.random() * decoyAnswers.length)], false));
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            molecules.forEach((m, index) => {
+                const dist = Math.hypot(m.x - mouseX, m.y - mouseY);
+                if (dist < m.radius) {
+                    if (m.isCorrect) {
+                        score += 100 + (streak * 10);
+                        streak++;
+                        scoreEl.innerText = score;
+                        streakEl.innerText = "🔥 " + streak;
+                        spawnMolecules(); // Refresh game
+                    } else {
+                        streak = 0;
+                        streakEl.innerText = "🔥 0";
+                        // Visual shake or red flash could go here
+                    }
+                }
+            });
+        });
+
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 14, 23, 0.3)'; // Trail effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            molecules.forEach(m => m.update());
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        spawnMolecules();
+        animate();
+    </script>
+</body>
+</html>

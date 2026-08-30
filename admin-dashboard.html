@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainJoy – Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --purple: #6a0dad; --purple-dark: #4a148c; --purple-light: #9a5cff;
+      --purple-bg: #f3e5f5; --border: #e1bee7; --text: #1a1a2e; --text-muted: #6b7280;
+      --shadow: 0 8px 24px rgba(106,13,173,0.12);
+      --radius: 14px; --radius-lg: 22px; --radius-pill: 50px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; background: #f9f0ff; color: var(--text); min-height: 100vh; }
+
+    .navbar {
+      background: linear-gradient(135deg, #4a148c, #6a0dad, #8a2be2);
+      padding: 0 28px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 20px rgba(74,20,140,0.4); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand span { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; color: #fff; }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .nav-user { color: rgba(255,255,255,0.9); font-size: 0.88rem; font-weight: 600; }
+    .btn-logout {
+      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4);
+      color: #fff; padding: 7px 18px; border-radius: var(--radius-pill);
+      font-family: 'Poppins', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+    .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    .welcome {
+      background: linear-gradient(135deg, #4a148c, #6a0dad);
+      border-radius: var(--radius-lg); padding: 28px 32px; color: #fff; margin-bottom: 28px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .welcome h1 { font-family: 'Baloo 2', cursive; font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+    .welcome p { font-size: 0.92rem; opacity: 0.9; }
+    .welcome-emoji { font-size: 3.5rem; }
+
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: #fff; border-radius: var(--radius); padding: 20px;
+      border: 1.5px solid var(--border); text-align: center; box-shadow: var(--shadow);
+    }
+    .stat-card .stat-num { font-size: 2rem; font-weight: 800; color: var(--purple); font-family: 'Baloo 2', cursive; }
+    .stat-card .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    .section-title { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; color: var(--purple-dark); margin-bottom: 16px; }
+
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 32px; }
+    .feature-card {
+      background: #fff; border-radius: var(--radius-lg); padding: 24px;
+      border: 1.5px solid var(--border); box-shadow: var(--shadow);
+      cursor: pointer; transition: all 0.3s; position: relative;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(106,13,173,0.2); border-color: #ce93d8; }
+    .feature-card .f-icon {
+      width: 52px; height: 52px; border-radius: 14px; background: var(--purple-bg);
+      display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 14px;
+    }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .feature-card p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+    .feature-card .f-btn {
+      display: inline-block; padding: 8px 18px; border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      color: #fff; font-size: 0.82rem; font-weight: 700; border: none; cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .badge {
+      position: absolute; top: 14px; right: 14px; font-size: 0.68rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; text-transform: uppercase;
+    }
+    .badge.soon { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+    .badge.new { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+    @media(max-width:600px) { .page { padding: 20px 14px; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" style="text-decoration:none"><span style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#fff;">🧠 BrainJoy</span></a>
+  <div class="nav-right">
+    <span class="nav-user">🏛 <span id="userName">Admin</span></span>
+    <button class="btn-logout" onclick="logout()">Log Out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="welcome">
+    <div>
+      <h1>Admin Console, <span id="welcomeName">Admin</span>! 🏛</h1>
+      <p>Manage your school, track performance and control everything from here.</p>
+    </div>
+    <span class="welcome-emoji">🏛</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">🏫 Schools</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">👩‍🏫 Teachers</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">🎓 Students</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">📊 Reports Generated</div></div>
+  </div>
+
+  <p class="section-title">🏛 Admin Control Panel</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="badge new">New</span>
+      <div class="f-icon">🏛</div>
+      <h3>District Overview</h3>
+      <p>School-wide analytics, health dashboards and performance reports.</p>
+      <button class="f-btn">View Overview →</button>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">👥</div>
+      <h3>Mass Import</h3>
+      <p>Sync students and teachers via Clever, CSV or Google Workspace.</p>
+      <button class="f-btn">Import Users →</button>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">🧰</div>
+      <h3>Teacher Controls</h3>
+      <p>Manage staff access, curriculum permissions and classroom settings.</p>
+      <button class="f-btn">Manage Teachers →</button>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">📉</div>
+      <h3>Engagement Reports</h3>
+      <p>Detailed ROI, usage metrics and engagement data across your school.</p>
+      <button class="f-btn">View Reports →</button>
+    </div>
+    <div class="feature-card">
+      <span class="badge soon">Soon</span>
+      <div class="f-icon">🔒</div>
+      <h3>Permissions Manager</h3>
+      <p>Set role-based access controls and content visibility per school.</p>
+      <button class="f-btn" disabled>Coming Soon</button>
+    </div>
+    <div class="feature-card">
+      <span class="badge soon">Soon</span>
+      <div class="f-icon">🌐</div>
+      <h3>Multi-School Hub</h3>
+      <p>Manage multiple schools and campuses from a single admin panel.</p>
+      <button class="f-btn" disabled>Coming Soon</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://kxqjyqohhjkggtqnwubd.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_sQjeQCi8f6J4iQgyP3jGSA_7fK1Noek';
+  const { createClient } = supabase;
+  const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  client.auth.getSession().then(({ data }) => {
+    if (!data.session) { window.location.href = 'login.html'; return; }
+    const user = data.session.user;
+    const role = user.user_metadata?.role;
+    if (role && role !== 'admin') {
+      window.location.href = role + '-dashboard.html';
+      return;
+    }
+    const name = user.user_metadata?.full_name?.split(' ')[0] || 'Admin';
+    document.getElementById('userName').textContent = name;
+    document.getElementById('welcomeName').textContent = name;
+  });
+
+  async function logout() {
+    await client.auth.signOut();
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>

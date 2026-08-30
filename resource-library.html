@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Library | BrainJoy 🧠</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bj-purple: #6a0dad;
+            --bj-gold: #d4af37;
+            --bj-text: #2d3748;
+            --bj-bg: #f8faff;
+            --bj-border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body { background-color: var(--bj-bg); color: var(--bj-text); }
+
+        /* HEADER & NAVIGATION */
+        .rl-navbar {
+            background: #fff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--bj-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .rl-logo { font-size: 1.6rem; font-weight: 800; color: var(--bj-purple); text-decoration: none; }
+
+        .rl-search-bar {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 10px 20px;
+            width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rl-search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        /* FILTERS BAR */
+        .rl-filters {
+            background: #fff;
+            padding: 15px 40px;
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid var(--bj-border);
+            overflow-x: auto;
+        }
+
+        .rl-filter-btn {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--bj-border);
+            background: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .rl-filter-btn:hover, .rl-filter-btn.active {
+            background: var(--bj-purple);
+            color: #fff;
+            border-color: var(--bj-purple);
+        }
+
+        /* GRID LAYOUT */
+        .rl-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .rl-section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+
+        .rl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* RESOURCE CARD */
+        .rl-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid var(--bj-border);
+            overflow: hidden;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .rl-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
+
+        .rl-thumb {
+            height: 180px;
+            background: #eee;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .rl-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .badge-free { background: #e3ffe6; color: #1a7f3c; }
+        .badge-pro { background: #fff5cc; color: #856404; }
+
+        .rl-content { padding: 20px; }
+        .rl-tag { font-size: 0.75rem; color: var(--bj-purple); font-weight: 700; text-transform: uppercase; }
+        .rl-title { font-size: 1.1rem; font-weight: 700; margin: 5px 0 10px; color: var(--bj-text); }
+        
+        .rl-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .rl-price { font-weight: 800; font-size: 1.1rem; }
+        .rl-btn {
+            background: var(--bj-purple);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* PREMIUM CALLOUT */
+        .rl-banner {
+            background: linear-gradient(135deg, #6a0dad, #4a097a);
+            border-radius: 24px;
+            padding: 40px;
+            color: #fff;
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="rl-navbar">
+        <a href="#" class="rl-logo">🧠 BrainJoy <span style="font-weight: 300; font-size: 1rem; color: #718096;">Library</span></a>
+        
+        <div class="rl-search-bar">
+            🔍 <input type="text" placeholder="Search Chemistry, KS3 Math, Phonics...">
+        </div>
+
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="#" style="text-decoration: none; color: var(--bj-text); font-weight: 600;">My Downloads</a>
+            <button class="rl-btn" style="background: var(--bj-gold);">Sell Your Resources</button>
+        </div>
+    </nav>
+
+    <div class="rl-filters">
+        <button class="rl-filter-btn active">All Resources</button>
+        <button class="rl-filter-btn">Chemistry</button>
+        <button class="rl-filter-btn">Physics</button>
+        <button class="rl-filter-btn">STEAM</button>
+        <button class="rl-filter-btn">K-12 Math</button>
+        <button class="rl-filter-btn">English Literature</button>
+        <button class="rl-filter-btn">Interactive Quizzes</button>
+    </div>
+
+    <div class="rl-container">
+        
+        <div class="rl-banner">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 10px;">Become a Gold Member 🏆</h1>
+                <p style="opacity: 0.9;">Unlimited access to 5,000+ premium resources and AI-powered assessments.</p>
+            </div>
+            <button class="rl-btn" style="background: #fff; color: var(--bj-purple); padding: 15px 30px; font-size: 1rem;">Upgrade Now</button>
+        </div>
+
+        <div class="rl-section-title">✨ Featured Resources</div>
+
+        <div class="rl-grid">
+            <!-- Resource 1 -->
+            <div class="rl-card">
+                <div class="rl-thumb" style="background: #f3e8ff;">
+                    <span class="rl-badge badge-pro">PRO</span>
+                    <span style="font-size: 4rem;">🧪</span>
+                </div>
+                <div class="rl-content">
+                    <span class="rl-tag">Chemistry / Secondary</span>
+                    <h3 class="rl-title">Periodic Trends: Complete Mastery Pack</h3>
+                    <p style="font-size: 0.8rem; color: #718096;">Full lesson slides + 3 interactive games + Printable Exam.</p>
+                    <div class="rl-footer">
+                        <span class="rl-price">$4.99</span>
+                        <button class="rl-btn">View Pack</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource 2 -->
+            <div class="rl-card">
+                <div class="rl-thumb" style="background: #fff5f5;">
+                    <span class="rl-badge badge-free">FREE</span>
+                    <span style="font-size: 4rem;">⚛️</span>
+                </div>
+                <div class="rl-content">
+                    <span class="rl-tag">Physics / A-Level</span>
+                    <h3 class="rl-title">Atomic Structure Quiz Bank</h3>
+                    <p style="font-size: 0.8rem; color: #718096;">50 MCQ questions for BrainJoy Quiz Sprint mode.</p>
+                    <div class="rl-footer">
+                        <span class="rl-price" style="color: #1a7f3c;">FREE</span>
+                        <button class="rl-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource 3 -->
+            <div class="rl-card">
+                <div class="rl-thumb" style="background: #e0f2fe;">
+                    <span class="rl-badge badge-pro">PRO</span>
+                    <span style="font-size: 4rem;">🦒</span>
+                </div>
+                <div class="rl-content">
+                    <span class="rl-tag">Science / Primary</span>
+                    <h3 class="rl-title">Animal Kingdoms: Sort & Match Game</h3>
+                    <p style="font-size: 0.8rem; color: #718096;">Interactive drag-and-drop game for ages 5-8.</p>
+                    <div class="rl-footer">
+                        <span class="rl-price">$2.50</span>
+                        <button class="rl-btn">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

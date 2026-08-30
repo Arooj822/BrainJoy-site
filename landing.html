@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainJoy – Welcome</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --purple: #6a0dad;
+      --purple-dark: #4a148c;
+      --purple-light: #9a5cff;
+      --pink: #ff5ca2;
+      --gold: #ffb400;
+      --border: #e8deff;
+      --radius: 14px;
+      --radius-pill: 50px;
+      --shadow-md: 0 8px 24px rgba(106,13,173,0.18);
+      --shadow-lg: 0 16px 48px rgba(106,13,173,0.24);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Poppins', sans-serif; overflow: hidden; }
+
+    /* ── BACKGROUND ── */
+    .bg {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #0d0021 0%, #1a0040 40%, #2d005a 70%, #1a0030 100%);
+    }
+    /* floating orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      animation: drift 8s ease-in-out infinite;
+    }
+    .orb1 { width: 500px; height: 500px; background: #6a0dad; top: -150px; left: -150px; animation-delay: 0s; }
+    .orb2 { width: 350px; height: 350px; background: #ff5ca2; bottom: -100px; right: -80px; animation-delay: 3s; }
+    .orb3 { width: 250px; height: 250px; background: #9a5cff; top: 50%; left: 55%; animation-delay: 1.5s; }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%       { transform: translate(20px, -20px) scale(1.05); }
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      position: relative; z-index: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 0;
+    }
+
+    /* ── LOGO ── */
+    .logo-wrap {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 12px;
+      animation: pop-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .logo-wrap img {
+      width: 64px; height: 64px;
+      filter: drop-shadow(0 4px 16px rgba(255,92,162,0.5));
+      animation: bounce-soft 3s ease-in-out infinite;
+    }
+    .brand {
+      font-family: 'Baloo 2', cursive;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+
+    /* ── TAGLINE ── */
+    .tagline {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 44px;
+      text-align: center;
+      max-width: 380px;
+      line-height: 1.6;
+      animation: fade-up 0.7s 0.15s ease both;
+    }
+    .tagline strong { color: #ff5ca2; font-weight: 700; }
+
+    /* ── CARD ── */
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 36px;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      animation: fade-up 0.7s 0.25s ease both;
+    }
+
+    .card-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .card-sub {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      background: rgba(255,255,255,0.08);
+      border-radius: var(--radius-pill);
+      padding: 4px;
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: var(--radius-pill);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      transition: all 0.25s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(106,13,173,0.5);
+    }
+
+    /* ── PANELS ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── INPUTS ── */
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .field input {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: #fff;
+      outline: none;
+      transition: 0.2s;
+    }
+    .field input::placeholder { color: rgba(255,255,255,0.3); }
+    .field input:focus { border-color: var(--purple-light); background: rgba(255,255,255,0.12); }
+
+    /* ── ROLE GRID ── */
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .role-btn {
+      padding: 11px 8px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.7);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+    .role-btn:hover { border-color: var(--purple-light); color: #fff; }
+    .role-btn.selected {
+      border-color: var(--purple-light);
+      background: rgba(154,92,255,0.2);
+      color: #fff;
+    }
+
+    /* ── SUBMIT BTN ── */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: 0.2s;
+      box-shadow: 0 6px 20px rgba(106,13,173,0.4);
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(106,13,173,0.5); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── ERROR / SUCCESS ── */
+    .msg {
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 12px;
+      min-height: 20px;
+      font-weight: 600;
+    }
+    .msg.error { color: #ff5ca2; }
+    .msg.success { color: #4ade80; }
+
+    /* ── SUCCESS SCREEN ── */
+    #successScreen {
+      display: none;
+      text-align: center;
+      animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    #successScreen .big-icon { font-size: 4rem; margin-bottom: 16px; }
+    #successScreen h2 { font-family: 'Baloo 2', cursive; font-size: 1.6rem; color: #fff; margin-bottom: 8px; }
+    #successScreen p { color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px; }
+
+    /* ── SOCIAL PROOF ── */
+    .social-proof {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 28px;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.8rem;
+      animation: fade-up 0.7s 0.4s ease both;
+    }
+    .avatars { display: flex; }
+    .avatars span {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      margin-left: -8px;
+      font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+    }
+    .avatars span:first-child { margin-left: 0; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes pop-in   { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes fade-up  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounce-soft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .brand { font-size: 2rem; }
+      .card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <img src="assets/happy-brain.png" alt="BrainJoy">
+    <span class="brand">BrainJoy</span>
+  </div>
+
+  <p class="tagline">Mastery. Personalized. <strong>Driven by AI.</strong><br>Join 5,000+ learners in 42+ countries.</p>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Normal auth view -->
+    <div id="authView">
+      <p class="card-title">Welcome 👋</p>
+      <p class="card-sub">Sign in or create your free account to continue</p>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Log In</button>
+        <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign Up Free</button>
+      </div>
+
+      <!-- LOGIN PANEL -->
+      <div class="panel active" id="panelLogin">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Your password" onkeydown="if(event.key==='Enter') loginUser()" />
+        </div>
+        <button class="submit-btn" id="loginBtn" onclick="loginUser()">Log In →</button>
+        <div class="msg" id="loginMsg"></div>
+      </div>
+
+      <!-- SIGNUP PANEL -->
+      <div class="panel" id="panelSignup">
+        <div class="field">
+          <label>I am a…</label>
+          <div class="role-grid">
+            <button class="role-btn" id="role-student" onclick="pickRole('student')">🎓 Student</button>
+            <button class="role-btn" id="role-teacher" onclick="pickRole('teacher')">👩‍🏫 Teacher</button>
+            <button class="role-btn" id="role-parent" onclick="pickRole('parent')">👪 Parent</button>
+            <button class="role-btn" id="role-admin" onclick="pickRole('admin')">🏛 Admin</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="signupName" placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="signupEmail" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="Min. 6 characters" onkeydown="if(event.key==='Enter') signupUser()" />
+        </div>
+        <button class="submit-btn" id="signupBtn" onclick="signupUser()">Create Free Account →</button>
+        <div class="msg" id="signupMsg"></div>
+      </div>
+    </div>
+
+    <!-- Success screen (after signup) -->
+    <div id="successScreen">
+      <div class="big-icon">🎉</div>
+      <h2>Check your email!</h2>
+      <p>We sent a confirmation link to <strong id="confirmedEmail" style="color:#fff"></strong>.<br>Click it to verify, then come back to log in.</p>
+      <button class="submit-btn" onclick="switchTab('login'); document.getElementById('successScreen').style.display='none'; document.getElementById('authView').style.display='block';">
+        Back to Log In →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Social proof -->
+  <div class="social-proof">
+    <div class="avatars">
+      <span>🎓</span><span>👩‍🏫</span><span>👪</span><span>🏛</span>
+    </div>
+    <span>5,000+ learners already inside</span>
+  </div>
+
+</div>
+
+<script>
+  // ── SUPABASE ──
+  const SUPABASE_URL     = 'https://kxqjyqohhjkggtqnwubd.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_sQjeQCi8f6J4iQgyP3jGSA_7fK1Noek';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ── If already logged in, go straight to app ──
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) window.location.href = 'index.html';
+  })();
+
+  // ── TAB SWITCHING ──
+  let currentTab = 'login';
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('panelLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('panelSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('loginMsg').textContent = '';
+    document.getElementById('signupMsg').textContent = '';
+  }
+
+  // ── ROLE SELECTION ──
+  let selectedRole = '';
+  function pickRole(role) {
+    selectedRole = role;
+    ['student','teacher','parent','admin'].forEach(r => {
+      document.getElementById('role-' + r).classList.toggle('selected', r === role);
+    });
+  }
+
+  // ── LOGIN ──
+  async function loginUser() {
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg      = document.getElementById('loginMsg');
+    const btn      = document.getElementById('loginBtn');
+
+    if (!email || !password) { setMsg(msg, 'Please fill in both fields.', 'error'); return; }
+
+    btn.disabled = true; btn.textContent = 'Logging in…';
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    btn.disabled = false; btn.textContent = 'Log In →';
+
+    if (error) { setMsg(msg, error.message, 'error'); return; }
+    setMsg(msg, '✅ Logged in! Redirecting…', 'success');
+    setTimeout(() => window.location.href = 'index.html', 800);
+  }
+
+  // ── SIGNUP ──
+  async function signupUser() {
+    const name     = document.getElementById('signupName').value.trim();
+    const email    = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const msg      = document.getElementById('signupMsg');
+    const btn      = document.getElementById('signupBtn');
+
+    if (!selectedRole)           { setMsg(msg, 'Please choose your role first.', 'error'); return; }
+    if (!name || !email || !password) { setMsg(msg, 'Please fill in all fields.', 'error'); return; }
+    if (password.length < 6)    { setMsg(msg, 'Password must be at least 6 characters.', 'error'); return; }
+
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { data: { full_name: name, role: selectedRole } }
+    });
+    btn.disabled = false; btn.textContent = 'Create Free Account →';
+
+    if (error) { setMsg(msg, error.message, 'error'); return; }
+
+    // Show success screen
+    document.getElementById('confirmedEmail').textContent = email;
+    document.getElementById('authView').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+  }
+
+  // ── HELPER ──
+  function setMsg(el, text, type) {
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+</script>
+</body>
+</html>
