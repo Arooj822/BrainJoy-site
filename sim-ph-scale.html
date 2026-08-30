@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>pH Scale Explorer — BrainJoy</title>
+<meta name="description" content="Compare everyday substances on the pH scale and see what makes them acidic or basic in this interactive simulation." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .ph-scale-wrap {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    background: #fff;
+    padding: 24px;
+    position: relative;
+  }
+  .ph-bar-container {
+    position: relative;
+    height: 60px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: 20px 0;
+    background: linear-gradient(90deg,
+      #ff0000 0%,   /* 0 */
+      #ff4500 7%,   /* 1 */
+      #ff8c00 14%,  /* 2 */
+      #ffd700 21%,  /* 3 */
+      #ffff00 28%,  /* 4 */
+      #adff2f 35%,  /* 5 */
+      #00ff00 42%,  /* 6 */
+      #00fa9a 49%,  /* 7 */
+      #00ced1 56%,  /* 8 */
+      #1e90ff 63%,  /* 9 */
+      #4169e1 70%,  /* 10 */
+      #8a2be2 77%,  /* 11 */
+      #9400d3 84%,  /* 12 */
+      #8b008b 91%,  /* 13 */
+      #4b0082 100%  /* 14 */
+    );
+  }
+  .ph-marker {
+    position: absolute;
+    top: -8px;
+    width: 4px;
+    height: 76px;
+    background: #fff;
+    border: 3px solid var(--text);
+    border-radius: 4px;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+  }
+  .ph-marker::after {
+    content: attr(data-ph);
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 3px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .ph-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 4px;
+    padding: 0 2px;
+  }
+  .substances-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .substance-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .substance-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--purple-200);
+  }
+  .substance-btn.active {
+    border-color: var(--purple);
+    background: var(--purple-50);
+    box-shadow: 0 4px 12px rgba(106,13,173,0.12);
+  }
+  .substance-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+  .meter-panel {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-top: 20px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .meter-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(0,191,165,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .meter-display {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #00ff88;
+    text-shadow: 0 0 20px rgba(0,255,136,0.3);
+    line-height: 1;
+    margin: 10px 0;
+    transition: color 0.4s;
+  }
+  .meter-label {
+    font-size: 0.85rem;
+    color: #8899aa;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .meter-type {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: all 0.3s;
+  }
+  .meter-type.acidic {
+    background: rgba(255,100,0,0.2);
+    color: #ff8c00;
+    border: 1px solid rgba(255,140,0,0.4);
+  }
+  .meter-type.neutral {
+    background: rgba(0,255,136,0.15);
+    color: #00ff88;
+    border: 1px solid rgba(0,255,136,0.3);
+  }
+  .meter-type.basic {
+    background: rgba(100,100,255,0.2);
+    color: #8899ff;
+    border: 1px solid rgba(100,100,255,0.4);
+  }
+  .custom-slider-wrap {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--purple-50);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--purple-200);
+  }
+  .custom-slider-wrap label {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .custom-slider-wrap input[type="range"] {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg,
+      #ff0000 0%, #ff4500 7%, #ff8c00 14%, #ffd700 21%,
+      #ffff00 28%, #adff2f 35%, #00ff00 42%, #00fa9a 49%,
+      #00ced1 56%, #1e90ff 63%, #4169e1 70%, #8a2be2 77%,
+      #9400d3 84%, #8b008b 91%, #4b0082 100%
+    );
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+  }
+  .custom-slider-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--text);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+  .indicator-preview {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .ind-preview {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .ind-preview.active {
+    border-color: var(--purple);
+    box-shadow: 0 2px 8px rgba(106,13,173,0.1);
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon">🧠</div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/i.html">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow">Chemistry Sim &middot; pH Scale</p>
+  <h1>Compare substances on the <span class="gradient-text">pH scale.</span></h1>
+  <p class="hero-sub">Click any substance to see where it lands. Drag the slider to explore any pH value and watch the universal indicator color change.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>pH Scale</h2>
+        <p class="panel-note">0 = most acidic, 7 = neutral, 14 = most basic. Click a substance or drag the slider.</p>
+      </div>
+
+      <div class="ph-scale-wrap">
+        <div class="ph-bar-container">
+          <div class="ph-marker" id="phMarker" style="left: 50%;" data-ph="7.0"></div>
+        </div>
+        <div class="ph-labels">
+          <span>0 Acidic</span>
+          <span>7 Neutral</span>
+          <span>14 Basic</span>
+        </div>
+
+        <div class="substances-grid" id="substancesGrid"></div>
+      </div>
+
+      <div class="meter-panel">
+        <div class="meter-label">Digital pH Meter</div>
+        <div class="meter-display" id="meterDisplay">7.00</div>
+        <div class="meter-type neutral" id="meterType">Neutral</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">Explore pH values and see how universal indicator responds.</p>
+
+      <div class="custom-slider-wrap">
+        <label>Custom pH <span class="val" id="phLabel">7.0</span></label>
+        <input type="range" id="phSlider" min="0" max="14" step="0.1" value="7.0">
+      </div>
+
+      <div style="margin-top: 18px;">
+        <h3 style="font-family:var(--font-display); font-weight:700; font-size:1.05rem; margin-bottom:10px;">Universal Indicator Colors</h3>
+        <div class="indicator-preview" id="indicatorPreview">
+          <div class="ind-preview" data-min="0" data-max="3">Red<br><span style="font-size:0.7rem; color:var(--text-muted);">Strong acid</span></div>
+          <div class="ind-preview" data-min="3" data-max="6">Orange/Yellow<br><span style="font-size:0.7rem; color:var(--text-muted);">Weak acid</span></div>
+          <div class="ind-preview" data-min="6" data-max="8">Green<br><span style="font-size:0.7rem; color:var(--text-muted);">Neutral</span></div>
+          <div class="ind-preview" data-min="8" data-max="11">Blue<br><span style="font-size:0.7rem; color:var(--text-muted);">Weak base</span></div>
+          <div class="ind-preview" data-min="11" data-max="14">Purple<br><span style="font-size:0.7rem; color:var(--text-muted);">Strong base</span></div>
+        </div>
+      </div>
+
+      <div class="btnrow" style="margin-top: 20px;">
+        <button class="sbtn sbtn-reset" id="resetBtn">Reset to Neutral</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>What does pH actually measure?</h3>
+      <p>pH measures the <strong>concentration of hydrogen ions (H⁺)</strong> in a solution. Lower pH means more H⁺ ions — more acidic. Higher pH means fewer H⁺ ions and more OH⁻ ions — more basic. Each whole number change represents a 10× difference in concentration.</p>
+    </div>
+    <div class="callout">
+      <h3>Why does universal indicator change color?</h3>
+      <p>Universal indicator is a <strong>mixture of dyes</strong> that change color at different pH values. In strong acid it's red, in strong base it's purple, and at neutral pH it's green. It's like a chemical rainbow that tells you the exact acidity.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sim-wrap quiz-section">
+  <p class="section-label">Check yourself</p>
+  <h2>pH scale quiz</h2>
+  <div id="quizList"></div>
+  <div class="score-card" id="scoreCard">
+    <h3 id="scoreTitle"></h3>
+    <p id="scoreSub"></p>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon">🧠</div>
+      <span>&copy; 2026 BrainJoy · brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const substances = [
+    { name: 'Battery Acid', icon: '🔋', ph: 1.0 },
+    { name: 'Lemon Juice', icon: '🍋', ph: 2.2 },
+    { name: 'Vinegar', icon: '🍶', ph: 3.0 },
+    { name: 'Orange Juice', icon: '🍊', ph: 3.5 },
+    { name: 'Soda', icon: '🥤', ph: 4.0 },
+    { name: 'Coffee', icon: '☕', ph: 5.0 },
+    { name: 'Milk', icon: '🥛', ph: 6.5 },
+    { name: 'Pure Water', icon: '💧', ph: 7.0 },
+    { name: 'Blood', icon: '🩸', ph: 7.4 },
+    { name: 'Egg White', icon: '🥚', ph: 8.0 },
+    { name: 'Baking Soda', icon: '🧂', ph: 9.0 },
+    { name: 'Ammonia', icon: '🧴', ph: 11.0 },
+    { name: 'Bleach', icon: '🧼', ph: 12.5 },
+    { name: 'Drain Cleaner', icon: '🚿', ph: 14.0 },
+  ];
+
+  const grid = document.getElementById('substancesGrid');
+  let currentPH = 7.0;
+
+  function updateUI(ph) {
+    currentPH = ph;
+    const pct = (ph / 14) * 100;
+    const marker = document.getElementById('phMarker');
+    marker.style.left = pct + '%';
+    marker.setAttribute('data-ph', ph.toFixed(1));
+
+    document.getElementById('meterDisplay').textContent = ph.toFixed(2);
+    document.getElementById('phLabel').textContent = ph.toFixed(1);
+    document.getElementById('phSlider').value = ph;
+
+    const typeEl = document.getElementById('meterType');
+    if (ph < 6.5) {
+      typeEl.textContent = 'Acidic';
+      typeEl.className = 'meter-type acidic';
+    } else if (ph > 7.5) {
+      typeEl.textContent = 'Basic';
+      typeEl.className = 'meter-type basic';
+    } else {
+      typeEl.textContent = 'Neutral';
+      typeEl.className = 'meter-type neutral';
+    }
+
+    // Update indicator preview
+    document.querySelectorAll('.ind-preview').forEach(el => {
+      const min = parseFloat(el.dataset.min);
+      const max = parseFloat(el.dataset.max);
+      el.classList.toggle('active', ph >= min && ph <= max);
+    });
+
+    // Highlight substance button
+    document.querySelectorAll('.substance-btn').forEach(btn => {
+      const btnPH = parseFloat(btn.dataset.ph);
+      btn.classList.toggle('active', Math.abs(btnPH - ph) < 0.15);
+    });
+  }
+
+  substances.forEach(sub => {
+    const btn = document.createElement('button');
+    btn.className = 'substance-btn';
+    btn.dataset.ph = sub.ph;
+    btn.innerHTML = `<span class="substance-icon">${sub.icon}</span><span>${sub.name}</span>`;
+    btn.addEventListener('click', () => updateUI(sub.ph));
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('phSlider').addEventListener('input', (e) => {
+    updateUI(parseFloat(e.target.value));
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    updateUI(7.0);
+  });
+
+  updateUI(7.0);
+
+  // Quiz
+  const questions = [
+    { q:"What is the pH of pure water at 25°C?",
+      opts:["0","7","14","1"], correct:1,
+      explain:"Pure water is neutral with a pH of 7 at standard temperature. It has equal concentrations of H⁺ and OH⁻ ions." },
+    { q:"Which substance is the most acidic?",
+      opts:["Lemon juice (pH 2.2)","Vinegar (pH 3.0)","Battery acid (pH 1.0)","Soda (pH 4.0)"], correct:2,
+      explain:"Lower pH means more acidic. Battery acid at pH 1.0 is the most acidic of these options — 10 times more acidic than lemon juice." },
+    { q:"What happens to H⁺ concentration when pH increases by 1?",
+      opts:["It increases 10×","It decreases 10×","It doubles","It stays the same"], correct:1,
+      explain:"The pH scale is logarithmic. Each whole number increase means the H⁺ concentration decreases by a factor of 10." },
+    { q:"What color does universal indicator turn in a strong base?",
+      opts:["Red","Green","Blue","Purple"], correct:3,
+      explain:"In strong bases (pH 11-14), universal indicator turns purple. Red is for strong acids, green for neutral, blue for weak bases." },
+    { q:"A solution with pH 9 has how many times more OH⁻ than a solution with pH 7?",
+      opts:["10×","100×","1000×","Same amount"], correct:1,
+      explain:"pH 9 is 2 units above pH 7. Since each unit is a 10× change, pH 9 has 10² = 100 times more OH⁻ (and 100 times less H⁺) than pH 7." }
+  ];
+
+  const list = document.getElementById('quizList');
+  let score = 0, answered = 0;
+  questions.forEach((item, qi) => {
+    const card = document.createElement('div'); card.className = 'qcard';
+    const title = document.createElement('p'); title.className = 'qtitle'; title.textContent = (qi+1) + '. ' + item.q; card.appendChild(title);
+    const optsWrap = document.createElement('div'); optsWrap.className = 'qopts';
+    const explain = document.createElement('p'); explain.className = 'qexplain'; explain.textContent = item.explain;
+    item.opts.forEach((optText, oi) => {
+      const btn = document.createElement('button'); btn.className = 'qopt'; btn.textContent = optText;
+      btn.addEventListener('click', () => {
+        const buttons = optsWrap.querySelectorAll('.qopt');
+        if (buttons[0].disabled) return;
+        buttons.forEach((b, bi) => { b.disabled = true; if (bi === item.correct) b.classList.add('correct'); });
+        if (oi !== item.correct) btn.classList.add('incorrect'); else score++;
+        answered++; explain.style.display = 'block';
+        if (answered === questions.length){
+          document.getElementById('scoreTitle').textContent = score + '/' + questions.length + ' correct';
+          document.getElementById('scoreSub').textContent = score === questions.length
+            ? "Perfect score! You're a pH master."
+            : score >= 3 ? "Nice work. Explore the slider again if any concept needs reinforcement."
+            : "Try dragging the pH slider and clicking different substances to build intuition.";
+          const card2 = document.getElementById('scoreCard');
+          card2.style.display = 'block';
+          card2.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      });
+      optsWrap.appendChild(btn);
+    });
+    card.appendChild(optsWrap); card.appendChild(explain); list.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
