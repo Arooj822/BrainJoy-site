@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Build an Atom — BrainJoy</title>
+<meta name="description" content="Add protons, neutrons, and electrons and discover which element, isotope, or ion you've built in this interactive atom simulator." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .apparatus-panel{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .atom-svg{width:100%; max-width:340px; height:auto; display:block;}
+  .shell-group{transform-origin:150px 150px;}
+  .shell-1{animation:orbit 24s linear infinite;}
+  .shell-2{animation:orbit 17s linear infinite reverse;}
+  .shell-3{animation:orbit 11s linear infinite;}
+  .shell-4{animation:orbit 8s linear infinite reverse;}
+  @keyframes orbit{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .nucleus-group{animation:pulse 3.2s ease-in-out infinite; transform-origin:150px 150px;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
+  .proton{fill:#FF5CA2; stroke:#fff; stroke-width:1.2;}
+  .neutron{fill:#8B9DC3; stroke:#fff; stroke-width:1.2;}
+  .electron{fill:#00BFA5;}
+  .shell-ring{fill:none; stroke:#E8DEFF; stroke-width:1.8;}
+  .shell-ring.active{stroke:#C9C2E8; stroke-width:2;}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand"><img src="assets/happy-brain.png" alt="BrainJoy"><span>BrainJoy</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/i.html">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+</nav>
+
+<header class="sim-hero">
+  <p class="eyebrow">Chemistry Sim &middot; Atomic Structure</p>
+  <h1>Build an atom, piece by piece.</h1>
+  <p>Add protons, neutrons, and electrons and watch your atom take shape. Discover the element, its mass, its charge, and whether you've built an ion or an isotope.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Your atom</h2>
+        <p class="panel-note">The nucleus holds protons (pink) and neutrons (blue). Electrons (teal) orbit in shells.</p>
+      </div>
+
+      <svg id="atomSvg" class="atom-svg" viewBox="0 0 300 300">
+        <!-- Shell rings -->
+        <circle class="shell-ring" cx="150" cy="150" r="58"/>
+        <circle class="shell-ring" cx="150" cy="150" r="88"/>
+        <circle class="shell-ring" cx="150" cy="150" r="118"/>
+        <circle class="shell-ring" cx="150" cy="150" r="148"/>
+
+        <!-- Electron groups (rotated via CSS) -->
+        <g id="shell1" class="shell-group shell-1" style="transform-origin:150px 150px;"></g>
+        <g id="shell2" class="shell-group shell-2" style="transform-origin:150px 150px;"></g>
+        <g id="shell3" class="shell-group shell-3" style="transform-origin:150px 150px;"></g>
+        <g id="shell4" class="shell-group shell-4" style="transform-origin:150px 150px;"></g>
+
+        <!-- Nucleus -->
+        <g id="nucleus" class="nucleus-group" style="transform-origin:150px 150px;"></g>
+      </svg>
+
+      <div class="readouts">
+        <div class="readout">
+          <div class="rlabel">Element</div>
+          <div class="rval" id="elName" style="font-size:1.1rem;">Hydrogen</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Symbol</div>
+          <div class="rval" id="elSym">H</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Atomic #</div>
+          <div class="rval" id="atomicNum">1</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Mass #</div>
+          <div class="rval" id="massNum">1</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Charge</div>
+          <div class="rval" id="chargeVal">0</div>
+          <div class="pill neutral" id="chargePill">Neutral</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Classification</div>
+          <div class="rval" id="classVal" style="font-size:1.05rem;">Atom</div>
+          <div class="pill neutral" id="classPill">Neutral atom</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">Add or remove subatomic particles and observe what changes.</p>
+
+      <div class="field">
+        <label>Protons <span class="val" id="pLabel">1</span></label>
+        <input type="range" id="pSlider" min="1" max="20" step="1" value="1">
+        <p class="field-hint">Protons determine the element. Changing this changes everything.</p>
+      </div>
+      <div class="field">
+        <label>Neutrons <span class="val" id="nLabel">0</span></label>
+        <input type="range" id="nSlider" min="0" max="26" step="1" value="0">
+        <p class="field-hint">Different neutron count = isotope of the same element.</p>
+      </div>
+      <div class="field">
+        <label>Electrons <span class="val" id="eLabel">1</span></label>
+        <input type="range" id="eSlider" min="0" max="26" step="1" value="1">
+        <p class="field-hint">Unequal electrons and protons = an ion.</p>
+      </div>
+
+      <div class="btnrow">
+        <button class="sbtn sbtn-reset" id="resetBtn">Reset to Hydrogen</button>
+        <button class="sbtn sbtn-reset" id="neutralBtn">Make neutral</button>
+        <button class="sbtn sbtn-primary" id="commonBtn">Common isotope</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>Why protons define the element</h3>
+      <p>The number of protons is called the <strong>atomic number</strong>. Every carbon atom has exactly 6 protons; every oxygen atom has 8. Change the proton count and you change the element itself — and its chemical identity.</p>
+    </div>
+    <div class="callout">
+      <h3>Ions vs. isotopes</h3>
+      <p>An <strong>isotope</strong> has the usual number of protons but a different number of neutrons. An <strong>ion</strong> has an unequal number of protons and electrons, giving it a positive or negative charge. Both are still the same element.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sim-wrap quiz-section">
+  <p class="section-label">Check yourself</p>
+  <h2>Atomic structure quiz</h2>
+  <div id="quizList"></div>
+  <div class="score-card" id="scoreCard">
+    <h3 id="scoreTitle"></h3>
+    <p id="scoreSub"></p>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <span>&copy; 2026 BrainJoy · brainjoy.site</span>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const elementData = [
+    {z:1, sym:'H', name:'Hydrogen', commonN:0},
+    {z:2, sym:'He', name:'Helium', commonN:2},
+    {z:3, sym:'Li', name:'Lithium', commonN:4},
+    {z:4, sym:'Be', name:'Beryllium', commonN:5},
+    {z:5, sym:'B', name:'Boron', commonN:6},
+    {z:6, sym:'C', name:'Carbon', commonN:6},
+    {z:7, sym:'N', name:'Nitrogen', commonN:7},
+    {z:8, sym:'O', name:'Oxygen', commonN:8},
+    {z:9, sym:'F', name:'Fluorine', commonN:10},
+    {z:10, sym:'Ne', name:'Neon', commonN:10},
+    {z:11, sym:'Na', name:'Sodium', commonN:12},
+    {z:12, sym:'Mg', name:'Magnesium', commonN:12},
+    {z:13, sym:'Al', name:'Aluminium', commonN:14},
+    {z:14, sym:'Si', name:'Silicon', commonN:14},
+    {z:15, sym:'P', name:'Phosphorus', commonN:16},
+    {z:16, sym:'S', name:'Sulfur', commonN:16},
+    {z:17, sym:'Cl', name:'Chlorine', commonN:18},
+    {z:18, sym:'Ar', name:'Argon', commonN:22},
+    {z:19, sym:'K', name:'Potassium', commonN:20},
+    {z:20, sym:'Ca', name:'Calcium', commonN:20}
+  ];
+
+  const pSlider = document.getElementById('pSlider');
+  const nSlider = document.getElementById('nSlider');
+  const eSlider = document.getElementById('eSlider');
+  const pLabel = document.getElementById('pLabel');
+  const nLabel = document.getElementById('nLabel');
+  const eLabel = document.getElementById('eLabel');
+  const elName = document.getElementById('elName');
+  const elSym = document.getElementById('elSym');
+  const atomicNum = document.getElementById('atomicNum');
+  const massNum = document.getElementById('massNum');
+  const chargeVal = document.getElementById('chargeVal');
+  const chargePill = document.getElementById('chargePill');
+  const classVal = document.getElementById('classVal');
+  const classPill = document.getElementById('classPill');
+  const nucleus = document.getElementById('nucleus');
+  const shellGroups = [
+    document.getElementById('shell1'),
+    document.getElementById('shell2'),
+    document.getElementById('shell3'),
+    document.getElementById('shell4')
+  ];
+  const shellRings = document.querySelectorAll('.shell-ring');
+
+  const shellCaps = [2, 8, 8, 2];
+  const shellRadii = [58, 88, 118, 148];
+
+  function getElement(p){
+    return elementData[p-1] || elementData[elementData.length-1];
+  }
+
+  function distributeElectrons(n){
+    const dist = [];
+    let remaining = n;
+    for (let i = 0; i < shellCaps.length; i++){
+      const placed = Math.min(remaining, shellCaps[i]);
+      dist.push(placed);
+      remaining -= placed;
+      if (remaining <= 0) break;
+    }
+    while (dist.length < shellCaps.length) dist.push(0);
+    return dist;
+  }
+
+  function drawNucleus(protons, neutrons){
+    const total = protons + neutrons;
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    const center = 150;
+    const spread = 4.0;
+    const radius = total > 22 ? 3.2 : (total > 12 ? 3.8 : 4.5);
+    let html = '';
+    for (let i = 0; i < total; i++){
+      const isProton = i < protons;
+      const r = i === 0 ? 0 : spread * Math.sqrt(i);
+      const theta = i * goldenAngle;
+      const x = center + r * Math.cos(theta);
+      const y = center + r * Math.sin(theta);
+      html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${radius}" class="${isProton?'proton':'neutron'}"/>`;
+    }
+    nucleus.innerHTML = html;
+  }
+
+  function drawElectrons(electrons){
+    const dist = distributeElectrons(electrons);
+    shellRings.forEach((ring, i) => {
+      ring.classList.toggle('active', dist[i] > 0);
+    });
+    shellGroups.forEach((group, i) => {
+      const count = dist[i];
+      const r = shellRadii[i];
+      let html = '';
+      if (count > 0){
+        const step = (2 * Math.PI) / count;
+        for (let j = 0; j < count; j++){
+          const angle = j * step;
+          const x = 150 + r * Math.cos(angle);
+          const y = 150 + r * Math.sin(angle);
+          html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" class="electron"/>`;
+        }
+      }
+      group.innerHTML = html;
+    });
+  }
+
+  function update(){
+    const p = Number(pSlider.value);
+    const n = Number(nSlider.value);
+    const e = Number(eSlider.value);
+    const el = getElement(p);
+
+    pLabel.textContent = p;
+    nLabel.textContent = n;
+    eLabel.textContent = e;
+
+    elName.textContent = el.name;
+    elSym.textContent = el.sym;
+    atomicNum.textContent = p;
+    massNum.textContent = p + n;
+
+    const charge = p - e;
+    chargeVal.textContent = (charge > 0 ? '+' : '') + charge;
+    if (charge > 0){
+      chargePill.textContent = 'Positive'; chargePill.className = 'pill acidic';
+    } else if (charge < 0){
+      chargePill.textContent = 'Negative'; chargePill.className = 'pill basic';
+    } else {
+      chargePill.textContent = 'Neutral'; chargePill.className = 'pill neutral';
+    }
+
+    const isIsotope = n !== el.commonN;
+    if (charge !== 0){
+      classVal.textContent = charge > 0 ? 'Cation' : 'Anion';
+      classPill.textContent = charge > 0 ? 'Positive ion' : 'Negative ion';
+      classPill.className = charge > 0 ? 'pill acidic' : 'pill basic';
+    } else if (isIsotope){
+      classVal.textContent = 'Isotope';
+      classPill.textContent = 'Isotope';
+      classPill.className = 'pill neutral';
+    } else {
+      classVal.textContent = 'Atom';
+      classPill.textContent = 'Neutral atom';
+      classPill.className = 'pill neutral';
+    }
+
+    drawNucleus(p, n);
+    drawElectrons(e);
+  }
+
+  pSlider.addEventListener('input', update);
+  nSlider.addEventListener('input', update);
+  eSlider.addEventListener('input', update);
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    pSlider.value = 1; nSlider.value = 0; eSlider.value = 1; update();
+  });
+  document.getElementById('neutralBtn').addEventListener('click', () => {
+    eSlider.value = pSlider.value; update();
+  });
+  document.getElementById('commonBtn').addEventListener('click', () => {
+    const el = getElement(Number(pSlider.value));
+    nSlider.value = el.commonN; update();
+  });
+
+  update();
+})();
+</script>
+
+<script>
+(function(){
+  const questions = [
+    { q:"Which particle determines which element an atom is?",
+      opts:["Neutrons","Electrons","Protons","Photons"], correct:2,
+      explain:"The number of protons — the atomic number — defines the element. Change the proton count and you change the element entirely." },
+    { q:"What is an isotope?",
+      opts:["An atom with a different number of protons","An atom with the same protons but different neutrons","A charged atom","A particle that orbits the nucleus"], correct:1,
+      explain:"Isotopes are variants of the same element. Carbon-12 and Carbon-14 both have 6 protons, but different numbers of neutrons." },
+    { q:"What happens when an atom has more electrons than protons?",
+      opts:["It becomes a positive ion (cation)","It becomes a negative ion (anion)","It becomes a different element","It becomes radioactive"], correct:1,
+      explain:"Extra electrons give the atom a net negative charge, making it an anion." },
+    { q:"Where are protons and neutrons located?",
+      opts:["Orbiting the nucleus","In the electron shells","In the nucleus at the center","Outside the atom"], correct:2,
+      explain:"Protons and neutrons are packed together in the dense nucleus at the atom's center. Electrons orbit around them." },
+    { q:"An atom has 17 protons, 18 neutrons, and 17 electrons. What is it?",
+      opts:["Chlorine-35 atom","Chlorine-35 ion","Argon-35 atom","Sulfur-35 atom"], correct:0,
+      explain:"17 protons = Chlorine. Mass number = 17 + 18 = 35. With 17 electrons the charge is neutral, so it is a neutral Chlorine-35 atom." }
+  ];
+  const list = document.getElementById('quizList');
+  let score = 0, answered = 0;
+  questions.forEach((item, qi) => {
+    const card = document.createElement('div'); card.className = 'qcard';
+    const title = document.createElement('p'); title.className = 'qtitle'; title.textContent = (qi+1) + '. ' + item.q; card.appendChild(title);
+    const optsWrap = document.createElement('div'); optsWrap.className = 'qopts';
+    const explain = document.createElement('p'); explain.className = 'qexplain'; explain.textContent = item.explain;
+    item.opts.forEach((optText, oi) => {
+      const btn = document.createElement('button'); btn.className = 'qopt'; btn.textContent = optText;
+      btn.addEventListener('click', () => {
+        const buttons = optsWrap.querySelectorAll('.qopt');
+        if (buttons[0].disabled) return;
+        buttons.forEach((b, bi) => { b.disabled = true; if (bi === item.correct) b.classList.add('correct'); });
+        if (oi !== item.correct) btn.classList.add('incorrect'); else score++;
+        answered++; explain.style.display = 'block';
+        if (answered === questions.length){
+          document.getElementById('scoreTitle').textContent = score + '/' + questions.length + ' correct';
+          document.getElementById('scoreSub').textContent = score === questions.length
+            ? "Perfect score — you understand atomic structure inside and out."
+            : score >= 3 ? "Solid understanding. Tweak the sim above if any concept felt tricky."
+            : "Give it another pass — try adding protons one at a time and watch the element name change.";
+          const card2 = document.getElementById('scoreCard');
+          card2.style.display = 'block';
+          card2.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      });
+      optsWrap.appendChild(btn);
+    });
+    card.appendChild(optsWrap); card.appendChild(explain); list.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
