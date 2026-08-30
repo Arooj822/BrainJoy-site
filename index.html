@@ -613,6 +613,70 @@
   </div>
 </div>
 
+<!-- ===== AUTH MODALS (restored) ===== -->
+<div id="loginModal" class="auth-overlay">
+  <div class="auth-modal">
+    <button class="auth-close" onclick="closeModal('loginModal')">&times;</button>
+    <div class="auth-logo"><img src="assets/happy-brain.png" alt="BrainJoy"></div>
+    <h2 class="auth-title">Welcome Back 👋</h2>
+    <p class="auth-sub">Log in to continue your learning journey</p>
+    <input type="email" id="loginEmail" class="auth-input" placeholder="Email Address">
+    <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+    <button class="auth-btn" onclick="loginUser()">Log In →</button>
+    <div class="auth-footer">Don't have an account? <a onclick="closeModal('loginModal'); openModal('signupModal')">Sign up free →</a></div>
+  </div>
+</div>
+
+<div id="signupModal" class="auth-overlay">
+  <div class="auth-modal">
+    <button class="auth-close" onclick="closeModal('signupModal')">&times;</button>
+    <div id="signupStep1">
+      <div class="auth-logo"><img src="assets/happy-brain.png" alt="BrainJoy"></div>
+      <h2 class="auth-title">Join BrainJoy Free 🚀</h2>
+      <p class="auth-sub">Who are you? Choose your role to get started:</p>
+      <div class="role-selector-grid">
+        <button class="role-select-btn" id="roleBtn-student" onclick="selectRole('student')">🎓 I'm a Student</button>
+        <button class="role-select-btn" id="roleBtn-teacher" onclick="selectRole('teacher')">👩‍🏫 I'm a Teacher</button>
+        <button class="role-select-btn" id="roleBtn-parent" onclick="selectRole('parent')">👪 I'm a Parent</button>
+        <button class="role-select-btn" id="roleBtn-admin" onclick="selectRole('admin')">🏛 I'm an Admin</button>
+      </div>
+    </div>
+    <div id="signupStep2" style="display:none;">
+      <div class="auth-logo"><img src="assets/happy-brain.png" alt="BrainJoy"></div>
+      <h2 class="auth-title" id="signupRoleTitle">Create Your Account</h2>
+      <p class="auth-sub">Fill in your details below — it's free!</p>
+      <input type="text" id="signupName" class="auth-input" placeholder="Full Name">
+      <input type="email" id="signupEmail" class="auth-input" placeholder="Email Address">
+      <input type="password" id="signupPassword" class="auth-input" placeholder="Create a Password">
+      <button class="auth-btn" onclick="signupUser()">Create My Account →</button>
+      <div class="auth-footer">
+        <a onclick="showSignupStep(1)" style="cursor:pointer;">← Change role</a>
+        &nbsp;·&nbsp; Already have an account? <a onclick="closeModal('signupModal'); openModal('loginModal')">Log in</a>
+      </div>
+    </div>
+    <div id="signupStep3" style="display:none;text-align:center;">
+      <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
+      <h2 class="auth-title">You're Almost In!</h2>
+      <p class="auth-sub">Check your email to confirm your account. Once verified, you're all set!</p>
+      <button class="auth-btn" onclick="closeModal('signupModal')">Got it, close →</button>
+    </div>
+  </div>
+</div>
+
+<div id="donateModal" class="auth-overlay">
+  <div class="auth-modal">
+    <button class="auth-close" onclick="closeModal('donateModal')">&times;</button>
+    <h2 class="auth-title">Support BrainJoy 💜</h2>
+    <p class="auth-sub">Help us bring free education to every student in the world.</p>
+    <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px;">Donation Amount (optional)</label>
+    <input id="donateAmount" type="number" min="1" class="auth-input" placeholder="Enter amount (e.g., 25)">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+      <button onclick="donateWithStripe()" style="padding:13px;background:#1a1a2e;color:#fff;border:none;border-radius:var(--radius);font-weight:700;cursor:pointer;font-size:0.95rem;">💳 Card / Apple Pay / Google Pay</button>
+    </div>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:14px;text-align:center;">Payments processed securely by Stripe.</p>
+  </div>
+</div>
+
 <!-- ===== ADMIN & SCHOOL CONSOLE MODAL ===== -->
 <div id="adminConsoleModal" class="admin-modal-overlay">
   <div class="admin-modal">
