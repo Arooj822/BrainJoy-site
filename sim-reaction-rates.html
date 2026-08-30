@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reaction Rates — BrainJoy</title>
+<meta name="description" content="Turn up temperature and concentration to watch molecules collide faster in this interactive reaction-rate simulator." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .apparatus-panel{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .reaction-canvas{width:100%; max-width:420px; height:280px; border-radius:16px; background:#0d0d1a; border:2px solid var(--border); display:block;}
+  .rate-bar-wrap{width:100%; max-width:420px; background:#eee; border-radius:100px; height:14px; overflow:hidden; margin-top:4px;}
+  .rate-bar-fill{height:100%; width:0%; background:linear-gradient(90deg, var(--purple), var(--pink)); border-radius:100px; transition:width 0.3s;}
+  .molecule-legend{display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-top:8px; font-size:0.78rem;}
+  .molecule-legend span{display:flex; align-items:center; gap:5px;}
+  .dot{display:inline-block; width:10px; height:10px; border-radius:50%;}
+  .dot.a{background:#9a5cff;}
+  .dot.b{background:#00bfa5;}
+  .dot.c{background:#ffb400;}
+  .live-readouts{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; width:100%;}
+  @media(max-width:480px){.live-readouts{grid-template-columns:1fr 1fr;}}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand"><img src="assets/happy-brain.png" alt="BrainJoy"><span>BrainJoy</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/i.html">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+</nav>
+
+<header class="sim-hero">
+  <p class="eyebrow">Chemistry Sim &middot; Kinetics</p>
+  <h1>Heat it up. Pack it in. Watch it react.</h1>
+  <p>Adjust temperature and concentration to see how particle speed and density control how fast a reaction really happens.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Reaction vessel</h2>
+        <p class="panel-note">A + B → C &nbsp;|&nbsp; Purple + Teal collide to make Gold</p>
+      </div>
+      <canvas id="reactionCanvas" class="reaction-canvas" width="420" height="280"></canvas>
+      <div class="molecule-legend">
+        <span><span class="dot a"></span> Reactant A</span>
+        <span><span class="dot b"></span> Reactant B</span>
+        <span><span class="dot c"></span> Product C</span>
+      </div>
+      <div style="width:100%; max-width:420px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-muted); margin-bottom:4px;">
+          <span>Reaction progress</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="rate-bar-wrap"><div class="rate-bar-fill" id="rateBar"></div></div>
+      </div>
+      <div class="live-readouts">
+        <div class="readout">
+          <div class="rlabel">Collisions / s</div>
+          <div class="rval" id="collisionRate">0</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Successful</div>
+          <div class="rval" id="successRate">0</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Products made</div>
+          <div class="rval" id="productCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">Change conditions and observe the rate.</p>
+
+      <div class="field">
+        <label>Temperature <span class="val" id="tempLabel">25 °C</span></label>
+        <input type="range" id="tempSlider" min="0" max="100" step="1" value="25">
+        <p class="field-hint">Higher temperature = faster particles = more frequent, harder collisions.</p>
+      </div>
+      <div class="field">
+        <label>Concentration <span class="val" id="concLabel">Medium</span></label>
+        <input type="range" id="concSlider" min="10" max="80" step="1" value="35">
+        <p class="field-hint">More particles in the same space = more chances to collide.</p>
+      </div>
+      <div class="field">
+        <label>Activation energy barrier <span class="val" id="eaLabel">Normal</span></label>
+        <input type="range" id="eaSlider" min="1" max="10" step="1" value="5">
+        <p class="field-hint">A higher barrier means only the fastest collisions succeed.</p>
+      </div>
+
+      <div class="btnrow">
+        <button class="sbtn sbtn-reset" id="resetBtn">Reset vessel</button>
+        <button class="sbtn sbtn-primary" id="pulseBtn">Heat burst</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel graph-panel">
+    <h2>Live rate graph</h2>
+    <p class="panel-note">Reaction rate (successful collisions per second) over the last 60 seconds.</p>
+    <div class="graph-wrap"><svg id="rateGraph" class="curve" viewBox="0 0 620 200" style="height:200px;"></svg></div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>Why temperature matters</h3>
+      <p>Raising temperature gives particles more kinetic energy. They move faster and collide more often — but more importantly, a greater share of those collisions now has enough energy to overcome the activation barrier and react.</p>
+    </div>
+    <div class="callout">
+      <h3>Why concentration matters</h3>
+      <p>Higher concentration means more particles in the same volume. With more A and B molecules around, the odds of a collision go up proportionally. Double the concentration, double the collision frequency.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sim-wrap quiz-section">
+  <p class="section-label">Check yourself</p>
+  <h2>Reaction rates quiz</h2>
+  <div id="quizList"></div>
+  <div class="score-card" id="scoreCard">
+    <h3 id="scoreTitle"></h3>
+    <p id="scoreSub"></p>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <span>&copy; 2026 BrainJoy · brainjoy.site</span>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const canvas = document.getElementById('reactionCanvas');
+  const ctx = canvas.getContext('2d');
+  const tempSlider = document.getElementById('tempSlider');
+  const concSlider = document.getElementById('concSlider');
+  const eaSlider = document.getElementById('eaSlider');
+  const tempLabel = document.getElementById('tempLabel');
+  const concLabel = document.getElementById('concLabel');
+  const eaLabel = document.getElementById('eaLabel');
+  const collisionRateEl = document.getElementById('collisionRate');
+  const successRateEl = document.getElementById('successRate');
+  const productCountEl = document.getElementById('productCount');
+  const progressPctEl = document.getElementById('progressPct');
+  const rateBar = document.getElementById('rateBar');
+  const rateGraph = document.getElementById('rateGraph');
+
+  let particles = [];
+  let products = [];
+  let totalCollisions = 0;
+  let successfulCollisions = 0;
+  let lastSecondCollisions = 0;
+  let lastSecondSuccess = 0;
+  let tickCount = 0;
+  let history = [];
+  const maxHistory = 120;
+
+  const W = 420, H = 280;
+  const R = 5; // particle radius
+
+  function speedFromTemp(t){ return 0.5 + (t/100)*3.5; }
+  function countFromConc(c){ return c; }
+
+  function initParticles(){
+    particles = [];
+    products = [];
+    totalCollisions = 0;
+    successfulCollisions = 0;
+    lastSecondCollisions = 0;
+    lastSecondSuccess = 0;
+    history = [];
+    const count = countFromConc(Number(concSlider.value));
+    const speedBase = speedFromTemp(Number(tempSlider.value));
+    for(let i=0;i<count;i++){
+      const type = i % 2 === 0 ? 'A' : 'B';
+      const angle = Math.random()*Math.PI*2;
+      const speed = speedBase * (0.7 + Math.random()*0.6);
+      particles.push({
+        x: R + Math.random()*(W-2*R),
+        y: R + Math.random()*(H-2*R),
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed,
+        type: type,
+        r: R,
+        flash: 0
+      });
+    }
+  }
+
+  function updateParticles(){
+    const temp = Number(tempSlider.value);
+    const speedBase = speedFromTemp(temp);
+    const ea = Number(eaSlider.value);
+    const minSpeedForReaction = 1.0 + (ea-1)*0.35;
+
+    // Adjust velocities toward target speed without resetting direction
+    particles.forEach(p => {
+      const curSpeed = Math.hypot(p.vx, p.vy);
+      const targetSpeed = speedBase * (0.7 + 0.3);
+      if (curSpeed > 0) {
+        const scale = targetSpeed / curSpeed;
+        p.vx *= 0.98 + 0.02*scale;
+        p.vy *= 0.98 + 0.02*scale;
+      }
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < p.r){ p.x = p.r; p.vx *= -1; }
+      if (p.x > W-p.r){ p.x = W-p.r; p.vx *= -1; }
+      if (p.y < p.r){ p.y = p.r; p.vy *= -1; }
+      if (p.y > H-p.r){ p.y = H-p.r; p.vy *= -1; }
+      if (p.flash > 0) p.flash--;
+    });
+
+    // Check A-B collisions
+    for (let i=0;i<particles.length;i++){
+      for (let j=i+1;j<particles.length;j++){
+        const a = particles[i], b = particles[j];
+        if (a.type === b.type) continue;
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < a.r + b.r){
+          // Collision!
+          totalCollisions++;
+          lastSecondCollisions++;
+
+          // Bounce
+          const nx = dx/dist, ny = dy/dist;
+          const dvx = a.vx - b.vx, dvy = a.vy - b.vy;
+          const velAlongNormal = dvx*nx + dvy*ny;
+          if (velAlongNormal > 0) continue;
+          const jVal = -velAlongNormal;
+          a.vx += jVal*nx*0.5; a.vy += jVal*ny*0.5;
+          b.vx -= jVal*nx*0.5; b.vy -= jVal*ny*0.5;
+          // Separate
+          const overlap = (a.r+b.r - dist)/2;
+          a.x += nx*overlap; a.y += ny*overlap;
+          b.x -= nx*overlap; b.y -= ny*overlap;
+
+          // Reaction check: relative speed must exceed activation barrier
+          const relSpeed = Math.hypot(a.vx - b.vx, a.vy - b.vy);
+          if (relSpeed > minSpeedForReaction){
+            lastSecondSuccess++;
+            successfulCollisions++;
+            a.flash = 8;
+            b.flash = 8;
+            // Spawn product at midpoint
+            products.push({x:(a.x+b.x)/2, y:(a.y+b.y)/2, life:40});
+          }
+        }
+      }
+    }
+  }
+
+  function draw(){
+    ctx.fillStyle = '#0d0d1a';
+    ctx.fillRect(0,0,W,H);
+
+    // Draw grid
+    ctx.strokeStyle = '#1a1a33';
+    ctx.lineWidth = 1;
+    for(let x=0;x<W;x+=28){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=0;y<H;y+=28){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Products
+    products.forEach((p,i) => {
+      p.life--;
+      if (p.life <= 0){ products.splice(i,1); return; }
+      const alpha = p.life/40;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3 + (40-p.life)*0.15, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255, 180, 0, ${alpha})`;
+      ctx.fill();
+    });
+
+    // Particles
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      if (p.type === 'A'){
+        ctx.fillStyle = p.flash > 0 ? '#fff' : '#9a5cff';
+      } else {
+        ctx.fillStyle = p.flash > 0 ? '#fff' : '#00bfa5';
+      }
+      ctx.fill();
+      // Glow
+      if (p.flash > 0){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r+4, 0, Math.PI*2);
+        ctx.fillStyle = p.type==='A' ? 'rgba(154,92,255,0.3)' : 'rgba(0,191,165,0.3)';
+        ctx.fill();
+      }
+    });
+  }
+
+  function updateReadouts(){
+    collisionRateEl.textContent = lastSecondCollisions;
+    successRateEl.textContent = lastSecondSuccess;
+    productCountEl.textContent = successfulCollisions;
+    const totalPossible = Math.floor(Number(concSlider.value)/2);
+    const pct = totalPossible > 0 ? Math.min(100, Math.round((successfulCollisions / (totalPossible*3))*100)) : 0;
+    progressPctEl.textContent = pct + '%';
+    rateBar.style.width = pct + '%';
+  }
+
+  function drawGraph(){
+    const svg = rateGraph;
+    const w=620, h=200, padL=40, padR=16, padT=10, padB=28;
+    const plotW = w-padL-padR, plotH = h-padT-padB;
+    let maxVal = 5;
+    history.forEach(v => { if (v>maxVal) maxVal = v; });
+    maxVal = Math.max(maxVal, 10);
+
+    function x(i){ return padL + (i/(maxHistory-1))*plotW; }
+    function y(v){ return padT + (1 - v/maxVal)*plotH; }
+
+    let path = '';
+    for (let i=0;i<history.length;i++){
+      path += (i===0?'M':'L') + x(i).toFixed(1) + ',' + y(history[i]).toFixed(1) + ' ';
+    }
+
+    let html = '';
+    for (let v=0; v<=maxVal; v+=Math.ceil(maxVal/4)){
+      html += `<text class="axis-label" x="${padL-8}" y="${(y(v)+4).toFixed(1)}" text-anchor="end">${v}</text>`;
+      html += `<line class="grid-line" x1="${padL}" y1="${y(v).toFixed(1)}" x2="${w-padR}" y2="${y(v).toFixed(1)}"/>`;
+    }
+    html += `<text class="axis-label" x="${padL-8}" y="${(padT+4)}" text-anchor="end">rate</text>`;
+    html += `<text class="axis-label" x="${w/2}" y="${h-6}" text-anchor="middle" style="font-weight:600;">Time →</text>`;
+    if (path) html += `<path class="curve-path" d="${path}"/>`;
+    if (history.length){
+      const last = history[history.length-1];
+      html += `<circle class="marker" cx="${x(history.length-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="5"/>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  function loop(){
+    updateParticles();
+    draw();
+    tickCount++;
+    if (tickCount % 30 === 0){
+      history.push(lastSecondSuccess);
+      if (history.length > maxHistory) history.shift();
+      updateReadouts();
+      drawGraph();
+      lastSecondCollisions = 0;
+      lastSecondSuccess = 0;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function updateLabels(){
+    tempLabel.textContent = tempSlider.value + ' °C';
+    const c = Number(concSlider.value);
+    concLabel.textContent = c < 25 ? 'Low' : c < 50 ? 'Medium' : c < 65 ? 'High' : 'Very High';
+    const ea = Number(eaSlider.value);
+    eaLabel.textContent = ea < 4 ? 'Low' : ea < 7 ? 'Normal' : 'High';
+  }
+
+  tempSlider.addEventListener('input', () => { updateLabels(); });
+  concSlider.addEventListener('input', () => { updateLabels(); initParticles(); });
+  eaSlider.addEventListener('input', updateLabels);
+  document.getElementById('resetBtn').addEventListener('click', () => { initParticles(); });
+  document.getElementById('pulseBtn').addEventListener('click', () => {
+    const old = tempSlider.value;
+    tempSlider.value = Math.min(100, Number(old)+25);
+    updateLabels();
+    setTimeout(() => { tempSlider.value = old; updateLabels(); }, 1200);
+  });
+
+  updateLabels();
+  initParticles();
+  loop();
+})();
+</script>
+
+<script>
+(function(){
+  const questions = [
+    { q:"What happens to reaction rate when you increase temperature?",
+      opts:["Particles slow down and stop reacting","Particles move faster and more collisions have enough energy to react","The reaction becomes endothermic","The concentration automatically drops"],
+      correct:1, explain:"Higher temperature increases kinetic energy. Particles move faster, collide more often, and a larger fraction of collisions exceeds the activation energy barrier." },
+    { q:"If you double the concentration of both reactants, what happens to collision frequency?",
+      opts:["It stays the same","It doubles","It roughly quadruples","It drops to zero"],
+      correct:2, explain:"More particles in the same volume means more possible collision pairs. Doubling both reactants roughly quadruples the collision frequency (proportional to [A]×[B])." },
+    { q:"What is activation energy?",
+      opts:["The total energy released by a reaction","The minimum energy colliding particles need to react","The energy stored in the products","The speed of the reaction"],
+      correct:1, explain:"Activation energy is the energy barrier that must be overcome for a reaction to occur. Even if a collision happens, if the energy is too low, particles simply bounce apart unchanged." },
+    { q:"Why does a higher activation energy barrier slow a reaction?",
+      opts:["It reduces the number of particles","Only faster-moving collisions can overcome it","It lowers the temperature","It removes products from the vessel"],
+      correct:1, explain:"With a higher barrier, fewer collisions have sufficient kinetic energy to react. Most collisions are unsuccessful — the particles just bounce off each other." },
+    { q:"In this simulation, what color represents a successful collision producing product C?",
+      opts:["Purple flash","Teal flash","Gold/yellow spark","Red burst"],
+      correct:2, explain:"When an A (purple) and B (teal) particle collide with enough energy, they flash white and spawn a gold/yellow product particle." }
+  ];
+  const list = document.getElementById('quizList');
+  let score=0, answered=0;
+  questions.forEach((item, qi)=>{
+    const card=document.createElement('div'); card.className='qcard';
+    const title=document.createElement('p'); title.className='qtitle'; title.textContent=(qi+1)+'. '+item.q; card.appendChild(title);
+    const optsWrap=document.createElement('div'); optsWrap.className='qopts';
+    const explain=document.createElement('p'); explain.className='qexplain'; explain.textContent=item.explain;
+    item.opts.forEach((optText, oi)=>{
+      const btn=document.createElement('button'); btn.className='qopt'; btn.textContent=optText;
+      btn.addEventListener('click', ()=>{
+        const buttons=optsWrap.querySelectorAll('.qopt');
+        if (buttons[0].disabled) return;
+        buttons.forEach((b,bi)=>{ b.disabled=true; if(bi===item.correct) b.classList.add('correct'); });
+        if (oi!==item.correct) btn.classList.add('incorrect'); else score++;
+        answered++; explain.style.display='block';
+        if (answered===questions.length){
+          const card2=document.getElementById('scoreCard');
+          document.getElementById('scoreTitle').textContent = score+'/'+questions.length+' correct';
+          document.getElementById('scoreSub').textContent = score===questions.length
+            ? "Perfect score — you understand collision theory cold."
+            : score>=3 ? "Good grasp of reaction kinetics. Re-run the sim if anything felt shaky."
+            : "Try again — crank the temperature and watch how many more flashes you get.";
+          card2.style.display='block';
+          card2.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      });
+      optsWrap.appendChild(btn);
+    });
+    card.appendChild(optsWrap); card.appendChild(explain); list.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
