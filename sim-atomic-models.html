@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Atomic Models: Dalton & Thomson — BrainJoy</title>
+<meta name="description" content="Explore Dalton's solid sphere and Thomson's plum pudding model with the chocolate chip cookie analogy in this interactive simulation." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .apparatus-panel{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .model-stage{width:100%; max-width:420px; height:320px; border-radius:16px; background:linear-gradient(135deg, #faf8ff, #f0e8ff); border:2px solid var(--border); position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;}
+  .model-svg{width:100%; height:100%;}
+  .model-tabs{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; justify-content:center;}
+  .model-tab{padding:10px 22px; border-radius:100px; border:2px solid var(--border); background:#fff; font-family:'Poppins',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; transition:0.2s; color:var(--text);}
+  .model-tab:hover{border-color:var(--purple); color:var(--purple);}
+  .model-tab.active{background:linear-gradient(135deg,var(--purple),var(--purple-light)); color:#fff; border-color:transparent; box-shadow:0 4px 14px rgba(106,13,173,0.3);}
+  .analogy-box{background:linear-gradient(135deg, #fff8f0, #fff3e0); border:2px solid #ffe0b2; border-radius:16px; padding:20px 22px; margin-top:10px; width:100%; max-width:420px;}
+  .analogy-box h4{font-family:'Baloo 2',cursive; color:#e65100; margin:0 0 10px; font-size:1.1rem;}
+  .analogy-box p{margin:0; color:var(--text-muted); font-size:0.88rem; line-height:1.6;}
+  .cookie-svg{float:right; margin-left:12px; width:90px; height:90px;}
+  .discovery-btn{background:linear-gradient(135deg,var(--purple),var(--purple-light)); color:#fff; border:none; border-radius:100px; padding:10px 20px; font-weight:700; font-size:0.86rem; cursor:pointer; font-family:'Poppins',sans-serif; transition:0.2s; margin-top:10px;}
+  .discovery-btn:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(106,13,173,0.3);}
+  .electron-pop{animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+  @keyframes popIn{from{transform:scale(0); opacity:0;}to{transform:scale(1); opacity:1;}}
+  .timeline-wrap{display:flex; gap:16px; overflow-x:auto; padding:10px 0; margin-top:10px;}
+  .timeline-card{min-width:160px; background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:16px; text-align:center; transition:0.2s; cursor:pointer;}
+  .timeline-card:hover{border-color:var(--purple); transform:translateY(-3px);}
+  .timeline-card.active{background:var(--purple-bg); border-color:var(--purple);}
+  .timeline-year{font-size:0.75rem; font-weight:700; color:var(--purple); margin-bottom:6px;}
+  .timeline-name{font-size:0.92rem; font-weight:700; color:var(--text);}
+  .timeline-desc{font-size:0.78rem; color:var(--text-muted); margin-top:4px;}
+  .fact-bubble{background:#fff; border:1.5px dashed var(--border); border-radius:12px; padding:14px 16px; margin-top:12px; font-size:0.85rem; color:var(--text-muted); line-height:1.6;}
+  .fact-bubble strong{color:var(--purple-dark);}
+  .compare-table{width:100%; border-collapse:collapse; margin-top:14px; font-size:0.88rem;}
+  .compare-table th{background:var(--purple-bg); color:var(--purple-dark); padding:10px 12px; text-align:left; border-radius:8px 8px 0 0;}
+  .compare-table td{padding:10px 12px; border-bottom:1px solid var(--border); color:var(--text);}
+  .compare-table tr:last-child td{border-bottom:none;}
+  .zoom-lens{position:absolute; width:80px; height:80px; border:3px solid var(--purple); border-radius:50%; pointer-events:none; opacity:0; transition:opacity 0.2s; background:rgba(106,13,173,0.05); box-shadow:0 0 20px rgba(106,13,173,0.2);}
+  .model-stage:hover .zoom-lens{opacity:1;}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand"><img src="assets/happy-brain.png" alt="BrainJoy"><span>BrainJoy</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/i.html">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+</nav>
+
+<header class="sim-hero">
+  <p class="eyebrow">Chemistry Sim &middot; Atomic Models</p>
+  <h1>From solid sphere to chocolate chip cookie.</h1>
+  <p>Explore how our picture of the atom evolved — from Dalton's indestructible billiard ball to Thomson's plum pudding model, explained with the famous cookie analogy.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Model viewer</h2>
+        <p class="panel-note">Switch between models. Hover to zoom. Click Thomson's atom to discover electrons.</p>
+      </div>
+
+      <div class="model-tabs">
+        <button class="model-tab active" id="tabDalton" onclick="showModel('dalton')">Dalton (1803)</button>
+        <button class="model-tab" id="tabThomson" onclick="showModel('thomson')">Thomson (1897)</button>
+      </div>
+
+      <div class="model-stage" id="modelStage">
+        <svg id="modelSvg" class="model-svg" viewBox="0 0 420 320">
+          <!-- Dalton Model -->
+          <g id="daltonGroup">
+            <circle cx="210" cy="160" r="90" fill="url(#daltonGrad)" stroke="#C9C2E8" stroke-width="3"/>
+            <defs>
+              <radialGradient id="daltonGrad" cx="35%" cy="35%">
+                <stop offset="0%" stop-color="#D7CCFF"/>
+                <stop offset="100%" stop-color="#9a5cff"/>
+              </radialGradient>
+            </defs>
+            <text x="210" y="165" text-anchor="middle" fill="#fff" font-family="'Baloo 2',cursive" font-weight="800" font-size="1.4rem">ATOM</text>
+            <text x="210" y="275" text-anchor="middle" fill="#6b7280" font-family="'Poppins',sans-serif" font-size="0.82rem">Indivisible solid sphere</text>
+            <text x="210" y="295" text-anchor="middle" fill="#9a5cff" font-family="'Poppins',sans-serif" font-weight="700" font-size="0.78rem">No subatomic parts • Uniform throughout</text>
+          </g>
+
+          <!-- Thomson Model -->
+          <g id="thomsonGroup" style="display:none;">
+            <circle cx="210" cy="160" r="95" fill="#FCE4EC" stroke="#F48FB1" stroke-width="2.5"/>
+            <!-- Positive pudding -->
+            <circle cx="210" cy="160" r="90" fill="url(#puddingGrad)" opacity="0.9"/>
+            <defs>
+              <radialGradient id="puddingGrad" cx="40%" cy="40%">
+                <stop offset="0%" stop-color="#F8BBD0"/>
+                <stop offset="100%" stop-color="#F06292"/>
+              </radialGradient>
+            </defs>
+            <!-- Electrons (chocolate chips) -->
+            <g id="electronGroup">
+              <circle cx="170" cy="130" r="10" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="250" cy="140" r="9" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="200" cy="200" r="11" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="230" cy="110" r="8" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="180" cy="180" r="10" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="260" cy="190" r="9" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="150" cy="160" r="8" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+              <circle cx="240" cy="170" r="10" fill="#5D4037" class="electron-chip" style="cursor:pointer;" onclick="popElectron(this)"/>
+            </g>
+            <!-- Labels appear on click -->
+            <g id="thomsonLabels" style="display:none;">
+              <text x="210" y="275" text-anchor="middle" fill="#6b7280" font-family="'Poppins',sans-serif" font-size="0.82rem">Positive "pudding" with embedded electrons</text>
+              <text x="210" y="295" text-anchor="middle" fill="#E91E63" font-family="'Poppins',sans-serif" font-weight="700" font-size="0.78rem">Like chocolate chips in a cookie!</text>
+            </g>
+          </g>
+
+          <!-- Discovery flash effect -->
+          <circle id="flashCircle" cx="210" cy="160" r="0" fill="none" stroke="#FFD700" stroke-width="4" opacity="0"/>
+        </svg>
+        <div class="zoom-lens" id="zoomLens"></div>
+      </div>
+
+      <div class="analogy-box" id="analogyBox">
+        <svg class="cookie-svg" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#D7CCC8" stroke="#A1887F" stroke-width="2"/>
+          <circle cx="35" cy="38" r="8" fill="#5D4037"/>
+          <circle cx="62" cy="32" r="7" fill="#5D4037"/>
+          <circle cx="55" cy="58" r="9" fill="#5D4037"/>
+          <circle cx="30" cy="60" r="6" fill="#5D4037"/>
+          <circle cx="70" cy="65" r="7" fill="#5D4037"/>
+          <circle cx="45" cy="75" r="8" fill="#5D4037"/>
+        </svg>
+        <h4>🍪 The Chocolate Chip Cookie Analogy</h4>
+        <p id="analogyText">Thomson imagined the atom as a <strong>chocolate chip cookie</strong>. The dough is a sea of positive charge, and the <strong>chocolate chips</strong> are tiny negative electrons scattered throughout. Click the brown dots in the model above to "discover" them!</p>
+      </div>
+
+      <div class="readouts" style="width:100%;">
+        <div class="readout">
+          <div class="rlabel">Model</div>
+          <div class="rval" id="modelName" style="font-size:1.1rem;">Dalton</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Year</div>
+          <div class="rval" id="modelYear">1803</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Key idea</div>
+          <div class="rval" id="modelKey" style="font-size:0.95rem;">Solid sphere</div>
+        </div>
+        <div class="readout">
+          <div class="rlabel">Electrons</div>
+          <div class="rval" id="modelElec">Not known</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls & Details</h2>
+      <p class="panel-note">Switch models, explore the analogy, and compare key differences.</p>
+
+      <div class="field">
+        <label>Select atomic model</label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="sbtn sbtn-primary" id="btnDalton" onclick="showModel('dalton')" style="flex:1;">Dalton</button>
+          <button class="sbtn sbtn-reset" id="btnThomson" onclick="showModel('thomson')" style="flex:1;">Thomson</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Analogy toggle</label>
+        <button class="sbtn sbtn-reset" onclick="toggleAnalogy()" style="width:100%;">🍪 Show / Hide Cookie Analogy</button>
+      </div>
+
+      <div class="fact-bubble" id="factBubble">
+        <strong>💡 Did you know?</strong> <span id="factText">Dalton believed atoms were like tiny, solid billiard balls — completely indivisible and indestructible. He had no idea electrons even existed!</span>
+      </div>
+
+      <h3 style="font-family:'Baloo 2',cursive; color:var(--purple-dark); margin:20px 0 10px; font-size:1.1rem;">Side-by-side comparison</h3>
+      <table class="compare-table">
+        <tr><th>Feature</th><th>Dalton (1803)</th><th>Thomson (1897)</th></tr>
+        <tr><td><strong>Shape</strong></td><td>Solid sphere</td><td>Sphere of positive charge</td></tr>
+        <tr><td><strong>Subatomic parts</strong></td><td>None — indivisible</td><td>Electrons embedded inside</td></tr>
+        <tr><td><strong>Charge</strong></td><td>Neutral (assumed)</td><td>Positive pudding + negative electrons</td></tr>
+        <tr><td><strong>Analogy</strong></td><td>Billiard ball ⚪</td><td>Chocolate chip cookie 🍪</td></tr>
+        <tr><td><strong>Evidence</strong></td><td>Law of multiple proportions</td><td>Cathode ray experiments</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>Why Thomson needed a new model</h3>
+      <p>In 1897, Thomson discovered the <strong>electron</strong> using cathode ray tubes. This proved atoms were <em>not</em> indivisible. Since the whole atom was neutral, Thomson proposed a "pudding" of positive charge with negative electrons embedded like plums — or chocolate chips — inside it.</p>
+    </div>
+    <div class="callout">
+      <h3>Why the cookie analogy works</h3>
+      <p>Both the cookie dough and Thomson's positive charge are <strong>continuous and spread out</strong>. The chocolate chips and electrons are <strong>discrete, embedded particles</strong> scattered throughout. It's a perfect visual match — tasty and memorable!</p>
+    </div>
+  </div>
+
+  <div class="panel graph-panel" style="margin-top:24px;">
+    <h2>Timeline of atomic discovery</h2>
+    <p class="panel-note">Click a card to jump to that model in the viewer above.</p>
+    <div class="timeline-wrap">
+      <div class="timeline-card active" onclick="showModel('dalton')">
+        <div class="timeline-year">1803</div>
+        <div class="timeline-name">John Dalton</div>
+        <div class="timeline-desc">Solid sphere model</div>
+      </div>
+      <div class="timeline-card" onclick="showModel('thomson')">
+        <div class="timeline-year">1897</div>
+        <div class="timeline-name">J.J. Thomson</div>
+        <div class="timeline-desc">Plum pudding model</div>
+      </div>
+      <div class="timeline-card" style="opacity:0.5; cursor:default;">
+        <div class="timeline-year">1911</div>
+        <div class="timeline-name">Ernest Rutherford</div>
+        <div class="timeline-desc">Nuclear model (next lesson)</div>
+      </div>
+      <div class="timeline-card" style="opacity:0.5; cursor:default;">
+        <div class="timeline-year">1913</div>
+        <div class="timeline-name">Niels Bohr</div>
+        <div class="timeline-desc">Planetary model (next lesson)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sim-wrap quiz-section">
+  <p class="section-label">Check yourself</p>
+  <h2>Atomic models quiz</h2>
+  <div id="quizList"></div>
+  <div class="score-card" id="scoreCard">
+    <h3 id="scoreTitle"></h3>
+    <p id="scoreSub"></p>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <span>&copy; 2026 BrainJoy · brainjoy.site</span>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const daltonGroup = document.getElementById('daltonGroup');
+  const thomsonGroup = document.getElementById('thomsonGroup');
+  const thomsonLabels = document.getElementById('thomsonLabels');
+  const modelName = document.getElementById('modelName');
+  const modelYear = document.getElementById('modelYear');
+  const modelKey = document.getElementById('modelKey');
+  const modelElec = document.getElementById('modelElec');
+  const factText = document.getElementById('factText');
+  const analogyText = document.getElementById('analogyText');
+  const tabDalton = document.getElementById('tabDalton');
+  const tabThomson = document.getElementById('tabThomson');
+  const btnDalton = document.getElementById('btnDalton');
+  const btnThomson = document.getElementById('btnThomson');
+
+  function setActiveTab(name){
+    tabDalton.classList.toggle('active', name === 'dalton');
+    tabThomson.classList.toggle('active', name === 'thomson');
+    if (name === 'dalton'){
+      btnDalton.className = 'sbtn sbtn-primary'; btnDalton.style.flex = '1';
+      btnThomson.className = 'sbtn sbtn-reset'; btnThomson.style.flex = '1';
+    } else {
+      btnDalton.className = 'sbtn sbtn-reset'; btnDalton.style.flex = '1';
+      btnThomson.className = 'sbtn sbtn-primary'; btnThomson.style.flex = '1';
+    }
+    document.querySelectorAll('.timeline-card').forEach((c,i) => {
+      c.classList.toggle('active', (name==='dalton'&&i===0) || (name==='thomson'&&i===1));
+    });
+  }
+
+  window.showModel = function(name){
+    if (name === 'dalton'){
+      daltonGroup.style.display = 'block';
+      thomsonGroup.style.display = 'none';
+      modelName.textContent = 'Dalton';
+      modelYear.textContent = '1803';
+      modelKey.textContent = 'Solid sphere';
+      modelElec.textContent = 'Not known';
+      factText.textContent = "Dalton believed atoms were like tiny, solid billiard balls — completely indivisible and indestructible. He had no idea electrons even existed!";
+      analogyText.innerHTML = "Dalton's model has <strong>no analogy needed</strong> — it's just a plain, solid ball. Imagine a tiny marble or billiard ball. That's it. No chocolate chips, no filling, no parts inside.";
+    } else {
+      daltonGroup.style.display = 'none';
+      thomsonGroup.style.display = 'block';
+      modelName.textContent = 'Thomson';
+      modelYear.textContent = '1897';
+      modelKey.textContent = 'Plum pudding';
+      modelElec.textContent = 'Embedded inside';
+      factText.textContent = "Thomson discovered electrons in cathode rays. Since atoms are neutral, he proposed a 'pudding' of positive charge with negative electrons scattered inside — like chocolate chips in cookie dough!";
+      analogyText.innerHTML = "Thomson imagined the atom as a <strong>chocolate chip cookie</strong>. The dough is a sea of positive charge, and the <strong>chocolate chips</strong> are tiny negative electrons scattered throughout. Click the brown dots in the model above to discover them!";
+    }
+    setActiveTab(name);
+  };
+
+  window.popElectron = function(el){
+    if (el.classList.contains('popped')) return;
+    el.classList.add('popped');
+    el.style.fill = '#00BFA5';
+    el.style.stroke = '#fff';
+    el.style.strokeWidth = '2';
+    el.setAttribute('r', '12');
+    thomsonLabels.style.display = 'block';
+    // Flash effect
+    const flash = document.getElementById('flashCircle');
+    flash.setAttribute('r', '10');
+    flash.style.opacity = '1';
+    flash.style.transition = 'all 0.5s ease-out';
+    setTimeout(() => {
+      flash.setAttribute('r', '140');
+      flash.style.opacity = '0';
+    }, 50);
+    setTimeout(() => {
+      flash.style.transition = 'none';
+      flash.setAttribute('r', '0');
+    }, 600);
+  };
+
+  window.toggleAnalogy = function(){
+    const box = document.getElementById('analogyBox');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  };
+
+  // Zoom lens follow mouse
+  const stage = document.getElementById('modelStage');
+  const lens = document.getElementById('zoomLens');
+  stage.addEventListener('mousemove', function(e){
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left - 40;
+    const y = e.clientY - rect.top - 40;
+    lens.style.left = x + 'px';
+    lens.style.top = y + 'px';
+  });
+
+  setActiveTab('dalton');
+})();
+</script>
+
+<script>
+(function(){
+  const questions = [
+    { q:"What was John Dalton's model of the atom?",
+      opts:["A positively charged sphere with embedded electrons","A solid, indivisible sphere with no subatomic parts","A nucleus with electrons orbiting around it","Empty space with electrons floating freely"], correct:1,
+      explain:"Dalton proposed that atoms were tiny, solid, indivisible spheres — like billiard balls. He believed they could not be broken down into smaller parts." },
+    { q:"What did J.J. Thomson discover that led to a new atomic model?",
+      opts:["The neutron","The proton","The electron","The nucleus"], correct:2,
+      explain:"Thomson discovered the electron in 1897 through cathode ray experiments. This proved atoms were NOT indivisible, so a new model was needed." },
+    { q:"Which analogy best describes Thomson's plum pudding model?",
+      opts:["Planets orbiting the sun","Chocolate chips in a cookie","Marbles in a box","Water in a glass"], correct:1,
+      explain:"Thomson's model is perfectly described by the chocolate chip cookie analogy: the dough represents the positive charge, and the chips represent the negative electrons embedded throughout." },
+    { q:"In Thomson's model, where are the electrons located?",
+      opts:["Orbiting outside the atom","Inside the nucleus","Embedded throughout the positive "pudding"","Outside the positive charge entirely"], correct:2,
+      explain:"Thomson proposed that electrons were scattered like raisins or chocolate chips throughout a uniform "pudding" of positive charge." },
+    { q:"Why did Thomson's model replace Dalton's model?",
+      opts:["Dalton's math was wrong","New evidence showed atoms contain smaller particles (electrons)","Scientists preferred the cookie analogy","Dalton never published his work"], correct:1,
+      explain:"Dalton's model claimed atoms were indivisible. When Thomson discovered electrons inside atoms, Dalton's model could no longer be correct — atoms clearly had smaller parts." },
+    { q:"What would Dalton's atom look like if you cut it in half, according to his theory?",
+      opts:["Two smaller atoms of the same element","A nucleus and electrons revealed","Nothing — it can't be cut","Two different elements"], correct:2,
+      explain:"Dalton believed atoms were indivisible — they could not be cut or broken down. Cutting it was theoretically impossible in his model." }
+  ];
+  const list = document.getElementById('quizList');
+  let score = 0, answered = 0;
+  questions.forEach((item, qi) => {
+    const card = document.createElement('div'); card.className = 'qcard';
+    const title = document.createElement('p'); title.className = 'qtitle'; title.textContent = (qi+1) + '. ' + item.q; card.appendChild(title);
+    const optsWrap = document.createElement('div'); optsWrap.className = 'qopts';
+    const explain = document.createElement('p'); explain.className = 'qexplain'; explain.textContent = item.explain;
+    item.opts.forEach((optText, oi) => {
+      const btn = document.createElement('button'); btn.className = 'qopt'; btn.textContent = optText;
+      btn.addEventListener('click', () => {
+        const buttons = optsWrap.querySelectorAll('.qopt');
+        if (buttons[0].disabled) return;
+        buttons.forEach((b, bi) => { b.disabled = true; if (bi === item.correct) b.classList.add('correct'); });
+        if (oi !== item.correct) btn.classList.add('incorrect'); else score++;
+        answered++; explain.style.display = 'block';
+        if (answered === questions.length){
+          document.getElementById('scoreTitle').textContent = score + '/' + questions.length + ' correct';
+          document.getElementById('scoreSub').textContent = score === questions.length
+            ? "Perfect score — you've mastered Dalton and Thomson!"
+            : score >= 4 ? "Great understanding of atomic model history. Review the cookie analogy if needed!"
+            : "Try again — click between the two models above and read the comparison table carefully.";
+          const card2 = document.getElementById('scoreCard');
+          card2.style.display = 'block';
+          card2.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      });
+      optsWrap.appendChild(btn);
+    });
+    card.appendChild(optsWrap); card.appendChild(explain); list.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
