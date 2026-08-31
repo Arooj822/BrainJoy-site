@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Step Conversion Playground</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+  h1 {
+    text-align: center;
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #a0a0c0;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+  .mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  .mode-btn {
+    padding: 12px 30px;
+    border: 2px solid rgba(240,147,251,0.3);
+    background: transparent;
+    color: #f093fb;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .mode-btn:hover, .mode-btn.active {
+    background: rgba(240,147,251,0.2);
+    border-color: #f093fb;
+  }
+  .problem-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .problem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .problem-header h2 {
+    color: #f093fb;
+    font-size: 1.3rem;
+  }
+  .difficulty-badge {
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .difficulty-badge.easy { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+  .difficulty-badge.medium { background: rgba(255,193,7,0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
+  .difficulty-badge.hard { background: rgba(255,0,110,0.15); color: #ff006e; border: 1px solid rgba(255,0,110,0.3); }
+  .problem-text {
+    font-size: 1.2rem;
+    color: #ccd6f6;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    border-left: 4px solid #f093fb;
+    margin-bottom: 25px;
+  }
+  .pathway-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+  }
+  .path-node {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .path-node.start { background: rgba(0,212,255,0.2); color: #00d4ff; border: 1px solid rgba(0,212,255,0.4); }
+  .path-node.arrow { background: transparent; color: #8892b0; font-size: 1.3rem; padding: 5px; }
+  .path-node.step { background: rgba(240,147,251,0.15); color: #f093fb; border: 1px solid rgba(240,147,251,0.3); }
+  .path-node.end { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+  .scaffolded-steps {
+    display: none;
+  }
+  .scaffolded-steps.active {
+    display: block;
+  }
+  .scaffold-step {
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 4px solid #f093fb;
+  }
+  .scaffold-step h3 {
+    color: #f093fb;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+  .scaffold-step .instruction {
+    color: #a0a0c0;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  .input-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .step-input {
+    padding: 12px 18px;
+    border: 2px solid rgba(240,147,251,0.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    font-size: 1.1rem;
+    width: 200px;
+    outline: none;
+  }
+  .step-input:focus {
+    border-color: #f093fb;
+  }
+  .step-input.correct {
+    border-color: #00ff88;
+    background: rgba(0,255,136,0.1);
+  }
+  .step-input.incorrect {
+    border-color: #ff006e;
+    background: rgba(255,0,110,0.1);
+  }
+  .check-step-btn {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .check-step-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(240,147,251,0.3);
+  }
+  .step-feedback {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    display: none;
+  }
+  .step-feedback.show { display: block; }
+  .step-feedback.correct { background: rgba(0,255,136,0.1); color: #00ff88; }
+  .step-feedback.incorrect { background: rgba(255,0,110,0.1); color: #ff006e; }
+  .independent-section {
+    display: none;
+  }
+  .independent-section.active {
+    display: block;
+  }
+  .final-answer-area {
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+  }
+  .final-answer-area h3 {
+    color: #00ff88;
+    margin-bottom: 15px;
+  }
+  .final-input {
+    padding: 15px 25px;
+    border: 2px solid rgba(0,255,136,0.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    font-size: 1.3rem;
+    width: 250px;
+    text-align: center;
+    outline: none;
+    margin-bottom: 15px;
+  }
+  .final-input:focus {
+    border-color: #00ff88;
+  }
+  .final-submit {
+    padding: 12px 35px;
+    background: linear-gradient(90deg, #00ff88, #00d4ff);
+    color: #0f0f23;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .final-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,255,136,0.3);
+  }
+  .final-result {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    display: none;
+  }
+  .final-result.show { display: block; }
+  .final-result.success {
+    background: rgba(0,255,136,0.1);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+  }
+  .final-result.error {
+    background: rgba(255,0,110,0.1);
+    border: 1px solid #ff006e;
+    color: #ff006e;
+  }
+  .problem-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+  .nav-btn {
+    padding: 10px 20px;
+    border: 2px solid rgba(240,147,251,0.3);
+    background: transparent;
+    color: #f093fb;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: rgba(240,147,251,0.2);
+    border-color: #f093fb;
+  }
+  .hint-box {
+    background: rgba(255,193,7,0.1);
+    border: 1px solid rgba(255,193,7,0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    color: #ffc107;
+    display: none;
+  }
+  .hint-box.show { display: block; }
+  .show-hint-btn {
+    padding: 8px 18px;
+    background: rgba(255,193,7,0.15);
+    border: 1px solid rgba(255,193,7,0.4);
+    color: #ffc107;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 10px;
+  }
+  .show-hint-btn:hover {
+    background: rgba(255,193,7,0.25);
+  }
+  .conversion-chain {
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+  }
+  .conversion-chain h3 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .chain-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .chain-box {
+    padding: 15px 20px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .chain-box.given { background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.3); color: #00d4ff; }
+  .chain-box.factor { background: rgba(240,147,251,0.15); border: 1px solid rgba(240,147,251,0.3); color: #f093fb; }
+  .chain-box.result { background: rgba(0,255,136,0.15); border: 1px solid rgba(0,255,136,0.3); color: #00ff88; }
+  .chain-arrow { color: #8892b0; font-size: 1.5rem; }
+  .back-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(240,147,251,0.3);
+  }
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+  <h1>🔄 Multi-Step Conversion Playground</h1>
+  <p class="subtitle">Mass → Moles → Particles (and reverse) — Scaffolded & Independent Modes</p>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('scaffolded')">📚 Scaffolded Mode</button>
+    <button class="mode-btn" onclick="setMode('independent')">🎯 Independent Mode</button>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+
+  <div class="problem-nav" id="problemNav"></div>
+
+  <div class="problem-card">
+    <div class="problem-header">
+      <h2 id="problemTitle">Problem 1</h2>
+      <span class="difficulty-badge easy" id="diffBadge">Easy</span>
+    </div>
+    <div class="problem-text" id="problemText">
+      How many oxygen atoms are in 50 g of glucose (C₆H₁₂O₆)?
+    </div>
+
+    <div class="pathway-visual" id="pathwayVisual">
+      <span class="path-node start">50 g C₆H₁₂O₆</span>
+      <span class="path-node arrow">→</span>
+      <span class="path-node step">mol C₆H₁₂O₆</span>
+      <span class="path-node arrow">→</span>
+      <span class="path-node step">mol O atoms</span>
+      <span class="path-node arrow">→</span>
+      <span class="path-node end">O atoms</span>
+    </div>
+
+    <!-- Scaffolded Mode -->
+    <div class="scaffolded-steps active" id="scaffoldedSection">
+      <div class="scaffold-step" id="step1">
+        <h3>Step 1: Convert grams to moles</h3>
+        <div class="instruction" id="step1Instr">
+          Convert <strong>50 g</strong> of glucose to moles using its molar mass (180.16 g/mol).
+        </div>
+        <div class="input-row">
+          <input type="text" class="step-input" id="step1Input" placeholder="e.g., 0.278"
+                 onkeypress="if(event.key==='Enter')checkStep(1)">
+          <button class="check-step-btn" onclick="checkStep(1)">Check</button>
+        </div>
+        <div class="step-feedback" id="step1Feedback"></div>
+        <button class="show-hint-btn" onclick="showHint(1)">💡 Hint</button>
+        <div class="hint-box" id="hint1"></div>
+      </div>
+
+      <div class="scaffold-step" id="step2" style="opacity: 0.4; pointer-events: none;">
+        <h3>Step 2: Convert moles of compound to moles of element</h3>
+        <div class="instruction" id="step2Instr">
+          Each glucose molecule contains 6 oxygen atoms. Convert moles of glucose to moles of oxygen atoms.
+        </div>
+        <div class="input-row">
+          <input type="text" class="step-input" id="step2Input" placeholder="e.g., 1.67"
+                 onkeypress="if(event.key==='Enter')checkStep(2)">
+          <button class="check-step-btn" onclick="checkStep(2)">Check</button>
+        </div>
+        <div class="step-feedback" id="step2Feedback"></div>
+        <button class="show-hint-btn" onclick="showHint(2)">💡 Hint</button>
+        <div class="hint-box" id="hint2"></div>
+      </div>
+
+      <div class="scaffold-step" id="step3" style="opacity: 0.4; pointer-events: none;">
+        <h3>Step 3: Convert moles of atoms to number of atoms</h3>
+        <div class="instruction" id="step3Instr">
+          Use Avogadro's number (6.022 × 10²³ atoms/mol) to find the total number of oxygen atoms.
+        </div>
+        <div class="input-row">
+          <input type="text" class="step-input" id="step3Input" placeholder="e.g., 1.00e24"
+                 onkeypress="if(event.key==='Enter')checkStep(3)">
+          <button class="check-step-btn" onclick="checkStep(3)">Check</button>
+        </div>
+        <div class="step-feedback" id="step3Feedback"></div>
+        <button class="show-hint-btn" onclick="showHint(3)">💡 Hint</button>
+        <div class="hint-box" id="hint3"></div>
+      </div>
+    </div>
+
+    <!-- Independent Mode -->
+    <div class="independent-section" id="independentSection">
+      <div class="conversion-chain">
+        <h3>🧮 Conversion Chain</h3>
+        <div class="chain-visual" id="chainVisual"></div>
+      </div>
+      <div class="final-answer-area">
+        <h3>Enter Your Final Answer</h3>
+        <input type="text" class="final-input" id="finalInput" placeholder="e.g., 1.00 × 10²⁴"
+               onkeypress="if(event.key==='Enter')checkFinal()">
+        <br>
+        <button class="final-submit" onclick="checkFinal()">Submit Answer</button>
+        <div class="final-result" id="finalResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="simulations.html" class="back-btn">← Back to Simulations</a>
+  </div>
+</div>
+
+<script>
+const problems = [
+  {
+    title: "Oxygen Atoms in Glucose",
+    text: "How many oxygen atoms are in 50 g of glucose (C₆H₁₂O₆)?",
+    difficulty: "medium",
+    pathway: ["50 g C₆H₁₂O₆", "mol C₆H₁₂O₆", "mol O atoms", "O atoms"],
+    molarMass: 180.16,
+    given: 50,
+    steps: [
+      {
+        instr: "Convert <strong>50 g</strong> of glucose to moles using its molar mass (<strong>180.16 g/mol</strong>).",
+        answer: 50 / 180.16,
+        answerFormatted: "0.2775",
+        tolerance: 0.005,
+        hint: "Use: 50 g × (1 mol / 180.16 g) = ?",
+        unit: "mol"
+      },
+      {
+        instr: "Each glucose molecule contains <strong>6 oxygen atoms</strong>. Convert moles of glucose to moles of oxygen atoms.",
+        answer: (50 / 180.16) * 6,
+        answerFormatted: "1.665",
+        tolerance: 0.02,
+        hint: "Multiply by 6: mol glucose × (6 mol O / 1 mol glucose) = ?",
+        unit: "mol O"
+      },
+      {
+        instr: "Use <strong>Avogadro's number</strong> (6.022 × 10²³ atoms/mol) to find the total number of oxygen atoms.",
+        answer: (50 / 180.16) * 6 * 6.022e23,
+        answerFormatted: "1.003 × 10²⁴",
+        tolerance: 1e21,
+        hint: "Multiply by 6.022 × 10²³: mol O × (6.022×10²³ atoms / 1 mol) = ?",
+        unit: "atoms"
+      }
+    ],
+    finalAnswer: (50 / 180.16) * 6 * 6.022e23,
+    finalFormatted: "1.00 × 10²⁴ atoms"
+  },
+  {
+    title: "Moles from Atoms",
+    text: "How many moles of iron (Fe) are in 2.5 × 10²⁴ atoms of iron?",
+    difficulty: "easy",
+    pathway: ["2.5 × 10²⁴ atoms Fe", "mol Fe"],
+    molarMass: 55.85,
+    given: 2.5e24,
+    steps: [
+      {
+        instr: "Convert <strong>2.5 × 10²⁴ atoms</strong> of iron to moles using Avogadro's number.",
+        answer: 2.5e24 / 6.022e23,
+        answerFormatted: "4.15",
+        tolerance: 0.05,
+        hint: "Use: atoms × (1 mol / 6.022×10²³ atoms) = ?",
+        unit: "mol"
+      }
+    ],
+    finalAnswer: 2.5e24 / 6.022e23,
+    finalFormatted: "4.15 mol"
+  },
+  {
+    title: "Mass to Molecules",
+    text: "How many molecules of CO₂ are in 88.0 g of carbon dioxide?",
+    difficulty: "easy",
+    pathway: ["88.0 g CO₂", "mol CO₂", "molecules CO₂"],
+    molarMass: 44.01,
+    given: 88.0,
+    steps: [
+      {
+        instr: "Convert <strong>88.0 g</strong> of CO₂ to moles using its molar mass (<strong>44.01 g/mol</strong>).",
+        answer: 88.0 / 44.01,
+        answerFormatted: "2.00",
+        tolerance: 0.02,
+        hint: "88.0 g × (1 mol / 44.01 g) = ?",
+        unit: "mol"
+      },
+      {
+        instr: "Convert moles of CO₂ to molecules using Avogadro's number.",
+        answer: (88.0 / 44.01) * 6.022e23,
+        answerFormatted: "1.204 × 10²⁴",
+        tolerance: 1e21,
+        hint: "mol × (6.022×10²³ molecules / 1 mol) = ?",
+        unit: "molecules"
+      }
+    ],
+    finalAnswer: (88.0 / 44.01) * 6.022e23,
+    finalFormatted: "1.20 × 10²⁴ molecules"
+  },
+  {
+    title: "Hydrogen Atoms in Water",
+    text: "How many hydrogen atoms are in 36.0 g of water (H₂O)?",
+    difficulty: "medium",
+    pathway: ["36.0 g H₂O", "mol H₂O", "mol H atoms", "H atoms"],
+    molarMass: 18.02,
+    given: 36.0,
+    steps: [
+      {
+        instr: "Convert <strong>36.0 g</strong> of water to moles using its molar mass (<strong>18.02 g/mol</strong>).",
+        answer: 36.0 / 18.02,
+        answerFormatted: "1.998",
+        tolerance: 0.02,
+        hint: "36.0 g × (1 mol / 18.02 g) = ?",
+        unit: "mol"
+      },
+      {
+        instr: "Each water molecule contains <strong>2 hydrogen atoms</strong>. Convert moles of water to moles of hydrogen atoms.",
+        answer: (36.0 / 18.02) * 2,
+        answerFormatted: "3.996",
+        tolerance: 0.04,
+        hint: "mol H₂O × (2 mol H / 1 mol H₂O) = ?",
+        unit: "mol H"
+      },
+      {
+        instr: "Use Avogadro's number to find the total number of hydrogen atoms.",
+        answer: (36.0 / 18.02) * 2 * 6.022e23,
+        answerFormatted: "2.406 × 10²⁴",
+        tolerance: 2e21,
+        hint: "mol H × (6.022×10²³ atoms / 1 mol) = ?",
+        unit: "atoms"
+      }
+    ],
+    finalAnswer: (36.0 / 18.02) * 2 * 6.022e23,
+    finalFormatted: "2.41 × 10²⁴ atoms"
+  },
+  {
+    title: "Reverse: Molecules to Mass",
+    text: "What is the mass of 3.01 × 10²³ molecules of glucose (C₆H₁₂O₆)?",
+    difficulty: "hard",
+    pathway: ["3.01 × 10²³ molecules", "mol glucose", "g glucose"],
+    molarMass: 180.16,
+    given: 3.01e23,
+    steps: [
+      {
+        instr: "Convert <strong>3.01 × 10²³ molecules</strong> to moles using Avogadro's number.",
+        answer: 3.01e23 / 6.022e23,
+        answerFormatted: "0.500",
+        tolerance: 0.005,
+        hint: "molecules × (1 mol / 6.022×10²³ molecules) = ?",
+        unit: "mol"
+      },
+      {
+        instr: "Convert moles of glucose to grams using its molar mass (<strong>180.16 g/mol</strong>).",
+        answer: (3.01e23 / 6.022e23) * 180.16,
+        answerFormatted: "90.1",
+        tolerance: 1,
+        hint: "mol × (180.16 g / 1 mol) = ?",
+        unit: "g"
+      }
+    ],
+    finalAnswer: (3.01e23 / 6.022e23) * 180.16,
+    finalFormatted: "90.1 g"
+  }
+];
+
+let currentProblem = 0;
+let mode = 'scaffolded';
+let completedSteps = [false, false, false];
+
+function renderNav() {
+  const nav = document.getElementById('problemNav');
+  nav.innerHTML = problems.map((p, i) => `
+    <button class="nav-btn ${i === currentProblem ? 'active' : ''}" onclick="loadProblem(${i})">
+      ${i + 1}. ${p.title}
+    </button>
+  `).join('');
+}
+
+function loadProblem(idx) {
+  currentProblem = idx;
+  completedSteps = [false, false, false];
+  const p = problems[idx];
+
+  document.getElementById('problemTitle').textContent = `Problem ${idx + 1}: ${p.title}`;
+  document.getElementById('problemText').innerHTML = p.text;
+
+  const badge = document.getElementById('diffBadge');
+  badge.className = `difficulty-badge ${p.difficulty}`;
+  badge.textContent = p.difficulty.charAt(0).toUpperCase() + p.difficulty.slice(1);
+
+  // Render pathway
+  const pathway = document.getElementById('pathwayVisual');
+  pathway.innerHTML = p.pathway.map((node, i) => {
+    const isLast = i === p.pathway.length - 1;
+    const isFirst = i === 0;
+    let cls = 'step';
+    if (isFirst) cls = 'start';
+    if (isLast) cls = 'end';
+    return `<span class="path-node ${cls}">${node}</span>${!isLast ? '<span class="path-node arrow">→</span>' : ''}`;
+  }).join('');
+
+  // Reset scaffolded
+  p.steps.forEach((step, i) => {
+    const stepEl = document.getElementById(`step${i+1}`);
+    if (stepEl) {
+      stepEl.style.opacity = i === 0 ? '1' : '0.4';
+      stepEl.style.pointerEvents = i === 0 ? 'auto' : 'none';
+      document.getElementById(`step${i+1}Instr`).innerHTML = step.instr;
+      document.getElementById(`step${i+1}Input`).value = '';
+      document.getElementById(`step${i+1}Input`).className = 'step-input';
+      document.getElementById(`step${i+1}Feedback`).className = 'step-feedback';
+      document.getElementById(`step${i+1}Feedback`).style.display = 'none';
+      document.getElementById(`hint${i+1}`).className = 'hint-box';
+      document.getElementById(`hint${i+1}`).style.display = 'none';
+    }
+  });
+
+  // Hide extra steps if not needed
+  for (let i = p.steps.length; i < 3; i++) {
+    const el = document.getElementById(`step${i+1}`);
+    if (el) el.style.display = 'none';
+  }
+  for (let i = 0; i < p.steps.length; i++) {
+    const el = document.getElementById(`step${i+1}`);
+    if (el) el.style.display = 'block';
+  }
+
+  // Independent mode chain
+  renderChain(p);
+  document.getElementById('finalInput').value = '';
+  document.getElementById('finalResult').className = 'final-result';
+  document.getElementById('finalResult').style.display = 'none';
+
+  updateProgress();
+  renderNav();
+}
+
+function renderChain(p) {
+  const chain = document.getElementById('chainVisual');
+  chain.innerHTML = '';
+
+  // Build conversion chain
+  const items = [];
+  items.push({ type: 'given', text: `${p.given} ${p.pathway[0].split(' ').slice(1).join(' ')}` });
+
+  p.steps.forEach((step, i) => {
+    if (i === 0 && p.pathway.length > 2) {
+      items.push({ type: 'factor', text: `1 mol / ${p.molarMass} g` });
+    } else if (step.unit.includes('atoms') || step.unit.includes('molecules')) {
+      items.push({ type: 'factor', text: `6.022×10²³ / 1 mol` });
+    } else if (step.instr.includes('oxygen') || step.instr.includes('hydrogen')) {
+      const ratio = step.instr.includes('6') ? '6 mol O / 1 mol' : '2 mol H / 1 mol';
+      items.push({ type: 'factor', text: ratio });
+    } else {
+      items.push({ type: 'factor', text: 'Conversion factor' });
+    }
+    items.push({ type: 'result', text: `Step ${i+1}` });
+  });
+
+  chain.innerHTML = items.map(item => {
+    if (item.type === 'factor') {
+      return `<span class="chain-box factor">${item.text}</span>`;
+    }
+    return `<span class="chain-box ${item.type}">${item.text}</span>`;
+  }).join('<span class="chain-arrow">→</span>');
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (m === 'scaffolded') {
+    document.getElementById('scaffoldedSection').classList.add('active');
+    document.getElementById('independentSection').classList.remove('active');
+  } else {
+    document.getElementById('scaffoldedSection').classList.remove('active');
+    document.getElementById('independentSection').classList.add('active');
+  }
+}
+
+function checkStep(stepNum) {
+  const p = problems[currentProblem];
+  const step = p.steps[stepNum - 1];
+  const input = document.getElementById(`step${stepNum}Input`).value.trim();
+  const feedback = document.getElementById(`step${stepNum}Feedback`);
+  const inputEl = document.getElementById(`step${stepNum}Input`);
+
+  if (!input) {
+    feedback.textContent = 'Please enter a value.';
+    feedback.className = 'step-feedback incorrect show';
+    inputEl.className = 'step-input incorrect';
+    return;
+  }
+
+  // Parse input (handle scientific notation)
+  let val;
+  try {
+    val = parseFloat(input.replace('×', '*').replace('10^', 'e').replace('10', 'e'));
+    if (input.toLowerCase().includes('e') || input.includes('×')) {
+      val = parseFloat(input.replace(/[×xX]/g, '*').replace(/\s/g, '').replace(/\*10\^?/g, 'e'));
+    }
+    if (isNaN(val)) val = parseFloat(input);
+  } catch(e) {
+    val = parseFloat(input);
+  }
+
+  if (isNaN(val)) {
+    feedback.textContent = 'Please enter a valid number.';
+    feedback.className = 'step-feedback incorrect show';
+    inputEl.className = 'step-input incorrect';
+    return;
+  }
+
+  const correct = Math.abs(val - step.answer) <= step.tolerance || 
+                  Math.abs(val - step.answer) / Math.abs(step.answer) <= 0.02;
+
+  if (correct) {
+    feedback.innerHTML = `✅ <strong>Correct!</strong> ${step.answerFormatted} ${step.unit}`;
+    feedback.className = 'step-feedback correct show';
+    inputEl.className = 'step-input correct';
+    completedSteps[stepNum - 1] = true;
+
+    // Unlock next step
+    if (stepNum < p.steps.length) {
+      const next = document.getElementById(`step${stepNum + 1}`);
+      next.style.opacity = '1';
+      next.style.pointerEvents = 'auto';
+      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    updateProgress();
+  } else {
+    feedback.innerHTML = `❌ Not quite. Try again! Hint: The answer should be around <strong>${step.answerFormatted}</strong>.`;
+    feedback.className = 'step-feedback incorrect show';
+    inputEl.className = 'step-input incorrect';
+  }
+}
+
+function showHint(stepNum) {
+  const p = problems[currentProblem];
+  const hint = document.getElementById(`hint${stepNum}`);
+  hint.textContent = p.steps[stepNum - 1].hint;
+  hint.classList.add('show');
+}
+
+function checkFinal() {
+  const p = problems[currentProblem];
+  const input = document.getElementById('finalInput').value.trim();
+  const result = document.getElementById('finalResult');
+
+  if (!input) {
+    result.innerHTML = 'Please enter your final answer.';
+    result.className = 'final-result error show';
+    return;
+  }
+
+  let val;
+  try {
+    val = parseFloat(input.replace(/[×xX]/g, '*').replace(/\s/g, '').replace(/\*10\^?/g, 'e'));
+    if (isNaN(val)) val = parseFloat(input);
+  } catch(e) {
+    val = parseFloat(input);
+  }
+
+  if (isNaN(val)) {
+    result.innerHTML = 'Please enter a valid number.';
+    result.className = 'final-result error show';
+    return;
+  }
+
+  const tolerance = p.finalAnswer * 0.02;
+  const correct = Math.abs(val - p.finalAnswer) <= tolerance || 
+                  Math.abs(val - p.finalAnswer) / Math.abs(p.finalAnswer) <= 0.02;
+
+  if (correct) {
+    result.innerHTML = `
+      ✅ <strong>Excellent!</strong> Your answer is correct!<br><br>
+      <strong>Answer:</strong> ${p.finalFormatted}<br>
+      <strong>Steps:</strong> ${p.pathway.join(' → ')}
+    `;
+    result.className = 'final-result success show';
+  } else {
+    result.innerHTML = `
+      ❌ Not quite right. The correct answer is <strong>${p.finalFormatted}</strong>.<br>
+      Try working through the scaffolded mode to see each step!
+    `;
+    result.className = 'final-result error show';
+  }
+}
+
+function updateProgress() {
+  const p = problems[currentProblem];
+  const completed = completedSteps.filter((c, i) => c && i < p.steps.length).length;
+  const pct = (completed / p.steps.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// Initialize
+loadProblem(0);
+</script>
+</body>
+</html>
