@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Counting the Invisible — Scale & Analogy Simulator</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
+    overflow-x: hidden;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #8892b0;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+  }
+  .scale-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .scale-labels span { color: #00d4ff; }
+  input[type="range"] {
+    width: 100%;
+    height: 12px;
+    -webkit-appearance: none;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff006e);
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px; height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0,212,255,0.6);
+    border: 3px solid #00d4ff;
+  }
+  .current-value {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #00d4ff;
+    text-shadow: 0 0 30px rgba(0,212,255,0.3);
+  }
+  .current-label {
+    text-align: center;
+    font-size: 1.3rem;
+    color: #8892b0;
+    margin-top: 5px;
+  }
+  .visual-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    margin-top: 30px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    background: rgba(0,0,0,0.2);
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  .analogy-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .analogy-section h2 {
+    color: #00d4ff;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+  .analogy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .analogy-card {
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    padding: 20px;
+    border-left: 4px solid #00d4ff;
+    transition: transform 0.3s;
+  }
+  .analogy-card:hover { transform: translateY(-5px); }
+  .analogy-card h3 { color: #ff006e; margin-bottom: 10px; }
+  .analogy-card p { color: #ccd6f6; line-height: 1.6; }
+  .analogy-card .big-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00d4ff;
+    margin: 10px 0;
+  }
+  .moon-analogy {
+    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    margin-top: 20px;
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+  .moon-analogy h3 { color: #ff006e; margin-bottom: 15px; font-size: 1.4rem; }
+  .moon-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .moon { font-size: 4rem; }
+  .arrow { font-size: 2rem; color: #00d4ff; }
+  .trips-count {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #00d4ff;
+  }
+  .back-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+  }
+  .count-display {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+  .digit-box {
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #00d4ff;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .floating { animation: float 3s ease-in-out infinite; }
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+  <h1>🔬 Counting the Invisible</h1>
+  <p class="subtitle">Scale & Analogy Simulator — From Dozen to Mole</p>
+
+  <div class="scale-section">
+    <div class="scale-labels">
+      <span>1 Dozen (12)</span>
+      <span>1 Ream (500)</span>
+      <span>1 Mole (6.022 × 10²³)</span>
+    </div>
+    <input type="range" id="scaleSlider" min="0" max="100" value="0" step="0.1">
+    <div class="current-value" id="currentValue">12</div>
+    <div class="current-label" id="currentLabel">1 Dozen</div>
+    <div class="count-display" id="countDisplay"></div>
+    <div class="visual-container" id="visualContainer"></div>
+  </div>
+
+  <div class="analogy-section">
+    <h2>🌍 Real-World Analogies</h2>
+    <div class="analogy-grid">
+      <div class="analogy-card">
+        <h3>🌙 To the Moon & Back</h3>
+        <p>If you stacked <strong>6.022 × 10²³</strong> pennies (each 1.55 mm thick):</p>
+        <div class="big-number" id="moonTrips">0</div>
+        <p>trips to the moon and back!<br><small>(Moon distance: 384,400 km)</small></p>
+      </div>
+      <div class="analogy-card">
+        <h3>🌍 Around the Earth</h3>
+        <p>If you lined up <strong>6.022 × 10²³</strong> atoms side by side (0.1 nm each):</p>
+        <div class="big-number" id="earthWraps">0</div>
+        <p>times around Earth's equator!</p>
+      </div>
+      <div class="analogy-card">
+        <h3>⏰ Time Scale</h3>
+        <p>If you counted <strong>1 atom per second</strong>:</p>
+        <div class="big-number" id="countTime">0</div>
+        <p>years to count 1 mole!</p>
+      </div>
+      <div class="analogy-card">
+        <h3>💧 Drops in the Ocean</h3>
+        <p><strong>1 mole</strong> of water molecules vs. drops in all Earth's oceans:</p>
+        <div class="big-number" id="oceanDrops">0</div>
+        <p>times more than all ocean drops!</p>
+      </div>
+    </div>
+
+    <div class="moon-analogy">
+      <h3>🪙 The Penny Stack Challenge</h3>
+      <p style="color: #8892b0; margin-bottom: 15px;">Each penny is 1.55 mm thick. The moon is 384,400 km away.</p>
+      <div class="moon-visual">
+        <span class="moon">🌍</span>
+        <span class="arrow">➡️</span>
+        <span style="font-size: 2rem;">🪙🪙🪙🪙🪙<br><small>stack of pennies</small></span>
+        <span class="arrow">➡️</span>
+        <span class="moon">🌙</span>
+      </div>
+      <p style="color: #ccd6f6; font-size: 1.1rem;">With <strong>1 mole</strong> of pennies, you could make this trip:</p>
+      <div class="trips-count" id="pennyTrips">0 times</div>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="simulations.html" class="back-btn">← Back to Simulations</a>
+  </div>
+</div>
+
+<script>
+const slider = document.getElementById('scaleSlider');
+const currentValue = document.getElementById('currentValue');
+const currentLabel = document.getElementById('currentLabel');
+const visualContainer = document.getElementById('visualContainer');
+const countDisplay = document.getElementById('countDisplay');
+const NA = 6.022e23;
+const DOZEN = 12;
+const REAM = 500;
+
+function formatNumber(num) {
+  if (num >= 1e20) return num.toExponential(3);
+  if (num >= 1e6) return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  if (num >= 1000) return num.toLocaleString('en-US');
+  return Math.round(num).toString();
+}
+
+function getScaleValue(percent) {
+  if (percent <= 33.33) {
+    const t = percent / 33.33;
+    return DOZEN + (REAM - DOZEN) * t;
+  } else if (percent <= 66.67) {
+    const t = (percent - 33.33) / 33.34;
+    return REAM + (1e6 - REAM) * t;
+  } else {
+    const t = (percent - 66.67) / 33.33;
+    return 1e6 + (NA - 1e6) * t;
+  }
+}
+
+function getLabel(value) {
+  if (value < 100) return `${Math.round(value)} items — Less than a Ream`;
+  if (value < 1000) return `${Math.round(value)} items — Getting there...`;
+  if (value < 1e6) return `${formatNumber(value)} items — Still tiny!`;
+  if (value < 1e12) return `${formatNumber(value)} — Million/Billion scale`;
+  if (value < 1e18) return `${formatNumber(value)} — Quadrillion scale`;
+  return `6.022 × 10²³ — 1 MOLE! 🎉`;
+}
+
+function updateVisuals(value) {
+  visualContainer.innerHTML = '';
+  countDisplay.innerHTML = '';
+
+  let displayStr = formatNumber(value);
+  for (let char of displayStr) {
+    const box = document.createElement('div');
+    box.className = 'digit-box';
+    box.textContent = char;
+    countDisplay.appendChild(box);
+  }
+
+  let numParticles;
+  if (value < 100) numParticles = Math.min(Math.round(value), 100);
+  else if (value < 1000) numParticles = Math.min(Math.round(value / 10), 100);
+  else if (value < 1e6) numParticles = Math.min(Math.round(value / 10000), 100);
+  else if (value < 1e12) numParticles = Math.min(Math.round(value / 1e10), 100);
+  else numParticles = 100;
+
+  const colors = ['#00d4ff', '#7b2cbf', '#ff006e', '#fb5607', '#ffbe0b'];
+  for (let i = 0; i < numParticles; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.max(3, Math.min(15, 200 / Math.sqrt(numParticles)));
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.background = colors[i % colors.length];
+    p.style.left = (10 + Math.random() * 80) + '%';
+    p.style.top = (10 + Math.random() * 80) + '%';
+    p.style.opacity = 0.6 + Math.random() * 0.4;
+    p.style.boxShadow = `0 0 ${size}px ${colors[i % colors.length]}`;
+    visualContainer.appendChild(p);
+  }
+
+  // Update analogies
+  const pennyThickness = 1.55e-3; // meters
+  const moonDistance = 3.844e8; // meters (one way)
+  const pennyStackMeters = value * pennyThickness;
+  const trips = pennyStackMeters / (moonDistance * 2);
+  document.getElementById('moonTrips').textContent = formatNumber(trips);
+  document.getElementById('pennyTrips').textContent = trips > 1e6 
+    ? trips.toExponential(2) + ' times' 
+    : formatNumber(Math.round(trips)) + ' times';
+
+  const atomSize = 1e-10; // meters
+  const earthCircumference = 4.0075e7; // meters
+  const atomLine = value * atomSize;
+  const wraps = atomLine / earthCircumference;
+  document.getElementById('earthWraps').textContent = formatNumber(wraps);
+
+  const secondsInYear = 365.25 * 24 * 3600;
+  const years = value / secondsInYear;
+  document.getElementById('countTime').textContent = years > 1e9 
+    ? years.toExponential(2) 
+    : formatNumber(Math.round(years));
+
+  const oceanDrops = 2.676e25; // estimated drops in all oceans
+  const ratio = value / oceanDrops;
+  document.getElementById('oceanDrops').textContent = ratio < 0.01 
+    ? ratio.toExponential(2) 
+    : formatNumber(ratio);
+}
+
+slider.addEventListener('input', () => {
+  const val = getScaleValue(parseFloat(slider.value));
+  currentValue.textContent = formatNumber(val);
+  currentLabel.textContent = getLabel(val);
+  updateVisuals(val);
+});
+
+// Initialize
+updateVisuals(DOZEN);
+</script>
+</body>
+</html>
