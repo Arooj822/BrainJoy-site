@@ -1,0 +1,705 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>What is a Mole? — BrainJoy</title>
+
+<meta name="description" content="An interactive simulation that helps students understand the mole, Avogadro's number, particles, mass, and molar mass.">
+
+<link rel="icon" href="logo.png" type="image/png">
+
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f7f4ff;
+  color: #242038;
+}
+
+nav {
+  background: white;
+  border-bottom: 1px solid #e8e1f5;
+  padding: 14px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #6a0dad;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.brand img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.nav-links {
+  display: flex;
+  gap: 22px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #514a68;
+  font-weight: 600;
+}
+
+.nav-links a:hover {
+  color: #6a0dad;
+}
+
+.hero {
+  text-align: center;
+  padding: 60px 20px 35px;
+}
+
+.eyebrow {
+  color: #6a0dad;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 14px;
+}
+
+h1 {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(42px, 7vw, 70px);
+  margin: 8px 0;
+  color: #34115f;
+  line-height: 1;
+}
+
+.hero p {
+  max-width: 720px;
+  margin: 20px auto;
+  color: #625b75;
+  font-size: 17px;
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: auto;
+  padding-bottom: 60px;
+}
+
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 10px 35px rgba(70, 40, 110, 0.08);
+  border: 1px solid #ece5f8;
+}
+
+.card h2 {
+  font-family: "Baloo 2", sans-serif;
+  font-size: 32px;
+  color: #43136e;
+  margin-top: 0;
+}
+
+.big-number {
+  text-align: center;
+  background: linear-gradient(135deg, #6a0dad, #9c42d8);
+  color: white;
+  border-radius: 22px;
+  padding: 30px;
+  margin: 20px 0;
+}
+
+.big-number .number {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(35px, 7vw, 65px);
+  font-weight: 800;
+}
+
+.big-number p {
+  margin: 0;
+  opacity: .9;
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 25px 0;
+}
+
+input[type="number"],
+select {
+  border: 2px solid #ddd2ee;
+  border-radius: 12px;
+  padding: 12px 15px;
+  font-family: inherit;
+  font-size: 16px;
+  background: white;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: #6a0dad;
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 13px 20px;
+  background: #6a0dad;
+  color: white;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: #571092;
+}
+
+.particle-area {
+  min-height: 230px;
+  background: #faf8ff;
+  border: 2px dashed #d9c8ee;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.particle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #6a0dad;
+  box-shadow: 0 2px 7px rgba(106, 13, 173, .25);
+  animation: float 2s infinite alternate ease-in-out;
+}
+
+.particle:nth-child(2n) {
+  background: #8e44ad;
+  animation-delay: .2s;
+}
+
+.particle:nth-child(3n) {
+  background: #b56be0;
+  animation-delay: .4s;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(-3px);
+  }
+
+  to {
+    transform: translateY(4px);
+  }
+}
+
+.counter {
+  text-align: center;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 15px;
+}
+
+.explanation {
+  background: #f1e8fb;
+  border-left: 6px solid #6a0dad;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.formula {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  background: #fff9e8;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.comparison {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.substance {
+  background: #faf8ff;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  border: 1px solid #eee6f7;
+}
+
+.substance .emoji {
+  font-size: 45px;
+}
+
+.substance h3 {
+  margin-bottom: 5px;
+}
+
+.mass {
+  font-size: 25px;
+  font-weight: 800;
+  color: #6a0dad;
+}
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+}
+
+@media (max-width: 750px) {
+
+  nav {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 22px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+
+  <a href="index.html" class="brand">
+    <img src="assets/happy-brain.png" alt="BrainJoy">
+    <span>BrainJoy</span>
+  </a>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html">Simulations</a>
+    <a href="ap-chemistry/i.html">AP Chemistry</a>
+  </div>
+
+</nav>
+
+
+<header class="hero">
+
+  <div class="eyebrow">Grade 10 · The Mole</div>
+
+  <h1>⚖️ What is a Mole?</h1>
+
+  <p>
+    A mole is chemistry's way of counting enormous numbers of tiny particles.
+    Let's make the invisible visible!
+  </p>
+
+</header>
+
+
+<main class="container">
+
+
+  <!-- AVOGADRO NUMBER -->
+
+  <section class="card">
+
+    <h2>🔬 Step 1: Meet Avogadro's Number</h2>
+
+    <p>
+      One mole contains exactly
+      <strong>6.022 × 10²³ particles</strong>.
+      That's called Avogadro's number.
+    </p>
+
+    <div class="big-number">
+
+      <div class="number">6.022 × 10²³</div>
+
+      <p>particles in ONE mole</p>
+
+    </div>
+
+    <div class="explanation">
+
+      💡 Think of a mole like a chemistry version of a "dozen."
+
+      <br><br>
+
+      A dozen = 12 objects.
+
+      <br>
+
+      A mole = 602,200,000,000,000,000,000,000 objects.
+
+    </div>
+
+  </section>
+
+
+  <!-- INTERACTIVE PARTICLES -->
+
+  <section class="card">
+
+    <h2>🫧 Step 2: Count the Invisible</h2>
+
+    <p>
+      Use the slider to choose how many moles you have.
+      The simulation represents the enormous number of particles
+      using visible dots.
+    </p>
+
+    <input
+      type="range"
+      id="moleSlider"
+      min="0.1"
+      max="5"
+      step="0.1"
+      value="1"
+      oninput="updateParticles()"
+    >
+
+    <div class="counter">
+      <span id="moleValue">1.0</span> mol
+    </div>
+
+    <div class="particle-area" id="particleArea"></div>
+
+    <div class="counter">
+      <span id="particleCount">6.022 × 10²³</span> particles
+    </div>
+
+    <div class="explanation">
+
+      🧠 We obviously can't draw 6.022 × 10²³ dots on your screen.
+
+      Instead, each visible dot represents an enormous group
+      of particles.
+
+    </div>
+
+  </section>
+
+
+  <!-- MOLE FORMULA -->
+
+  <section class="card">
+
+    <h2>🧮 Step 3: Moles → Particles</h2>
+
+    <p>
+      To calculate the number of particles, multiply the number
+      of moles by Avogadro's number.
+    </p>
+
+    <div class="formula">
+
+      particles = moles × 6.022 × 10²³
+
+    </div>
+
+    <div class="controls">
+
+      <input
+        type="number"
+        id="moleInput"
+        value="2"
+        min="0"
+        step="0.1"
+      >
+
+      <button onclick="calculateParticles()">
+        Calculate Particles
+      </button>
+
+    </div>
+
+    <div class="big-number">
+
+      <div class="number" id="answer">
+        1.2044 × 10²⁴
+      </div>
+
+      <p>particles</p>
+
+    </div>
+
+  </section>
+
+
+  <!-- EQUAL MOLES -->
+
+  <section class="card">
+
+    <h2>⚖️ Step 4: Equal Moles, Different Masses</h2>
+
+    <p>
+      Here's something important:
+      <strong>one mole is always the same number of particles</strong>,
+      but different substances have different masses.
+    </p>
+
+    <div class="comparison">
+
+      <div class="substance">
+
+        <div class="emoji">💧</div>
+
+        <h3>Water</h3>
+
+        <p>H₂O</p>
+
+        <div class="mass">18.02 g</div>
+
+        <small>1 mole</small>
+
+      </div>
+
+
+      <div class="substance">
+
+        <div class="emoji">🧂</div>
+
+        <h3>Salt</h3>
+
+        <p>NaCl</p>
+
+        <div class="mass">58.44 g</div>
+
+        <small>1 mole</small>
+
+      </div>
+
+
+      <div class="substance">
+
+        <div class="emoji">🫧</div>
+
+        <h3>Carbon Dioxide</h3>
+
+        <p>CO₂</p>
+
+        <div class="mass">44.01 g</div>
+
+        <small>1 mole</small>
+
+      </div>
+
+    </div>
+
+    <div class="explanation">
+
+      🎯 All three samples contain approximately
+      <strong>6.022 × 10²³ molecules or formula units</strong>.
+
+      <br><br>
+
+      But their masses are different because their particles
+      have different masses.
+
+    </div>
+
+  </section>
+
+
+  <!-- TAKEAWAY -->
+
+  <section class="card">
+
+    <h2>🎯 The Big Idea</h2>
+
+    <p>
+      The mole is simply a counting unit.
+    </p>
+
+    <div class="formula">
+
+      1 mole = 6.022 × 10²³ particles
+
+    </div>
+
+    <p>
+      Once you understand that, chemistry becomes much easier.
+      You can move between the microscopic world of atoms and
+      molecules and the macroscopic world of grams.
+    </p>
+
+  </section>
+
+
+</main>
+
+
+<footer>
+
+  © 2026 BrainJoy · Learn science by playing with it.
+
+</footer>
+
+
+<script>
+
+const AVOGADRO = 6.022e23;
+
+
+function updateParticles() {
+
+  const moles = Number(
+    document.getElementById("moleSlider").value
+  );
+
+  document.getElementById("moleValue").textContent =
+    moles.toFixed(1);
+
+
+  const particles = moles * AVOGADRO;
+
+  document.getElementById("particleCount").textContent =
+    formatScientific(particles);
+
+
+  const area = document.getElementById("particleArea");
+
+  area.innerHTML = "";
+
+
+  // Visual representation.
+  // Each dot represents a huge group of particles.
+
+  const numberOfDots = Math.min(
+    100,
+    Math.max(3, Math.round(moles * 20))
+  );
+
+
+  for (let i = 0; i < numberOfDots; i++) {
+
+    const dot = document.createElement("div");
+
+    dot.className = "particle";
+
+    area.appendChild(dot);
+
+  }
+
+}
+
+
+function calculateParticles() {
+
+  const moles = Number(
+    document.getElementById("moleInput").value
+  );
+
+
+  if (moles < 0 || isNaN(moles)) {
+
+    document.getElementById("answer").textContent =
+      "Enter a valid number";
+
+    return;
+
+  }
+
+
+  const particles = moles * AVOGADRO;
+
+
+  document.getElementById("answer").textContent =
+    formatScientific(particles);
+
+}
+
+
+function formatScientific(number) {
+
+  if (number === 0) {
+    return "0";
+  }
+
+  const exponent =
+    Math.floor(Math.log10(Math.abs(number)));
+
+  const coefficient =
+    number / Math.pow(10, exponent);
+
+  return coefficient.toFixed(4) +
+    " × 10" +
+    superscript(exponent);
+
+}
+
+
+function superscript(number) {
+
+  const chars = {
+    "0": "⁰",
+    "1": "¹",
+    "2": "²",
+    "3": "³",
+    "4": "⁴",
+    "5": "⁵",
+    "6": "⁶",
+    "7": "⁷",
+    "8": "⁸",
+    "9": "⁹",
+    "-": "⁻"
+  };
+
+  return String(number)
+    .split("")
+    .map(char => chars[char] || char)
+    .join("");
+
+}
+
+
+updateParticles();
+
+</script>
+
+</body>
+</html>
+```
