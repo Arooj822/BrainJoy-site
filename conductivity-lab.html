@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation: Conductivity Comparison Lab</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .back-btn {
+            display: inline-block;
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .subtitle { color: #94a3b8; margin-bottom: 30px; }
+
+        .lab-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .sample-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            border: 2px solid #334155;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .sample-card:hover { border-color: #60a5fa; }
+        .sample-card.active { border-color: #fbbf24; box-shadow: 0 0 30px rgba(251, 191, 36, 0.2); }
+        .beaker-visual {
+            width: 100px;
+            height: 140px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.02);
+        }
+        .beaker-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75%;
+            transition: all 0.5s;
+        }
+        .vinegar-liq { background: rgba(239, 68, 68, 0.3); }
+        .salt-liq { background: rgba(56, 189, 248, 0.4); }
+        .tap-liq { background: rgba(148, 163, 184, 0.2); }
+        .beaker-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+        }
+        .sample-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 5px; }
+        .sample-formula { color: #94a3b8; font-size: 0.9rem; margin-bottom: 15px; }
+        .test-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .test-btn:hover { background: #2563eb; transform: scale(1.05); }
+        .ion-display {
+            margin-top: 15px;
+            min-height: 40px;
+            font-size: 1.3rem;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .meter-panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #334155;
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+        .meter-digital {
+            font-size: 4rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #22c55e;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+            transition: all 0.5s;
+        }
+        .meter-unit { color: #94a3b8; font-size: 1rem; margin-top: 5px; }
+        .meter-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #0f172a;
+            border-radius: 15px;
+            margin-top: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .meter-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%);
+            width: 0%;
+            transition: width 1.5s ease;
+            border-radius: 15px;
+        }
+        .meter-zones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .analysis {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        .analysis h3 { color: #fbbf24; margin-bottom: 15px; }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+        .comparison-table th { color: #fbbf24; font-weight: 600; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .strong { background: #dcfce7; color: #166534; }
+        .weak { background: #fef3c7; color: #92400e; }
+        .very-weak { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="simulations.html" class="back-btn">← Back to Simulations Hub</a>
+        <h1>🔌 Conductivity Comparison Lab</h1>
+        <p class="subtitle">Test vinegar, salt water, and tap water. Compare conductivity based on ion concentration and dissociation.</p>
+
+        <div class="meter-panel">
+            <div class="meter-digital" id="meterDisplay">0.00</div>
+            <div class="meter-unit">Conductivity (mS/cm)</div>
+            <div class="meter-bar-container">
+                <div class="meter-bar-fill" id="meterBar"></div>
+            </div>
+            <div class="meter-zones">
+                <span>Non-conductor</span>
+                <span>Weak Electrolyte</span>
+                <span>Strong Electrolyte</span>
+            </div>
+        </div>
+
+        <div class="lab-table">
+            <div class="sample-card" id="card1">
+                <div class="beaker-visual">
+                    <div class="beaker-liquid vinegar-liq"></div>
+                    <div class="beaker-label">🍶</div>
+                </div>
+                <div class="sample-name">Vinegar</div>
+                <div class="sample-formula">CH₃COOH (weak acid)</div>
+                <button class="test-btn" onclick="testSample('vinegar')">Test Conductivity</button>
+                <div class="ion-display" id="ions1"></div>
+            </div>
+
+            <div class="sample-card" id="card2">
+                <div class="beaker-visual">
+                    <div class="beaker-liquid salt-liq"></div>
+                    <div class="beaker-label">🧂</div>
+                </div>
+                <div class="sample-name">Salt Water</div>
+                <div class="sample-formula">NaCl (ionic salt)</div>
+                <button class="test-btn" onclick="testSample('salt')">Test Conductivity</button>
+                <div class="ion-display" id="ions2"></div>
+            </div>
+
+            <div class="sample-card" id="card3">
+                <div class="beaker-visual">
+                    <div class="beaker-liquid tap-liq"></div>
+                    <div class="beaker-label">💧</div>
+                </div>
+                <div class="sample-name">Tap Water</div>
+                <div class="sample-formula">H₂O + trace ions</div>
+                <button class="test-btn" onclick="testSample('tap')">Test Conductivity</button>
+                <div class="ion-display" id="ions3"></div>
+            </div>
+        </div>
+
+        <div class="analysis">
+            <h3>📊 Results Analysis</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Sample</th>
+                        <th>Dissociation Equation</th>
+                        <th>Ion Concentration</th>
+                        <th>Classification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vinegar</td>
+                        <td>CH₃COOH ⇌ CH₃COO⁻ + H⁺</td>
+                        <td>Low (partial)</td>
+                        <td><span class="badge weak">Weak Electrolyte</span></td>
+                    </tr>
+                    <tr>
+                        <td>Salt Water</td>
+                        <td>NaCl → Na⁺ + Cl⁻</td>
+                        <td>High (complete)</td>
+                        <td><span class="badge strong">Strong Electrolyte</span></td>
+                    </tr>
+                    <tr>
+                        <td>Tap Water</td>
+                        <td>H₂O ⇌ H⁺ + OH⁻</td>
+                        <td>Very Low</td>
+                        <td><span class="badge very-weak">Very Weak</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const samples = {
+            vinegar: { value: 1.2, bar: '15%', ions: 'CH₃COO⁻ &nbsp; H⁺ (few)', card: 'card1', display: 'ions1' },
+            salt: { value: 15.8, bar: '95%', ions: 'Na⁺ &nbsp; Cl⁻ (many)', card: 'card2', display: 'ions2' },
+            tap: { value: 0.05, bar: '3%', ions: 'H⁺ &nbsp; OH⁻ (trace)', card: 'card3', display: 'ions3' }
+        };
+
+        function testSample(type) {
+            const s = samples[type];
+            document.querySelectorAll('.sample-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(s.card).classList.add('active');
+
+            document.getElementById('meterDisplay').textContent = s.value.toFixed(2);
+            document.getElementById('meterBar').style.width = s.bar;
+
+            const ionDisplay = document.getElementById(s.display);
+            ionDisplay.innerHTML = s.ions;
+            ionDisplay.style.opacity = '1';
+
+            // Reset others
+            Object.keys(samples).forEach(k => {
+                if(k !== type) document.getElementById(samples[k].display).style.opacity = '0';
+            });
+        }
+    </script>
+</body>
+</html>
