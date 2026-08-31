@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molar Mass Calculator — Interactive Periodic Table</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  .container { max-width: 1300px; margin: 0 auto; padding: 30px 20px; }
+  h1 {
+    text-align: center;
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #8892b0;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 30px;
+  }
+  @media (max-width: 1100px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+  .ptable-section {
+    background: rgba(255,255,255,0.03);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .ptable-section h2 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+  }
+  .periodic-table {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 3px;
+    max-width: 100%;
+  }
+  .element-cell {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.7rem;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
+    min-height: 50px;
+  }
+  .element-cell:hover {
+    transform: scale(1.15);
+    z-index: 10;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  }
+  .element-cell.selected {
+    border: 2px solid #00ff88;
+    box-shadow: 0 0 15px rgba(0,255,136,0.4);
+  }
+  .element-symbol { font-weight: 700; font-size: 0.85rem; }
+  .element-number { font-size: 0.55rem; opacity: 0.7; }
+  .element-mass { font-size: 0.55rem; opacity: 0.8; }
+
+  /* Element categories */
+  .alkali { background: rgba(255,107,107,0.25); border-color: rgba(255,107,107,0.4); }
+  .alkaline { background: rgba(255,193,7,0.2); border-color: rgba(255,193,7,0.3); }
+  .transition { background: rgba(156,136,255,0.2); border-color: rgba(156,136,255,0.3); }
+  .basic { background: rgba(0,212,255,0.15); border-color: rgba(0,212,255,0.25); }
+  .nonmetal { background: rgba(0,255,136,0.15); border-color: rgba(0,255,136,0.25); }
+  .halogen { background: rgba(255,0,110,0.15); border-color: rgba(255,0,110,0.25); }
+  .noble { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.3); }
+  .lanthanide { background: rgba(255,152,0,0.2); border-color: rgba(255,152,0,0.3); }
+  .actinide { background: rgba(233,30,99,0.2); border-color: rgba(233,30,99,0.3); }
+  .empty { background: transparent; border: none; cursor: default; pointer-events: none; }
+
+  .builder-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.1);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+  }
+  .builder-section h2 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+  }
+  .formula-display {
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .formula-atom {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 1.2rem;
+    gap: 5px;
+  }
+  .formula-atom .sub {
+    font-size: 0.75rem;
+    color: #ff006e;
+    vertical-align: sub;
+  }
+  .formula-atom .remove {
+    cursor: pointer;
+    color: #ff006e;
+    font-size: 1rem;
+    margin-left: 5px;
+  }
+  .controls-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .count-input {
+    width: 60px;
+    padding: 8px;
+    border: 2px solid rgba(0,212,255,0.3);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    text-align: center;
+    font-size: 1rem;
+  }
+  .ctrl-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+  }
+  .ctrl-btn.add {
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    color: white;
+  }
+  .ctrl-btn.clear {
+    background: rgba(255,0,110,0.2);
+    color: #ff006e;
+    border: 1px solid rgba(255,0,110,0.4);
+  }
+  .ctrl-btn.clear:hover {
+    background: rgba(255,0,110,0.3);
+  }
+  .molar-mass-result {
+    background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,212,255,0.1));
+    border: 2px solid #00ff88;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .molar-mass-result .label {
+    color: #8892b0;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+  .molar-mass-result .value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #00ff88;
+  }
+  .molar-mass-result .unit {
+    color: #00ff88;
+    font-size: 1.1rem;
+  }
+  .breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  .breakdown-table th {
+    text-align: left;
+    padding: 10px;
+    color: #00d4ff;
+    border-bottom: 2px solid rgba(0,212,255,0.3);
+    font-size: 0.9rem;
+  }
+  .breakdown-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+  }
+  .breakdown-table .total-row {
+    font-weight: 700;
+    color: #00ff88;
+  }
+  .breakdown-table .total-row td {
+    border-top: 2px solid rgba(0,255,136,0.3);
+    border-bottom: none;
+  }
+  .selected-element-info {
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .selected-element-info .sym {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00d4ff;
+  }
+  .selected-element-info .name {
+    color: #8892b0;
+    font-size: 0.95rem;
+  }
+  .selected-element-info .mass {
+    color: #f093fb;
+    font-size: 1.1rem;
+    margin-top: 5px;
+  }
+  .preset-compounds {
+    margin-top: 20px;
+  }
+  .preset-compounds h3 {
+    color: #f093fb;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  .preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .preset-chip {
+    padding: 6px 14px;
+    background: rgba(240,147,251,0.15);
+    border: 1px solid rgba(240,147,251,0.3);
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #f093fb;
+    transition: all 0.3s;
+  }
+  .preset-chip:hover {
+    background: rgba(240,147,251,0.3);
+    transform: translateY(-2px);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #8892b0;
+  }
+  .legend-box {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .back-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+  }
+  .conversion-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    padding: 12px;
+    background: linear-gradient(90deg, rgba(0,212,255,0.2), rgba(123,44,191,0.2));
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 10px;
+    color: #00d4ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .conversion-link:hover {
+    background: linear-gradient(90deg, rgba(0,212,255,0.3), rgba(123,44,191,0.3));
+    transform: translateY(-2px);
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+  <h1>⚛️ Molar Mass Calculator</h1>
+  <p class="subtitle">Interactive Periodic Table — Click elements to build compounds</p>
+
+  <div class="main-grid">
+    <div class="ptable-section">
+      <h2>🔬 Periodic Table</h2>
+      <div class="periodic-table" id="periodicTable"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-box alkali"></div> Alkali</div>
+        <div class="legend-item"><div class="legend-box alkaline"></div> Alkaline</div>
+        <div class="legend-item"><div class="legend-box transition"></div> Transition</div>
+        <div class="legend-item"><div class="legend-box basic"></div> Basic Metal</div>
+        <div class="legend-item"><div class="legend-box nonmetal"></div> Nonmetal</div>
+        <div class="legend-item"><div class="legend-box halogen"></div> Halogen</div>
+        <div class="legend-item"><div class="legend-box noble"></div> Noble Gas</div>
+        <div class="legend-item"><div class="legend-box lanthanide"></div> Lanthanide</div>
+        <div class="legend-item"><div class="legend-box actinide"></div> Actinide</div>
+      </div>
+    </div>
+
+    <div class="builder-section">
+      <h2>🧪 Compound Builder</h2>
+
+      <div class="selected-element-info" id="selectedInfo">
+        <div class="sym">?</div>
+        <div class="name">Click an element</div>
+        <div class="mass">—</div>
+      </div>
+
+      <div class="controls-row">
+        <input type="number" class="count-input" id="atomCount" value="1" min="1" max="20">
+        <button class="ctrl-btn add" onclick="addElement()">➕ Add to Formula</button>
+      </div>
+
+      <div class="formula-display" id="formulaDisplay">
+        <span style="color: #8892b0;">Your formula will appear here...</span>
+      </div>
+
+      <button class="ctrl-btn clear" onclick="clearFormula()" style="width: 100%; margin-bottom: 20px;">🗑️ Clear Formula</button>
+
+      <div class="molar-mass-result" id="molarMassResult" style="display: none;">
+        <div class="label">Molar Mass</div>
+        <div class="value" id="mmValue">0</div>
+        <div class="unit">g/mol</div>
+      </div>
+
+      <div id="breakdownSection" style="display: none;">
+        <h3 style="color: #00d4ff; margin-bottom: 10px;">📊 Element Breakdown</h3>
+        <table class="breakdown-table" id="breakdownTable"></table>
+      </div>
+
+      <div class="preset-compounds">
+        <h3>⚡ Quick Presets</h3>
+        <div class="preset-grid">
+          <div class="preset-chip" onclick="loadPreset('H2O')">H₂O</div>
+          <div class="preset-chip" onclick="loadPreset('CO2')">CO₂</div>
+          <div class="preset-chip" onclick="loadPreset('C6H12O6')">C₆H₁₂O₆</div>
+          <div class="preset-chip" onclick="loadPreset('NaCl')">NaCl</div>
+          <div class="preset-chip" onclick="loadPreset('H2SO4')">H₂SO₄</div>
+          <div class="preset-chip" onclick="loadPreset('CaCO3')">CaCO₃</div>
+          <div class="preset-chip" onclick="loadPreset('NH3')">NH₃</div>
+          <div class="preset-chip" onclick="loadPreset('CH4')">CH₄</div>
+        </div>
+      </div>
+
+      <a href="mole-conversion-builder.html" class="conversion-link" id="conversionLink" style="display: none;">
+        🚀 Use This Molar Mass in Conversion Builder →
+      </a>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="simulations.html" class="back-btn">← Back to Simulations</a>
+  </div>
+</div>
+
+<script>
+const elements = [
+  {n:1,s:'H',m:1.008,cat:'nonmetal',name:'Hydrogen'},
+  {n:2,s:'He',m:4.003,cat:'noble',name:'Helium'},
+  {n:3,s:'Li',m:6.941,cat:'alkali',name:'Lithium'},
+  {n:4,s:'Be',m:9.012,cat:'alkaline',name:'Beryllium'},
+  {n:5,s:'B',m:10.81,cat:'basic',name:'Boron'},
+  {n:6,s:'C',m:12.01,cat:'nonmetal',name:'Carbon'},
+  {n:7,s:'N',m:14.01,cat:'nonmetal',name:'Nitrogen'},
+  {n:8,s:'O',m:16.00,cat:'nonmetal',name:'Oxygen'},
+  {n:9,s:'F',m:19.00,cat:'halogen',name:'Fluorine'},
+  {n:10,s:'Ne',m:20.18,cat:'noble',name:'Neon'},
+  {n:11,s:'Na',m:22.99,cat:'alkali',name:'Sodium'},
+  {n:12,s:'Mg',m:24.31,cat:'alkaline',name:'Magnesium'},
+  {n:13,s:'Al',m:26.98,cat:'basic',name:'Aluminum'},
+  {n:14,s:'Si',m:28.09,cat:'basic',name:'Silicon'},
+  {n:15,s:'P',m:30.97,cat:'nonmetal',name:'Phosphorus'},
+  {n:16,s:'S',m:32.07,cat:'nonmetal',name:'Sulfur'},
+  {n:17,s:'Cl',m:35.45,cat:'halogen',name:'Chlorine'},
+  {n:18,s:'Ar',m:39.95,cat:'noble',name:'Argon'},
+  {n:19,s:'K',m:39.10,cat:'alkali',name:'Potassium'},
+  {n:20,s:'Ca',m:40.08,cat:'alkaline',name:'Calcium'},
+  {n:21,s:'Sc',m:44.96,cat:'transition',name:'Scandium'},
+  {n:22,s:'Ti',m:47.87,cat:'transition',name:'Titanium'},
+  {n:23,s:'V',m:50.94,cat:'transition',name:'Vanadium'},
+  {n:24,s:'Cr',m:52.00,cat:'transition',name:'Chromium'},
+  {n:25,s:'Mn',m:54.94,cat:'transition',name:'Manganese'},
+  {n:26,s:'Fe',m:55.85,cat:'transition',name:'Iron'},
+  {n:27,s:'Co',m:58.93,cat:'transition',name:'Cobalt'},
+  {n:28,s:'Ni',m:58.69,cat:'transition',name:'Nickel'},
+  {n:29,s:'Cu',m:63.55,cat:'transition',name:'Copper'},
+  {n:30,s:'Zn',m:65.39,cat:'transition',name:'Zinc'},
+  {n:31,s:'Ga',m:69.72,cat:'basic',name:'Gallium'},
+  {n:32,s:'Ge',m:72.61,cat:'basic',name:'Germanium'},
+  {n:33,s:'As',m:74.92,cat:'basic',name:'Arsenic'},
+  {n:34,s:'Se',m:78.96,cat:'nonmetal',name:'Selenium'},
+  {n:35,s:'Br',m:79.90,cat:'halogen',name:'Bromine'},
+  {n:36,s:'Kr',m:83.80,cat:'noble',name:'Krypton'},
+  {n:37,s:'Rb',m:85.47,cat:'alkali',name:'Rubidium'},
+  {n:38,s:'Sr',m:87.62,cat:'alkaline',name:'Strontium'},
+  {n:39,s:'Y',m:88.91,cat:'transition',name:'Yttrium'},
+  {n:40,s:'Zr',m:91.22,cat:'transition',name:'Zirconium'},
+  {n:41,s:'Nb',m:92.91,cat:'transition',name:'Niobium'},
+  {n:42,s:'Mo',m:95.94,cat:'transition',name:'Molybdenum'},
+  {n:43,s:'Tc',m:98.91,cat:'transition',name:'Technetium'},
+  {n:44,s:'Ru',m:101.1,cat:'transition',name:'Ruthenium'},
+  {n:45,s:'Rh',m:102.9,cat:'transition',name:'Rhodium'},
+  {n:46,s:'Pd',m:106.4,cat:'transition',name:'Palladium'},
+  {n:47,s:'Ag',m:107.9,cat:'transition',name:'Silver'},
+  {n:48,s:'Cd',m:112.4,cat:'transition',name:'Cadmium'},
+  {n:49,s:'In',m:114.8,cat:'basic',name:'Indium'},
+  {n:50,s:'Sn',m:118.7,cat:'basic',name:'Tin'},
+  {n:51,s:'Sb',m:121.8,cat:'basic',name:'Antimony'},
+  {n:52,s:'Te',m:127.6,cat:'basic',name:'Tellurium'},
+  {n:53,s:'I',m:126.9,cat:'halogen',name:'Iodine'},
+  {n:54,s:'Xe',m:131.3,cat:'noble',name:'Xenon'},
+  {n:55,s:'Cs',m:132.9,cat:'alkali',name:'Cesium'},
+  {n:56,s:'Ba',m:137.3,cat:'alkaline',name:'Barium'},
+  {n:57,s:'La',m:138.9,cat:'lanthanide',name:'Lanthanum'},
+  {n:58,s:'Ce',m:140.1,cat:'lanthanide',name:'Cerium'},
+  {n:59,s:'Pr',m:140.9,cat:'lanthanide',name:'Praseodymium'},
+  {n:60,s:'Nd',m:144.2,cat:'lanthanide',name:'Neodymium'},
+  {n:61,s:'Pm',m:145,cat:'lanthanide',name:'Promethium'},
+  {n:62,s:'Sm',m:150.4,cat:'lanthanide',name:'Samarium'},
+  {n:63,s:'Eu',m:152.0,cat:'lanthanide',name:'Europium'},
+  {n:64,s:'Gd',m:157.3,cat:'lanthanide',name:'Gadolinium'},
+  {n:65,s:'Tb',m:158.9,cat:'lanthanide',name:'Terbium'},
+  {n:66,s:'Dy',m:162.5,cat:'lanthanide',name:'Dysprosium'},
+  {n:67,s:'Ho',m:164.9,cat:'lanthanide',name:'Holmium'},
+  {n:68,s:'Er',m:167.3,cat:'lanthanide',name:'Erbium'},
+  {n:69,s:'Tm',m:168.9,cat:'lanthanide',name:'Thulium'},
+  {n:70,s:'Yb',m:173.0,cat:'lanthanide',name:'Ytterbium'},
+  {n:71,s:'Lu',m:175.0,cat:'lanthanide',name:'Lutetium'},
+  {n:72,s:'Hf',m:178.5,cat:'transition',name:'Hafnium'},
+  {n:73,s:'Ta',m:180.9,cat:'transition',name:'Tantalum'},
+  {n:74,s:'W',m:183.8,cat:'transition',name:'Tungsten'},
+  {n:75,s:'Re',m:186.2,cat:'transition',name:'Rhenium'},
+  {n:76,s:'Os',m:190.2,cat:'transition',name:'Osmium'},
+  {n:77,s:'Ir',m:192.2,cat:'transition',name:'Iridium'},
+  {n:78,s:'Pt',m:195.1,cat:'transition',name:'Platinum'},
+  {n:79,s:'Au',m:197.0,cat:'transition',name:'Gold'},
+  {n:80,s:'Hg',m:200.6,cat:'transition',name:'Mercury'},
+  {n:81,s:'Tl',m:204.4,cat:'basic',name:'Thallium'},
+  {n:82,s:'Pb',m:207.2,cat:'basic',name:'Lead'},
+  {n:83,s:'Bi',m:209.0,cat:'basic',name:'Bismuth'},
+  {n:84,s:'Po',m:209,cat:'basic',name:'Polonium'},
+  {n:85,s:'At',m:210,cat:'halogen',name:'Astatine'},
+  {n:86,s:'Rn',m:222,cat:'noble',name:'Radon'},
+  {n:87,s:'Fr',m:223,cat:'alkali',name:'Francium'},
+  {n:88,s:'Ra',m:226,cat:'alkaline',name:'Radium'},
+  {n:89,s:'Ac',m:227,cat:'actinide',name:'Actinium'},
+  {n:90,s:'Th',m:232.0,cat:'actinide',name:'Thorium'},
+  {n:91,s:'Pa',m:231.0,cat:'actinide',name:'Protactinium'},
+  {n:92,s:'U',m:238.0,cat:'actinide',name:'Uranium'},
+  {n:93,s:'Np',m:237,cat:'actinide',name:'Neptunium'},
+  {n:94,s:'Pu',m:244,cat:'actinide',name:'Plutonium'},
+];
+
+// Layout: row, col (1-indexed, 18 columns)
+const layout = {
+  'H':[1,1], 'He':[1,18],
+  'Li':[2,1], 'Be':[2,2], 'B':[2,13], 'C':[2,14], 'N':[2,15], 'O':[2,16], 'F':[2,17], 'Ne':[2,18],
+  'Na':[3,1], 'Mg':[3,2], 'Al':[3,13], 'Si':[3,14], 'P':[3,15], 'S':[3,16], 'Cl':[3,17], 'Ar':[3,18],
+  'K':[4,1], 'Ca':[4,2], 'Sc':[4,3], 'Ti':[4,4], 'V':[4,5], 'Cr':[4,6], 'Mn':[4,7], 'Fe':[4,8], 'Co':[4,9], 'Ni':[4,10], 'Cu':[4,11], 'Zn':[4,12], 'Ga':[4,13], 'Ge':[4,14], 'As':[4,15], 'Se':[4,16], 'Br':[4,17], 'Kr':[4,18],
+  'Rb':[5,1], 'Sr':[5,2], 'Y':[5,3], 'Zr':[5,4], 'Nb':[5,5], 'Mo':[5,6], 'Tc':[5,7], 'Ru':[5,8], 'Rh':[5,9], 'Pd':[5,10], 'Ag':[5,11], 'Cd':[5,12], 'In':[5,13], 'Sn':[5,14], 'Sb':[5,15], 'Te':[5,16], 'I':[5,17], 'Xe':[5,18],
+  'Cs':[6,1], 'Ba':[6,2], 'La':[6,3], 'Hf':[6,4], 'Ta':[6,5], 'W':[6,6], 'Re':[6,7], 'Os':[6,8], 'Ir':[6,9], 'Pt':[6,10], 'Au':[6,11], 'Hg':[6,12], 'Tl':[6,13], 'Pb':[6,14], 'Bi':[6,15], 'Po':[6,16], 'At':[6,17], 'Rn':[6,18],
+  'Fr':[7,1], 'Ra':[7,2], 'Ac':[7,3],
+  'Ce':[8,4], 'Pr':[8,5], 'Nd':[8,6], 'Pm':[8,7], 'Sm':[8,8], 'Eu':[8,9], 'Gd':[8,10], 'Tb':[8,11], 'Dy':[8,12], 'Ho':[8,13], 'Er':[8,14], 'Tm':[8,15], 'Yb':[8,16], 'Lu':[8,17],
+  'Th':[9,4], 'Pa':[9,5], 'U':[9,6], 'Np':[9,7], 'Pu':[9,8],
+};
+
+let selectedElement = null;
+let formula = []; // [{symbol, count, mass}]
+
+function renderPeriodicTable() {
+  const table = document.getElementById('periodicTable');
+
+  // Create a 9x18 grid
+  for (let row = 1; row <= 9; row++) {
+    for (let col = 1; col <= 18; col++) {
+      const el = elements.find(e => {
+        const pos = layout[e.s];
+        return pos && pos[0] === row && pos[1] === col;
+      });
+
+      const cell = document.createElement('div');
+      if (el) {
+        cell.className = `element-cell ${el.cat}`;
+        cell.dataset.symbol = el.s;
+        cell.innerHTML = `
+          <span class="element-number">${el.n}</span>
+          <span class="element-symbol">${el.s}</span>
+          <span class="element-mass">${el.m.toFixed(1)}</span>
+        `;
+        cell.onclick = () => selectElement(el);
+      } else {
+        cell.className = 'element-cell empty';
+      }
+      table.appendChild(cell);
+    }
+  }
+}
+
+function selectElement(el) {
+  selectedElement = el;
+  document.querySelectorAll('.element-cell').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`[data-symbol="${el.s}"]`).classList.add('selected');
+
+  document.getElementById('selectedInfo').innerHTML = `
+    <div class="sym">${el.s}</div>
+    <div class="name">${el.name}</div>
+    <div class="mass">${el.m.toFixed(2)} g/mol</div>
+  `;
+}
+
+function addElement() {
+  if (!selectedElement) {
+    alert('Please select an element from the periodic table first!');
+    return;
+  }
+  const count = parseInt(document.getElementById('atomCount').value) || 1;
+
+  // Check if already exists
+  const existing = formula.find(f => f.symbol === selectedElement.s);
+  if (existing) {
+    existing.count += count;
+  } else {
+    formula.push({
+      symbol: selectedElement.s,
+      count: count,
+      mass: selectedElement.m,
+      name: selectedElement.name
+    });
+  }
+
+  renderFormula();
+  calculateMolarMass();
+}
+
+function removeElement(index) {
+  formula.splice(index, 1);
+  renderFormula();
+  calculateMolarMass();
+}
+
+function renderFormula() {
+  const display = document.getElementById('formulaDisplay');
+  if (formula.length === 0) {
+    display.innerHTML = '<span style="color: #8892b0;">Your formula will appear here...</span>';
+    return;
+  }
+
+  display.innerHTML = formula.map((f, i) => `
+    <span class="formula-atom">
+      ${f.symbol}${f.count > 1 ? `<span class="sub">${f.count}</span>` : ''}
+      <span class="remove" onclick="removeElement(${i})">×</span>
+    </span>
+  `).join('');
+}
+
+function calculateMolarMass() {
+  if (formula.length === 0) {
+    document.getElementById('molarMassResult').style.display = 'none';
+    document.getElementById('breakdownSection').style.display = 'none';
+    document.getElementById('conversionLink').style.display = 'none';
+    return;
+  }
+
+  let total = 0;
+  const rows = [];
+
+  formula.forEach(f => {
+    const subtotal = f.count * f.mass;
+    total += subtotal;
+    rows.push({
+      symbol: f.symbol,
+      name: f.name,
+      count: f.count,
+      atomicMass: f.mass,
+      subtotal: subtotal
+    });
+  });
+
+  document.getElementById('mmValue').textContent = total.toFixed(2);
+  document.getElementById('molarMassResult').style.display = 'block';
+
+  const table = document.getElementById('breakdownTable');
+  table.innerHTML = `
+    <tr><th>Element</th><th>Count</th><th>Atomic Mass</th><th>Subtotal</th></tr>
+    ${rows.map(r => `
+      <tr>
+        <td><strong>${r.symbol}</strong> <span style="color: #8892b0; font-size: 0.85rem;">${r.name}</span></td>
+        <td>${r.count}</td>
+        <td>${r.atomicMass.toFixed(2)} g/mol</td>
+        <td>${r.subtotal.toFixed(2)} g/mol</td>
+      </tr>
+    `).join('')}
+    <tr class="total-row">
+      <td colspan="3"><strong>Total Molar Mass</strong></td>
+      <td><strong>${total.toFixed(2)} g/mol</strong></td>
+    </tr>
+  `;
+  document.getElementById('breakdownSection').style.display = 'block';
+
+  // Show conversion link
+  document.getElementById('conversionLink').style.display = 'block';
+  document.getElementById('conversionLink').textContent = 
+    `🚀 Use ${total.toFixed(2)} g/mol in Conversion Builder →`;
+}
+
+function clearFormula() {
+  formula = [];
+  renderFormula();
+  calculateMolarMass();
+}
+
+function loadPreset(name) {
+  formula = [];
+  const presets = {
+    'H2O': [{s:'H',c:2,m:1.008,n:'Hydrogen'}, {s:'O',c:1,m:16.00,n:'Oxygen'}],
+    'CO2': [{s:'C',c:1,m:12.01,n:'Carbon'}, {s:'O',c:2,m:16.00,n:'Oxygen'}],
+    'C6H12O6': [{s:'C',c:6,m:12.01,n:'Carbon'}, {s:'H',c:12,m:1.008,n:'Hydrogen'}, {s:'O',c:6,m:16.00,n:'Oxygen'}],
+    'NaCl': [{s:'Na',c:1,m:22.99,n:'Sodium'}, {s:'Cl',c:1,m:35.45,n:'Chlorine'}],
+    'H2SO4': [{s:'H',c:2,m:1.008,n:'Hydrogen'}, {s:'S',c:1,m:32.07,n:'Sulfur'}, {s:'O',c:4,m:16.00,n:'Oxygen'}],
+    'CaCO3': [{s:'Ca',c:1,m:40.08,n:'Calcium'}, {s:'C',c:1,m:12.01,n:'Carbon'}, {s:'O',c:3,m:16.00,n:'Oxygen'}],
+    'NH3': [{s:'N',c:1,m:14.01,n:'Nitrogen'}, {s:'H',c:3,m:1.008,n:'Hydrogen'}],
+    'CH4': [{s:'C',c:1,m:12.01,n:'Carbon'}, {s:'H',c:4,m:1.008,n:'Hydrogen'}],
+  };
+
+  const p = presets[name];
+  if (p) {
+    p.forEach(item => {
+      formula.push({
+        symbol: item.s,
+        count: item.c,
+        mass: item.m,
+        name: item.n
+      });
+    });
+    renderFormula();
+    calculateMolarMass();
+  }
+}
+
+renderPeriodicTable();
+</script>
+</body>
+</html>
