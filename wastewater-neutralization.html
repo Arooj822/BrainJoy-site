@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation: UAE Wastewater Neutralization</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .back-btn {
+            display: inline-block;
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .subtitle { color: #94a3b8; margin-bottom: 25px; }
+
+        .uae-banner {
+            background: linear-gradient(90deg, #00732f, #fff, #000, #ff0000);
+            padding: 3px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .uae-inner {
+            background: #1e293b;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .uae-inner .flag { font-size: 2rem; }
+        .uae-inner p { font-size: 0.95rem; color: #cbd5e1; }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .tank-panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        .tank {
+            width: 200px;
+            height: 280px;
+            margin: 0 auto;
+            border: 4px solid #475569;
+            border-top: 4px dashed #475569;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.02);
+        }
+        .waste-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            transition: all 0.8s ease;
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+        }
+        .waste-liquid.safe {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+        }
+        .ph-display {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+        .fish-tank {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+        }
+        .fish { font-size: 2rem; transition: all 0.5s; }
+        .fish.happy { filter: brightness(1.2); }
+        .fish.sad { filter: grayscale(0.8) opacity(0.5); }
+
+        .controls-panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        .controls-panel h3 { color: #fbbf24; margin-bottom: 15px; }
+        .dropper-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .drop-acid {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        .drop-acid:hover { background: #fecaca; }
+        .drop-base {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #3b82f6;
+        }
+        .drop-base:hover { background: #bfdbfe; }
+        .drop-count {
+            text-align: center;
+            margin: 15px 0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .status-panel {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        .status-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .status-text.danger { color: #ef4444; }
+        .status-text.warning { color: #f59e0b; }
+        .status-text.success { color: #22c55e; }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 10px;
+        }
+
+        .equation-box {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+            margin-top: 20px;
+        }
+        .equation-box h4 { color: #fbbf24; margin-bottom: 10px; }
+        .eq { font-family: 'Courier New', monospace; font-size: 1.1rem; color: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="simulations.html" class="back-btn">← Back to Simulations Hub</a>
+        <h1>🇦🇪 UAE Wastewater Neutralization</h1>
+        <p class="subtitle">You are a Dubai Municipality engineer. Neutralize the industrial wastewater to pH 7 before it reaches the ocean.</p>
+
+        <div class="uae-banner">
+            <div class="uae-inner">
+                <div class="flag">🇦🇪</div>
+                <p><strong>Dubai Municipality Environmental Division:</strong> Industrial runoff must be neutralized before disposal to protect marine ecosystems in the Arabian Gulf.</p>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="tank-panel">
+                <h3 style="margin-bottom:15px;">🌊 Treatment Tank</h3>
+                <div class="tank">
+                    <div class="waste-liquid" id="wasteLiquid"></div>
+                    <div class="ph-display" id="phDisplay">pH 2.0</div>
+                </div>
+                <div class="fish-tank">
+                    <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">Marine Life Impact</div>
+                    <div class="fish sad" id="fish">🐟 🦀 🐠</div>
+                    <div style="font-size:0.8rem; color:#64748b; margin-top:5px;" id="marineStatus">Marine life threatened!</div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <h3>🧪 Chemical Controls</h3>
+                <button class="dropper-btn drop-acid" onclick="addAcid()">
+                    ⬇️ Add Acid (HCl) — Use if pH > 7
+                </button>
+                <button class="dropper-btn drop-base" onclick="addBase()">
+                    ⬆️ Add Base (NaOH) — Use if pH < 7
+                </button>
+                <div class="drop-count">Acid drops: <span id="acidCount">0</span> | Base drops: <span id="baseCount">0</span></div>
+
+                <div class="status-panel">
+                    <div class="status-text danger" id="statusText">⚠️ CRITICAL: Highly acidic wastewater!</div>
+                    <div style="font-size:0.85rem; color:#94a3b8;">Target pH: 7.0 (Neutral)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="equation-box">
+            <h4>📐 Neutralization Reaction</h4>
+            <div class="eq" id="neutralEq">HCl + NaOH → NaCl + H₂O</div>
+            <p style="margin-top:10px; color:#94a3b8; font-size:0.9rem;">
+                When an acid and base react, they form <strong>salt and water</strong>. This is called neutralization.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let ph = 2.0;
+        let acidDrops = 0;
+        let baseDrops = 0;
+        const targetPH = 7.0;
+
+        function updateDisplay() {
+            document.getElementById('phDisplay').textContent = `pH ${ph.toFixed(1)}`;
+            document.getElementById('acidCount').textContent = acidDrops;
+            document.getElementById('baseCount').textContent = baseDrops;
+
+            const liquid = document.getElementById('wasteLiquid');
+            const statusText = document.getElementById('statusText');
+            const fish = document.getElementById('fish');
+            const marineStatus = document.getElementById('marineStatus');
+            const progress = document.getElementById('progressFill');
+
+            // Color based on pH
+            if(ph < 4) {
+                liquid.style.background = 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)';
+            } else if(ph < 6) {
+                liquid.style.background = 'linear-gradient(180deg, #f97316 0%, #ea580c 100%)';
+            } else if(ph >= 6 && ph <= 8) {
+                liquid.style.background = 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)';
+                liquid.classList.add('safe');
+            } else if(ph > 8 && ph < 11) {
+                liquid.style.background = 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)';
+                liquid
