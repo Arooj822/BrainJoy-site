@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Graphite Challenge — Virtual Lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
+  h1 {
+    text-align: center;
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #8892b0;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+  }
+  .lab-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .lab-section h2 {
+    color: #00d4ff;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+  }
+  .balance-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+  }
+  .balance-display {
+    background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2));
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    min-width: 200px;
+    border: 2px solid rgba(0,212,255,0.2);
+  }
+  .balance-display .label {
+    color: #8892b0;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .balance-display .value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #00d4ff;
+    font-family: 'Courier New', monospace;
+  }
+  .balance-display .unit {
+    color: #8892b0;
+    font-size: 1rem;
+  }
+  .pencil-visual {
+    text-align: center;
+    margin: 20px 0;
+  }
+  .pencil {
+    display: inline-block;
+    width: 300px;
+    height: 30px;
+    background: linear-gradient(180deg, #ffd700 0%, #ff8c00 40%, #2d2d2d 40%, #1a1a1a 60%, #ffd700 60%, #ff8c00 100%);
+    border-radius: 3px 15px 15px 3px;
+    position: relative;
+    margin: 20px 0;
+  }
+  .pencil::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 5px;
+    width: 0; height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 20px solid #d4a574;
+  }
+  .pencil-tip {
+    position: absolute;
+    left: -25px;
+    top: 12px;
+    width: 8px; height: 6px;
+    background: #333;
+    border-radius: 50%;
+  }
+  .paper-area {
+    background: #f5f5dc;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 20px 0;
+    position: relative;
+    min-height: 200px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+  }
+  .paper-area h3 {
+    color: #333;
+    margin-bottom: 15px;
+  }
+  .paper-area p {
+    color: #555;
+    line-height: 1.6;
+  }
+  .graphite-line {
+    position: absolute;
+    bottom: 40px;
+    left: 10%;
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #333, #333, transparent);
+    border-radius: 2px;
+  }
+  .input-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    margin: 25px 0;
+    flex-wrap: wrap;
+  }
+  .mass-input {
+    padding: 12px 20px;
+    border: 2px solid rgba(0,212,255,0.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    font-size: 1.2rem;
+    width: 150px;
+    text-align: center;
+    outline: none;
+  }
+  .mass-input:focus {
+    border-color: #00d4ff;
+  }
+  .action-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-weigh {
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    color: white;
+  }
+  .btn-weigh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,212,255,0.3);
+  }
+  .btn-draw {
+    background: linear-gradient(90deg, #ff006e, #ff8c00);
+    color: white;
+  }
+  .btn-draw:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255,0,110,0.3);
+  }
+  .conversion-steps {
+    display: none;
+    margin-top: 30px;
+  }
+  .conversion-steps.active {
+    display: block;
+  }
+  .step-card {
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 4px solid #00d4ff;
+    position: relative;
+    overflow: hidden;
+  }
+  .step-card.step-2 { border-left-color: #ff006e; }
+  .step-card.step-3 { border-left-color: #00ff88; }
+  .step-card .step-num {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 3rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.05);
+  }
+  .step-card h3 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+  .step-card.step-2 h3 { color: #ff006e; }
+  .step-card.step-3 h3 { color: #00ff88; }
+  .step-math {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: #ccd6f6;
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  .step-math .highlight {
+    color: #00ff88;
+    font-weight: 700;
+  }
+  .step-math .cancel {
+    text-decoration: line-through;
+    color: #ff006e;
+  }
+  .astonishing-result {
+    background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,212,255,0.1));
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .astonishing-result h3 {
+    color: #00ff88;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+  }
+  .astonishing-result .big-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #00ff88;
+    text-shadow: 0 0 30px rgba(0,255,136,0.3);
+    word-break: break-all;
+  }
+  .astonishing-result .description {
+    color: #8892b0;
+    margin-top: 15px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .analyze-section {
+    background: rgba(255,255,255,0.03);
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .analyze-section h3 {
+    color: #f093fb;
+    margin-bottom: 15px;
+  }
+  .question {
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+  }
+  .question p {
+    color: #ccd6f6;
+    margin-bottom: 10px;
+  }
+  .question textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(240,147,251,0.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: #e0e0e0;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+  }
+  .question textarea:focus {
+    border-color: #f093fb;
+  }
+  .back-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+  }
+  @keyframes drawLine {
+    from { width: 0; }
+    to { width: 80%; }
+  }
+  .draw-anim {
+    animation: drawLine 2s ease forwards;
+  }
+  .particle-visual {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .mini-atom {
+    width: 6px; height: 6px;
+    background: #00ff88;
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+  <h1>✏️ The Graphite Challenge</h1>
+  <p class="subtitle">Virtual Lab — How Many Atoms in a Pencil Line?</p>
+
+  <div class="lab-section">
+    <h2>🧪 Procedure: Weigh Before & After</h2>
+    <p style="color: #8892b0; margin-bottom: 20px;">
+      Follow the steps below to determine how many carbon atoms are deposited when you draw a single line with a pencil.
+    </p>
+
+    <div class="balance-area">
+      <div class="balance-display">
+        <div class="label">Initial Mass</div>
+        <div class="value" id="initialMass">5.000</div>
+        <div class="unit">grams</div>
+      </div>
+      <div style="font-size: 2rem; color: #8892b0;">→</div>
+      <div class="balance-display">
+        <div class="label">Final Mass</div>
+        <div class="value" id="finalMass">4.998</div>
+        <div class="unit">grams</div>
+      </div>
+      <div style="font-size: 2rem; color: #8892b0;">→</div>
+      <div class="balance-display" style="border-color: #ff006e;">
+        <div class="label">Mass Difference</div>
+        <div class="value" id="massDiff" style="color: #ff006e;">0.002</div>
+        <div class="unit">grams</div>
+      </div>
+    </div>
+
+    <div class="pencil-visual">
+      <div style="color: #8892b0; margin-bottom: 10px;">Pencil with graphite tip</div>
+      <div class="pencil"><div class="pencil-tip"></div></div>
+    </div>
+
+    <div class="paper-area">
+      <h3>📄 Paper Surface</h3>
+      <p>Draw a line across the paper. The graphite deposited leaves a visible mark.</p>
+      <div class="graphite-line" id="graphiteLine"></div>
+    </div>
+
+    <div style="text-align: center; margin: 25px 0;">
+      <button class="action-btn btn-draw" onclick="drawLine()">✏️ Draw Line</button>
+      <button class="action-btn btn-weigh" onclick="calculateAtoms()" style="margin-left: 15px;">🔬 Calculate Atoms</button>
+    </div>
+
+    <div class="input-group">
+      <label style="color: #8892b0;">Or enter your own mass difference (g):</label>
+      <input type="number" class="mass-input" id="customMass" value="0.002" step="0.001" min="0.001" max="1">
+      <button class="action-btn btn-weigh" onclick="calculateAtomsCustom()">Calculate</button>
+    </div>
+  </div>
+
+  <div class="conversion-steps" id="conversionSteps">
+    <h2 style="color: #00d4ff; margin-bottom: 20px; text-align: center;">🔢 Step-by-Step Conversion</h2>
+
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <h3>Step 1: Grams of Carbon → Moles of Carbon</h3>
+      <p style="color: #8892b0; margin-bottom: 10px;">Use the molar mass of carbon (12.01 g/mol)</p>
+      <div class="step-math" id="step1Math"></div>
+    </div>
+
+    <div class="step-card step-2">
+      <div class="step-num">02</div>
+      <h3>Step 2: Moles of Carbon → Atoms of Carbon</h3>
+      <p style="color: #8892b0; margin-bottom: 10px;">Use Avogadro's number (6.022 × 10²³ atoms/mol)</p>
+      <div class="step-math" id="step2Math"></div>
+    </div>
+
+    <div class="step-card step-3">
+      <div class="step-num">03</div>
+      <h3>Step 3: Final Answer</h3>
+      <div class="step-math" id="step3Math"></div>
+    </div>
+
+    <div class="astonishing-result">
+      <h3>🤯 The Astonishing Result</h3>
+      <div class="big-number" id="finalAtoms"></div>
+      <div class="description" id="finalDescription"></div>
+      <div class="particle-visual" id="particleVisual"></div>
+    </div>
+  </div>
+
+  <div class="analyze-section">
+    <h3>📝 Analyze & Conclude (Exit Ticket)</h3>
+    <div class="question">
+      <p><strong>1.</strong> Why does such a tiny mass of graphite contain so many atoms?</p>
+      <textarea placeholder="Type your answer here..."></textarea>
+    </div>
+    <div class="question">
+      <p><strong>2.</strong> If you drew 10 lines instead of 1, how would the number of atoms change? Explain using the mole concept.</p>
+      <textarea placeholder="Type your answer here..."></textarea>
+    </div>
+    <div class="question">
+      <p><strong>3.</strong> How does this activity help you understand the scale of Avogadro's number?</p>
+      <textarea placeholder="Type your answer here..."></textarea>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="simulations.html" class="back-btn">← Back to Simulations</a>
+  </div>
+</div>
+
+<script>
+let hasDrawn = false;
+
+function drawLine() {
+  const line = document.getElementById('graphiteLine');
+  line.style.width = '0';
+  line.style.opacity = '0';
+  setTimeout(() => {
+    line.style.transition = 'all 2s ease';
+    line.style.width = '80%';
+    line.style.opacity = '1';
+  }, 100);
+  hasDrawn = true;
+}
+
+function calculateAtoms() {
+  const massDiff = 0.002; // grams
+  runCalculation(massDiff);
+}
+
+function calculateAtomsCustom() {
+  const massDiff = parseFloat(document.getElementById('customMass').value);
+  if (!massDiff || massDiff <= 0) {
+    alert('Please enter a valid mass difference greater than 0');
+    return;
+  }
+  runCalculation(massDiff);
+}
+
+function runCalculation(massDiff) {
+  const molarMassC = 12.01;
+  const avogadro = 6.022e23;
+
+  const molesC = massDiff / molarMassC;
+  const atomsC = molesC * avogadro;
+
+  // Update displays
+  document.getElementById('massDiff').textContent = massDiff.toFixed(3);
+
+  // Step 1
+  document.getElementById('step1Math').innerHTML = `
+    <span class="cancel">${massDiff.toFixed(3)} g C</span> × 
+    <span class="highlight">1 mol C / 12.01 g C</span> = 
+    <span class="highlight">${molesC.toExponential(3)} mol C</span>
+  `;
+
+  // Step 2
+  document.getElementById('step2Math').innerHTML = `
+    <span class="cancel">${molesC.toExponential(3)} mol C</span> × 
+    <span class="highlight">6.022 × 10²³ atoms C / 1 mol C</span> = 
+    <span class="highlight">${atomsC.toExponential(3)} atoms C</span>
+  `;
+
+  // Step 3
+  document.getElementById('step3Math').innerHTML = `
+    <strong>Mass of graphite:</strong> ${massDiff.toFixed(3)} g<br>
+    <strong>Moles of C:</strong> ${molesC.toExponential(3)} mol<br>
+    <strong>Atoms of C:</strong> <span class="highlight">${atomsC.toExponential(3)} atoms</span>
+  `;
+
+  // Final result
+  document.getElementById('finalAtoms').textContent = atomsC.toExponential(3);
+
+  // Description
+  const comparisons = [
+    `That's about <strong>${(atomsC / 1e9).toExponential(2)} billion</strong> atoms!`,
+    `If each atom were a grain of sand, you'd fill <strong>${(atomsC / 1e18).toExponential(2)}</strong> Olympic swimming pools.`,
+    `If you counted these atoms at 1 per second, it would take <strong>${(atomsC / (365.25 * 24 * 3600)).toExponential(2)}</strong> years!`,
+  ];
+  document.getElementById('finalDescription').innerHTML = comparisons.join('<br>');
+
+  // Particle visual
+  const visual = document.getElementById('particleVisual');
+  visual.innerHTML = '';
+  const numDots = Math.min(200, Math.max(50, Math.round(atomsC / 1e20)));
+  for (let i = 0; i < numDots; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'mini-atom';
+    dot.style.opacity = 0.3 + Math.random() * 0.7;
+    visual.appendChild(dot);
+  }
+
+  // Show steps
+  document.getElementById('conversionSteps').classList.add('active');
+
+  // Scroll to results
+  setTimeout(() => {
+    document.getElementById('conversionSteps').scrollIntoView({ behavior: 'smooth' });
+  }, 300);
+}
+</script>
+</body>
+</html>
