@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation: Dissociation & Conductivity</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .back-btn {
+            display: inline-block;
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover { color: #fff; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .subtitle { color: #94a3b8; margin-bottom: 25px; }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-acid { background: #dc2626; color: #fff; }
+        .btn-acid:hover { background: #b91c1c; }
+        .btn-base { background: #2563eb; color: #fff; }
+        .btn-base:hover { background: #1d4ed8; }
+        .btn-reset { background: #475569; color: #fff; }
+        .btn-reset:hover { background: #334155; }
+
+        .main-display {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .beaker-container {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #334155;
+            position: relative;
+            height: 400px;
+        }
+        .beaker {
+            width: 200px;
+            height: 280px;
+            margin: 0 auto;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.02);
+        }
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: rgba(56, 189, 248, 0.2);
+            transition: all 0.5s;
+        }
+        .liquid.acid { background: rgba(239, 68, 68, 0.25); }
+        .liquid.base { background: rgba(59, 130, 246, 0.25); }
+
+        .ion {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: all 0.8s ease;
+            opacity: 0;
+        }
+        .ion.h { background: #fca5a5; color: #7f1d1d; border: 2px solid #ef4444; }
+        .ion.cl { background: #bfdbfe; color: #1e3a5f; border: 2px solid #3b82f6; }
+        .ion.na { background: #fde68a; color: #92400e; border: 2px solid #f59e0b; }
+        .ion.oh { background: #a5f3fc; color: #164e63; border: 2px solid #06b6d4; }
+
+        .molecule {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background: #64748b;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: all 0.8s ease;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+        }
+
+        .panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        .panel h3 { color: #fbbf24; margin-bottom: 15px; }
+        .equation {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border-left: 3px solid #fbbf24;
+        }
+        .meter {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .meter-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #22c55e;
+            transition: color 0.5s;
+        }
+        .meter-label { color: #94a3b8; font-size: 0.9rem; margin-top: 5px; }
+        .meter-bar {
+            width: 100%;
+            height: 12px;
+            background: #334155;
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
+            width: 0%;
+            transition: width 1s ease;
+            border-radius: 6px;
+        }
+
+        .explanation {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid #22c55e;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="simulations.html" class="back-btn">← Back to Simulations Hub</a>
+        <h1>⚡ Acid-Base Dissociation & Conductivity</h1>
+        <p class="subtitle">Visualize the Arrhenius definition: acids produce H⁺, bases produce OH⁻. Observe how ions enable conductivity.</p>
+
+        <div class="controls">
+            <button class="btn btn-acid" onclick="loadAcid()">Add HCl (Acid)</button>
+            <button class="btn btn-base" onclick="loadBase()">Add NaOH (Base)</button>
+            <button class="btn btn-reset" onclick="reset()">Reset Beaker</button>
+        </div>
+
+        <div class="main-display">
+            <div class="beaker-container">
+                <div class="beaker" id="beaker">
+                    <div class="liquid" id="liquid"></div>
+                    <div class="molecule" id="molecule">HCl</div>
+                </div>
+                <p style="text-align:center; margin-top:15px; color:#94a3b8;">Watch the molecules dissociate into ions</p>
+            </div>
+
+            <div>
+                <div class="panel">
+                    <h3>🧪 Chemical Equation</h3>
+                    <div class="equation" id="equation">Select a substance above</div>
+                </div>
+                <div class="panel" style="margin-top:15px;">
+                    <h3>🔌 Conductivity Meter</h3>
+                    <div class="meter">
+                        <div class="meter-value" id="meterVal">0.0</div>
+                        <div class="meter-label">mS/cm (millisiemens)</div>
+                        <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+                    </div>
+                    <div class="explanation" id="explanation">
+                        Click "Add HCl" or "Add NaOH" to begin the simulation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentType = null;
+        const beaker = document.getElementById('beaker');
+        const liquid = document.getElementById('liquid');
+        const molecule = document.getElementById('molecule');
+        const equation = document.getElementById('equation');
+        const meterVal = document.getElementById('meterVal');
+        const meterFill = document.getElementById('meterFill');
+        const explanation = document.getElementById('explanation');
+
+        function clearIons() {
+            document.querySelectorAll('.ion').forEach(el => el.remove());
+        }
+
+        function createIon(cls, text, x, y) {
+            const ion = document.createElement('div');
+            ion.className = `ion ${cls}`;
+            ion.textContent = text;
+            ion.style.left = x + '%';
+            ion.style.top = y + '%';
+            ion.style.opacity = '0';
+            beaker.appendChild(ion);
+            return ion;
+        }
+
+        function animateIons(ions) {
+            setTimeout(() => {
+                ions.forEach((ion, i) => {
+                    setTimeout(() => {
+                        ion.style.opacity = '1';
+                        ion.style.left = (20 + Math.random() * 60) + '%';
+                        ion.style.top = (30 + Math.random() * 50) + '%';
+                    }, i * 100);
+                });
+            }, 300);
+        }
+
+        function loadAcid() {
+            reset();
+            currentType = 'acid';
+            liquid.className = 'liquid acid';
+            molecule.textContent = 'HCl';
+            molecule.style.opacity = '1';
+            equation.textContent = 'HCl (aq) → H⁺ (aq) + Cl⁻ (aq)';
+
+            setTimeout(() => {
+                molecule.style.opacity = '0';
+                molecule.style.transform = 'translate(-50%, -50%) scale(0.5)';
+
+                const h1 = createIon('h', 'H⁺', 45, 40);
+                const cl = createIon('cl', 'Cl⁻', 55, 40);
+                animateIons([h1, cl]);
+
+                meterVal.textContent = '12.8';
+                meterVal.style.color = '#22c55e';
+                meterFill.style.width = '85%';
+                explanation.innerHTML = '<strong>Arrhenius Acid:</strong> HCl dissociates into H⁺ and Cl⁻ ions. These free-moving ions carry electrical charge, making the solution an <strong>electrolyte</strong> that conducts electricity.';
+            }, 800);
+        }
+
+        function loadBase() {
+            reset();
+            currentType = 'base';
+            liquid.className = 'liquid base';
+            molecule.textContent = 'NaOH';
+            molecule.style.opacity = '1';
+            equation.textContent = 'NaOH (aq) → Na⁺ (aq) + OH⁻ (aq)';
+
+            setTimeout(() => {
+                molecule.style.opacity = '0';
+                molecule.style.transform = 'translate(-50%, -50%) scale(0.5)';
+
+                const na = createIon('na', 'Na⁺', 45, 40);
+                const oh = createIon('oh', 'OH⁻', 55, 40);
+                animateIons([na, oh]);
+
+                meterVal.textContent = '11.5';
+                meterVal.style.color = '#22c55e';
+                meterFill.style.width = '75%';
+                explanation.innerHTML = '<strong>Arrhenius Base:</strong> NaOH dissociates into Na⁺ and OH⁻ ions. The hydroxide ion (OH⁻) is responsible for basic properties. The solution conducts electricity because it contains mobile ions.';
+            }, 800);
+        }
+
+        function reset() {
+            clearIons();
+            currentType = null;
+            liquid.className = 'liquid';
+            molecule.textContent = '';
+            molecule.style.opacity = '0';
+            molecule.style.transform = 'translate(-50%, -50%) scale(1)';
+            equation.textContent = 'Select a substance above';
+            meterVal.textContent = '0.0';
+            meterVal.style.color = '#64748b';
+            meterFill.style.width = '0%';
+            explanation.innerHTML = 'Click "Add HCl" or "Add NaOH" to begin the simulation.';
+        }
+    </script>
+</body>
+</html>
