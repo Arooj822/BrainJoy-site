@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mole Conversion Builder — Dimensional Analysis</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+  h1 {
+    text-align: center;
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #8892b0;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+  .problem-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .problem-card h2 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+  }
+  .problem-text {
+    font-size: 1.2rem;
+    color: #ccd6f6;
+    padding: 15px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    border-left: 4px solid #00d4ff;
+  }
+  .train-track {
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 25px 0;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border: 2px dashed rgba(0,212,255,0.3);
+    position: relative;
+  }
+  .train-track-label {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: #1a1a2e;
+    padding: 0 10px;
+    color: #00d4ff;
+    font-size: 0.9rem;
+  }
+  .given-box {
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(123,44,191,0.2));
+    border: 2px solid #00d4ff;
+    border-radius: 12px;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    min-width: 120px;
+    text-align: center;
+  }
+  .conversion-slot {
+    width: 140px;
+    height: 80px;
+    border: 2px dashed rgba(255,255,255,0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    background: rgba(255,255,255,0.02);
+  }
+  .conversion-slot:hover {
+    border-color: #00d4ff;
+    background: rgba(0,212,255,0.05);
+  }
+  .conversion-slot.filled {
+    border-style: solid;
+    border-color: #00d4ff;
+    background: rgba(0,212,255,0.1);
+  }
+  .conversion-slot.correct {
+    border-color: #00ff88;
+    background: rgba(0,255,136,0.1);
+  }
+  .conversion-slot.incorrect {
+    border-color: #ff006e;
+    background: rgba(255,0,110,0.1);
+  }
+  .slot-content {
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  .slot-content .num { color: #00d4ff; font-weight: 700; }
+  .slot-content .den { color: #ff006e; font-weight: 700; }
+  .equals-sign {
+    font-size: 1.8rem;
+    color: #8892b0;
+    font-weight: 300;
+  }
+  .result-box {
+    background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,212,255,0.15));
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #00ff88;
+    min-width: 150px;
+    text-align: center;
+  }
+  .factor-bank {
+    background: rgba(255,255,255,0.03);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .factor-bank h3 {
+    color: #ff006e;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+  .factors-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .factor-card {
+    background: linear-gradient(135deg, rgba(255,0,110,0.15), rgba(123,44,191,0.15));
+    border: 2px solid rgba(255,0,110,0.4);
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: grab;
+    transition: all 0.3s;
+    text-align: center;
+    min-width: 100px;
+    user-select: none;
+  }
+  .factor-card:hover {
+    transform: translateY(-3px);
+    border-color: #ff006e;
+    box-shadow: 0 5px 20px rgba(255,0,110,0.2);
+  }
+  .factor-card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
+  .factor-card .top { color: #00d4ff; font-weight: 700; font-size: 1rem; }
+  .factor-card .bottom { color: #ff006e; font-weight: 700; font-size: 1rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 4px; margin-top: 4px; }
+  .controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 25px 0;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-check {
+    background: linear-gradient(90deg, #00ff88, #00d4ff);
+    color: #0f0f23;
+  }
+  .btn-check:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,255,136,0.3);
+  }
+  .btn-clear {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .btn-clear:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: #ff006e;
+  }
+  .btn-hint {
+    background: rgba(255,193,7,0.15);
+    color: #ffc107;
+    border: 2px solid rgba(255,193,7,0.4);
+  }
+  .btn-hint:hover {
+    background: rgba(255,193,7,0.25);
+  }
+  .feedback {
+    text-align: center;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: none;
+  }
+  .feedback.success {
+    display: block;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+  }
+  .feedback.error {
+    display: block;
+    background: rgba(255,0,110,0.1);
+    border: 1px solid #ff006e;
+    color: #ff006e;
+  }
+  .feedback.hint {
+    display: block;
+    background: rgba(255,193,7,0.1);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+  }
+  .unit-cancel-demo {
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+  .unit-cancel-demo h3 {
+    color: #00d4ff;
+    margin-bottom: 15px;
+  }
+  .cancel-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+    font-size: 1.3rem;
+    flex-wrap: wrap;
+  }
+  .cancel-unit {
+    padding: 8px 15px;
+    border-radius: 8px;
+    position: relative;
+  }
+  .cancel-unit.strike {
+    background: rgba(255,0,110,0.15);
+    color: #ff006e;
+  }
+  .cancel-unit.strike::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 2px;
+    background: #ff006e;
+    transform: rotate(-15deg);
+  }
+  .cancel-unit.keep {
+    background: rgba(0,255,136,0.15);
+    color: #00ff88;
+  }
+  .ai-tutor {
+    background: linear-gradient(135deg, rgba(123,44,191,0.15), rgba(0,212,255,0.15));
+    border: 1px solid rgba(123,44,191,0.4);
+    border-radius: 20px;
+    padding: 25px;
+    margin-top: 30px;
+  }
+  .ai-tutor h3 {
+    color: #a855f7;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ai-tutor h3::before {
+    content: '🤖';
+    font-size: 1.5rem;
+  }
+  .ai-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  .ai-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 2px solid rgba(168,85,247,0.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.2);
+    color: #e0e0e0;
+    font-size: 1rem;
+    outline: none;
+  }
+  .ai-input:focus {
+    border-color: #a855f7;
+  }
+  .ai-btn {
+    padding: 12px 24px;
+    background: linear-gradient(90deg, #a855f7, #7c3aed);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .ai-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(168,85,247,0.3);
+  }
+  .ai-response {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    color: #ccd6f6;
+    line-height: 1.6;
+    display: none;
+  }
+  .ai-response.show { display: block; }
+  .problem-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+  .prob-btn {
+    padding: 10px 20px;
+    border: 2px solid rgba(0,212,255,0.3);
+    background: transparent;
+    color: #00d4ff;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+  }
+  .prob-btn:hover, .prob-btn.active {
+    background: rgba(0,212,255,0.15);
+    border-color: #00d4ff;
+  }
+  .back-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .pulse { animation: pulse 2s infinite; }
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+  <h1>🚂 Mole Conversion Builder</h1>
+  <p class="subtitle">Dimensional Analysis — Build the "Train Track" Step-by-Step</p>
+
+  <div class="problem-selector">
+    <button class="prob-btn active" onclick="loadProblem(0)">Problem 1: mol → atoms</button>
+    <button class="prob-btn" onclick="loadProblem(1)">Problem 2: g → mol</button>
+    <button class="prob-btn" onclick="loadProblem(2)">Problem 3: mol → g</button>
+    <button class="prob-btn" onclick="loadProblem(3)">Problem 4: atoms → mol</button>
+  </div>
+
+  <div class="problem-card">
+    <h2>📝 Current Problem</h2>
+    <div class="problem-text" id="problemText">
+      How many atoms are in 2.5 moles of Helium (He)?
+    </div>
+  </div>
+
+  <div class="factor-bank">
+    <h3>🎯 Conversion Factor Cards (Drag to slots or click to place)</h3>
+    <div class="factors-grid" id="factorBank"></div>
+  </div>
+
+  <div class="train-track">
+    <span class="train-track-label">Your Setup</span>
+    <div class="given-box" id="givenBox">2.5 mol He</div>
+    <div class="conversion-slot" id="slot1" onclick="placeFactor(0)" ondrop="drop(event,0)" ondragover="allowDrop(event)">
+      <span style="color: #8892b0; font-size: 0.9rem;">Drop factor here</span>
+    </div>
+    <div class="conversion-slot" id="slot2" onclick="placeFactor(1)" ondrop="drop(event,1)" ondragover="allowDrop(event)">
+      <span style="color: #8892b0; font-size: 0.9rem;">Drop factor here</span>
+    </div>
+    <div class="equals-sign">=</div>
+    <div class="result-box" id="resultBox">? atoms</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-check" onclick="checkAnswer()">✓ Check Setup</button>
+    <button class="btn btn-clear" onclick="clearSetup()">↺ Clear All</button>
+    <button class="btn btn-hint" onclick="showHint()">💡 Hint</button>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="unit-cancel-demo" id="cancelDemo" style="display: none;">
+    <h3>✂️ Unit Cancellation Visualization</h3>
+    <div class="cancel-row" id="cancelRow"></div>
+    <p style="text-align: center; color: #8892b0; margin-top: 15px; font-size: 0.95rem;">
+      Units that appear on both top and bottom <span style="color: #ff006e;">cancel out</span>!
+      Only the desired unit remains.
+    </p>
+  </div>
+
+  <div class="ai-tutor">
+    <h3>AI Tutor — Verify My Setup</h3>
+    <p style="color: #8892b0; margin-bottom: 10px;">Type your setup and get instant feedback from the AI tutor.</p>
+    <div class="ai-input-group">
+      <input type="text" class="ai-input" id="aiInput" placeholder="e.g., 2.5 mol He × 6.022×10²³ atoms/mol = ?"
+             onkeypress="if(event.key==='Enter')aiTutor()">
+      <button class="ai-btn" onclick="aiTutor()">Ask AI Tutor</button>
+    </div>
+    <div class="ai-response" id="aiResponse"></div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="simulations.html" class="back-btn">← Back to Simulations</a>
+  </div>
+</div>
+
+<script>
+const problems = [
+  {
+    text: "How many atoms are in 2.5 moles of Helium (He)?",
+    given: "2.5 mol He",
+    targetUnit: "atoms",
+    targetLabel: "? atoms",
+    answer: 2.5 * 6.022e23,
+    answerFormatted: "1.51 × 10²⁴ atoms",
+    slots: 1,
+    correctFactors: [
+      { top: "6.022 × 10²³ atoms", bottom: "1 mol", value: 6.022e23 }
+    ],
+    hint: "You need to convert from moles to atoms. Use Avogadro's number!",
+    cancelUnits: ["mol", "atoms"]
+  },
+  {
+    text: "How many moles are in 36.0 grams of water (H₂O)?",
+    given: "36.0 g H₂O",
+    targetUnit: "mol",
+    targetLabel: "? mol",
+    answer: 36.0 / 18.02,
+    answerFormatted: "2.00 mol",
+    slots: 1,
+    correctFactors: [
+      { top: "1 mol", bottom: "18.02 g", value: 1/18.02 }
+    ],
+    hint: "Convert grams to moles using the molar mass of water (18.02 g/mol).",
+    cancelUnits: ["g", "mol"]
+  },
+  {
+    text: "What is the mass of 0.75 moles of carbon (C)?",
+    given: "0.75 mol C",
+    targetUnit: "g",
+    targetLabel: "? g",
+    answer: 0.75 * 12.01,
+    answerFormatted: "9.01 g",
+    slots: 1,
+    correctFactors: [
+      { top: "12.01 g", bottom: "1 mol", value: 12.01 }
+    ],
+    hint: "Convert moles to grams using carbon's molar mass (12.01 g/mol).",
+    cancelUnits: ["mol", "g"]
+  },
+  {
+    text: "How many moles are in 3.01 × 10²³ atoms of sodium (Na)?",
+    given: "3.01 × 10²³ atoms Na",
+    targetUnit: "mol",
+    targetLabel: "? mol",
+    answer: 3.01e23 / 6.022e23,
+    answerFormatted: "0.500 mol",
+    slots: 1,
+    correctFactors: [
+      { top: "1 mol", bottom: "6.022 × 10²³ atoms", value: 1/6.022e23 }
+    ],
+    hint: "Convert atoms to moles using Avogadro's number (upside down!).",
+    cancelUnits: ["atoms", "mol"]
+  }
+];
+
+let currentProblem = 0;
+let placedFactors = [null, null];
+let selectedFactor = null;
+
+// Factor pool with extra distractors
+const allFactors = [
+  { top: "6.022 × 10²³ atoms", bottom: "1 mol", id: "na-fwd" },
+  { top: "1 mol", bottom: "6.022 × 10²³ atoms", id: "na-rev" },
+  { top: "1 mol", bottom: "18.02 g", id: "mm-h2o-rev" },
+  { top: "18.02 g", bottom: "1 mol", id: "mm-h2o-fwd" },
+  { top: "12.01 g", bottom: "1 mol", id: "mm-c-fwd" },
+  { top: "1 mol", bottom: "12.01 g", id: "mm-c-rev" },
+  { top: "63.55 g", bottom: "1 mol", id: "mm-cu" },
+  { top: "1 mol", bottom: "22.99 g", id: "mm-na-rev" },
+  { top: "22.99 g", bottom: "1 mol", id: "mm-na-fwd" },
+  { top: "1 mol", bottom: "6.022 × 10²³ atoms", id: "na-rev-2" },
+];
+
+function loadProblem(idx) {
+  currentProblem = idx;
+  placedFactors = [null, null];
+  const p = problems[idx];
+
+  document.getElementById('problemText').textContent = p.text;
+  document.getElementById('givenBox').textContent = p.given;
+  document.getElementById('resultBox').textContent = p.targetLabel;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('cancelDemo').style.display = 'none';
+
+  // Reset slots
+  for (let i = 0; i < 2; i++) {
+    const slot = document.getElementById('slot' + (i+1));
+    slot.innerHTML = '<span style="color: #8892b0; font-size: 0.9rem;">Drop factor here</span>';
+    slot.className = 'conversion-slot';
+  }
+
+  // Update problem selector
+  document.querySelectorAll('.prob-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === idx);
+  });
+
+  renderFactorBank();
+}
+
+function renderFactorBank() {
+  const bank = document.getElementById('factorBank');
+  bank.innerHTML = '';
+
+  // Show relevant factors for current problem plus some distractors
+  const p = problems[currentProblem];
+  let factorsToShow = [];
+
+  // Always include correct factor
+  factorsToShow.push(p.correctFactors[0]);
+
+  // Add 3-4 distractors
+  const distractors = allFactors.filter(f => {
+    const cf = p.correctFactors[0];
+    return !(f.top === cf.top && f.bottom === cf.bottom);
+  }).sort(() => Math.random() - 0.5).slice(0, 4);
+
+  factorsToShow = [...factorsToShow, ...distractors].sort(() => Math.random() - 0.5);
+
+  factorsToShow.forEach((f, i) => {
+    const card = document.createElement('div');
+    card.className = 'factor-card';
+    card.draggable = true;
+    card.dataset.top = f.top;
+    card.dataset.bottom = f.bottom;
+    card.innerHTML = `<div class="top">${f.top}</div><div class="bottom">${f.bottom}</div>`;
+    card.ondragstart = (e) => drag(e, f);
+    card.onclick = () => selectFactorCard(f, card);
+    bank.appendChild(card);
+  });
+}
+
+function selectFactorCard(factor, card) {
+  // Deselect previous
+  document.querySelectorAll('.factor-card').forEach(c => c.style.borderColor = '');
+
+  // Find first empty slot
+  for (let i = 0; i < 2; i++) {
+    if (!placedFactors[i]) {
+      placeFactorInSlot(i, factor);
+      return;
+    }
+  }
+  // If full, replace first
+  placeFactorInSlot(0, factor);
+}
+
+function placeFactor(slotIdx) {
+  // If a factor is selected from bank, place it
+  if (selectedFactor) {
+    placeFactorInSlot(slotIdx, selectedFactor);
+    selectedFactor = null;
+  }
+}
+
+function placeFactorInSlot(slotIdx, factor) {
+  placedFactors[slotIdx] = factor;
+  const slot = document.getElementById('slot' + (slotIdx+1));
+  slot.className = 'conversion-slot filled';
+  slot.innerHTML = `
+    <div class="slot-content">
+      <div class="num">${factor.top}</div>
+      <div class="den">${factor.bottom}</div>
+    </div>
+  `;
+}
+
+function drag(e, factor) {
+  e.dataTransfer.setData('factor', JSON.stringify(factor));
+  e.target.classList.add('dragging');
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function drop(e, slotIdx) {
+  e.preventDefault();
+  const factor = JSON.parse(e.dataTransfer.getData('factor'));
+  placeFactorInSlot(slotIdx, factor);
+  document.querySelectorAll('.factor-card').forEach(c => c.classList.remove('dragging'));
+}
+
+function checkAnswer() {
+  const p = problems[currentProblem];
+  const feedback = document.getElementById('feedback');
+
+  // Check if correct factor is placed
+  const correct = p.correctFactors[0];
+  let foundCorrect = false;
+  let slotIdx = -1;
+
+  for (let i = 0; i < placedFactors.length; i++) {
+    if (placedFactors[i] && placedFactors[i].top === correct.top && placedFactors[i].bottom === correct.bottom) {
+      foundCorrect = true;
+      slotIdx = i;
+      break;
+    }
+  }
+
+  if (foundCorrect) {
+    const slot = document.getElementById('slot' + (slotIdx+1));
+    slot.classList.add('correct');
+    feedback.className = 'feedback success';
+    feedback.innerHTML = `✅ <strong>Correct!</strong> Your setup is right!<br>
+      ${p.given} × ${correct.top}/${correct.bottom} = <strong>${p.answerFormatted}</strong>`;
+    document.getElementById('resultBox').textContent = p.answerFormatted;
+    showCancellation();
+  } else {
+    // Mark incorrect slots
+    for (let i = 0; i < placedFactors.length; i++) {
+      if (placedFactors[i]) {
+        document.getElementById('slot' + (i+1)).classList.add('incorrect');
+      }
+    }
+    feedback.className = 'feedback error';
+    feedback.innerHTML = `❌ <strong>Not quite!</strong> Check your conversion factor.<br>
+      Think: What units need to cancel? What unit do you want to end with?`;
+  }
+  feedback.style.display = 'block';
+}
+
+function showCancellation() {
+  const p = problems[currentProblem];
+  const demo = document.getElementById('cancelDemo');
+  const row = document.getElementById('cancelRow');
+
+  const cf = p.correctFactors[0];
+  const givenUnit = p.given.split(' ').slice(1).join(' ');
+
+  row.innerHTML = `
+    <span class="cancel-unit keep">${p.given}</span>
+    <span style="color: #8892b0;">×</span>
+    <span class="cancel-unit strike">${cf.top}</span>
+    <span style="color: #8892b0;">/</span>
+    <span class="cancel-unit strike">${cf.bottom}</span>
+    <span style="color: #8892b0;">=</span>
+    <span class="cancel-unit keep">${p.answerFormatted}</span>
+  `;
+
+  demo.style.display = 'block';
+}
+
+function clearSetup() {
+  placedFactors = [null, null];
+  for (let i = 0; i < 2; i++) {
+    const slot = document.getElementById('slot' + (i+1));
+    slot.innerHTML = '<span style="color: #8892b0; font-size: 0.9rem;">Drop factor here</span>';
+    slot.className = 'conversion-slot';
+  }
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('cancelDemo').style.display = 'none';
+  document.getElementById('resultBox').textContent = problems[currentProblem].targetLabel;
+}
+
+function showHint() {
+  const p = problems[currentProblem];
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback hint';
+  feedback.innerHTML = `💡 <strong>Hint:</strong> ${p.hint}`;
+  feedback.style.display = 'block';
+}
+
+function aiTutor() {
+  const input = document.getElementById('aiInput').value.trim();
+  const response = document.getElementById('aiResponse');
+
+  if (!input) {
+    response.innerHTML = 'Please enter your setup first!';
+    response.classList.add('show');
+    return;
+  }
+
+  const p = problems[currentProblem];
+  const cf = p.correctFactors[0];
+
+  // Simple parsing
+  const hasGiven = input.includes(p.given.split(' ')[0]) || input.toLowerCase().includes(p.given.toLowerCase().split(' ')[0]);
+  const hasCorrectTop = input.includes(cf.top.split(' ')[0]);
+  const hasCorrectBottom = input.includes(cf.bottom.split(' ')[0]);
+
+  let html = `<strong>🤖 AI Tutor Analysis:</strong><br><br>`;
+
+  if (hasCorrectTop && hasCorrectBottom) {
+    html += `✅ <strong>Great setup!</strong> Your conversion factor looks correct.<br><br>`;
+    html += `<strong>Step-by-step:</strong><br>`;
+    html += `1. Start with: <code>${p.given}</code><br>`;
+    html += `2. Multiply by: <code>${cf.top} / ${cf.bottom}</code><br>`;
+    html += `3. Cancel units: <code>${cf.bottom.includes('mol') ? 'mol' : 'atoms'}</code> cancels out<br>`;
+    html += `4. Calculate: <code>${p.given.split(' ')[0]} × ${cf.value} = ${p.answerFormatted}</code><br><br>`;
+    html += `🎉 <strong>Answer: ${p.answerFormatted}</strong>`;
+  } else if (input.includes(cf.bottom.split(' ')[0]) && input.includes(cf.top.split(' ')[0])) {
+    html += `⚠️ <strong>Check your factor orientation!</strong><br><br>`;
+    html += `You have the right numbers, but they might be flipped.<br>`;
+    html += `Remember: the unit you want to <em>cancel</em> goes on the bottom.<br>`;
+    html += `For this problem, you need: <code>${cf.top} / ${cf.bottom}</code>`;
+  } else {
+    html += `🤔 Let me help you think through this...<br><br>`;
+    html += `<strong>Given:</strong> ${p.given}<br>`;
+    html += `<strong>Find:</strong> ${p.targetLabel}<br><br>`;
+    html += `Ask yourself: "What conversion connects <code>${p.given.split(' ').pop()}</code> to <code>${p.targetUnit}</code>?"<br>`;
+    html += `The answer is: <code>${cf.top} / ${cf.bottom}</code>`;
+  }
+
+  response.innerHTML = html;
+  response.classList.add('show');
+}
+
+// Initialize
+loadProblem(0);
+</script>
+</body>
+</html>
