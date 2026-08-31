@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equal Moles, Different Masses — Visual Lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+  h1 {
+    text-align: center;
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #a0a0c0;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+  }
+  .key-concept {
+    background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.15));
+    border: 1px solid rgba(240,147,251,0.3);
+    border-radius: 15px;
+    padding: 20px 30px;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 1.2rem;
+  }
+  .key-concept strong { color: #f093fb; }
+  .beakers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+  .beaker-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .beaker-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(240,147,251,0.5);
+    box-shadow: 0 20px 60px rgba(240,147,251,0.2);
+  }
+  .beaker-card.active {
+    border-color: #f5576c;
+    box-shadow: 0 0 40px rgba(245,87,108,0.3);
+  }
+  .beaker-name {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #fff;
+  }
+  .beaker-formula {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #f093fb;
+    margin-bottom: 20px;
+    font-family: 'Times New Roman', serif;
+  }
+  .beaker-visual {
+    width: 160px;
+    height: 200px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .beaker-glass {
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
+  }
+  .beaker-glass::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: -3px; right: -3px;
+    height: 6px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+  }
+  .substance-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: height 1s ease;
+    border-radius: 0 0 17px 17px;
+  }
+  .substance-fill.carbon { background: linear-gradient(180deg, #2d2d2d, #1a1a1a); }
+  .substance-fill.copper { background: linear-gradient(180deg, #b87333, #8b5a2b); }
+  .substance-fill.water { background: linear-gradient(180deg, rgba(0,150,255,0.6), rgba(0,100,200,0.8)); }
+  .particles-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    border-radius: 0 0 17px 17px;
+  }
+  .particle-dot {
+    position: absolute;
+    border-radius: 50%;
+    animation: floatParticle 3s ease-in-out infinite;
+  }
+  @keyframes floatParticle {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-5px) translateX(3px); }
+    50% { transform: translateY(3px) translateX(-3px); }
+    75% { transform: translateY(-2px) translateX(2px); }
+  }
+  .mass-display {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f5576c;
+    margin: 10px 0;
+  }
+  .moles-display {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #a0a0c0;
+    margin-bottom: 15px;
+  }
+  .info-panel {
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+  }
+  .beaker-card:hover .info-panel,
+  .beaker-card.active .info-panel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: #8892b0; }
+  .info-value { color: #f093fb; font-weight: 600; }
+  .comparison-bar {
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .comparison-bar h2 {
+    color: #f093fb;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 40px;
+    height: 250px;
+    padding: 20px;
+  }
+  .bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .bar {
+    width: 80px;
+    border-radius: 10px 10px 0 0;
+    transition: height 1s ease;
+    position: relative;
+  }
+  .bar.carbon { background: linear-gradient(180deg, #555, #2d2d2d); }
+  .bar.copper { background: linear-gradient(180deg, #d4a574, #b87333); }
+  .bar.water { background: linear-gradient(180deg, #4fc3f7, #0288d1); }
+  .bar-label {
+    font-size: 0.9rem;
+    color: #a0a0c0;
+    text-align: center;
+  }
+  .bar-value {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .particle-count-banner {
+    background: linear-gradient(90deg, rgba(240,147,251,0.2), rgba(245,87,108,0.2));
+    border: 1px solid rgba(240,147,251,0.3);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .particle-count-banner h2 {
+    color: #f093fb;
+    margin-bottom: 10px;
+  }
+  .particle-count-banner .big-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #f5576c;
+  }
+  .back-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(240,147,251,0.3);
+  }
+  .toggle-view {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .toggle-btn {
+    padding: 10px 25px;
+    margin: 0 10px;
+    border: 2px solid rgba(240,147,251,0.5);
+    background: transparent;
+    color: #f093fb;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  .toggle-btn:hover, .toggle-btn.active {
+    background: rgba(240,147,251,0.2);
+    border-color: #f093fb;
+  }
+  .particle-view {
+    display: none;
+    text-align: center;
+    padding: 20px;
+  }
+  .particle-view.active { display: block; }
+  .particle-canvas {
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    margin: 0 auto;
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+  }
+  .atom {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .atom.C { background: radial-gradient(circle at 30% 30%, #666, #333); }
+  .atom.Cu { background: radial-gradient(circle at 30% 30%, #e8a87c, #b87333); }
+  .atom.O { background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a); }
+  .atom.H { background: radial-gradient(circle at 30% 30%, #e9ecef, #adb5bd); }
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+  <h1>⚖️ Equal Moles, Different Masses</h1>
+  <p class="subtitle">Visual Lab — Same Number of Particles, Different Properties</p>
+
+  <div class="key-concept">
+    <strong>Key Concept:</strong> 1 mole of any substance always contains 
+    <strong>6.022 × 10²³</strong> particles (Avogadro's number), but the mass depends on the substance!
+  </div>
+
+  <div class="particle-count-banner">
+    <h2>🔬 Each Beaker Contains Exactly:</h2>
+    <div class="big-number">6.022 × 10²³ particles</div>
+    <p style="color: #a0a0c0; margin-top: 10px;">= 1 mole = Avogadro's Number (Nₐ)</p>
+  </div>
+
+  <div class="toggle-view">
+    <button class="toggle-btn active" onclick="showView('macro')">🔍 Macro View</button>
+    <button class="toggle-btn" onclick="showView('micro')">🔬 Particle View</button>
+  </div>
+
+  <div id="macroView" class="beakers-container">
+    <div class="beaker-card" onclick="selectCard(this, 'carbon')">
+      <div class="beaker-name">Carbon (Graphite)</div>
+      <div class="beaker-formula">C</div>
+      <div class="beaker-visual">
+        <div class="beaker-glass">
+          <div class="substance-fill carbon" style="height: 35%;"></div>
+          <div class="particles-layer" id="carbonParticles"></div>
+        </div>
+      </div>
+      <div class="mass-display">12.01 g</div>
+      <div class="moles-display">1 mole of Carbon atoms</div>
+      <div class="info-panel">
+        <div class="info-row"><span class="info-label">Molar Mass</span><span class="info-value">12.01 g/mol</span></div>
+        <div class="info-row"><span class="info-label">Particle Type</span><span class="info-value">C atoms</span></div>
+        <div class="info-row"><span class="info-label">State at RT</span><span class="info-value">Solid</span></div>
+        <div class="info-row"><span class="info-label">Real Comparison</span><span class="info-value">~2 pencil leads</span></div>
+      </div>
+    </div>
+
+    <div class="beaker-card" onclick="selectCard(this, 'copper')">
+      <div class="beaker-name">Copper</div>
+      <div class="beaker-formula">Cu</div>
+      <div class="beaker-visual">
+        <div class="beaker-glass">
+          <div class="substance-fill copper" style="height: 55%;"></div>
+          <div class="particles-layer" id="copperParticles"></div>
+        </div>
+      </div>
+      <div class="mass-display">63.55 g</div>
+      <div class="moles-display">1 mole of Copper atoms</div>
+      <div class="info-panel">
+        <div class="info-row"><span class="info-label">Molar Mass</span><span class="info-value">63.55 g/mol</span></div>
+        <div class="info-row"><span class="info-label">Particle Type</span><span class="info-value">Cu atoms</span></div>
+        <div class="info-row"><span class="info-label">State at RT</span><span class="info-value">Solid</span></div>
+        <div class="info-row"><span class="info-label">Real Comparison</span><span class="info-value">~11 US pennies</span></div>
+      </div>
+    </div>
+
+    <div class="beaker-card" onclick="selectCard(this, 'water')">
+      <div class="beaker-name">Water</div>
+      <div class="beaker-formula">H₂O</div>
+      <div class="beaker-visual">
+        <div class="beaker-glass">
+          <div class="substance-fill water" style="height: 70%;"></div>
+          <div class="particles-layer" id="waterParticles"></div>
+        </div>
+      </div>
+      <div class="mass-display">18.02 g</div>
+      <div class="moles-display">1 mole of Water molecules</div>
+      <div class="info-panel">
+        <div class="info-row"><span class="info-label">Molar Mass</span><span class="info-value">18.02 g/mol</span></div>
+        <div class="info-row"><span class="info-label">Particle Type</span><span class="info-value">H₂O molecules</span></div>
+        <div class="info-row"><span class="info-label">State at RT</span><span class="info-value">Liquid</span></div>
+        <div class="info-row"><span class="info-label">Real Comparison</span><span class="info-value">~18 mL (1.2 tbsp)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="microView" class="particle-view">
+    <h2 style="color: #f093fb; margin-bottom: 20px;">🔬 Particle-Level View (Representative Sample)</h2>
+    <p style="color: #a0a0c0; margin-bottom: 20px;">Each container has the SAME number of particles, but different types and arrangements!</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+      <div>
+        <h3 style="color: #fff; text-align: center; margin-bottom: 10px;">Carbon (C) — Atomic Solid</h3>
+        <div class="particle-canvas" id="canvasCarbon"></div>
+      </div>
+      <div>
+        <h3 style="color: #fff; text-align: center; margin-bottom: 10px;">Copper (Cu) — Metallic Lattice</h3>
+        <div class="particle-canvas" id="canvasCopper"></div>
+      </div>
+      <div>
+        <h3 style="color: #fff; text-align: center; margin-bottom: 10px;">Water (H₂O) — Molecular Liquid</h3>
+        <div class="particle-canvas" id="canvasWater"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comparison-bar">
+    <h2>📊 Mass Comparison (1 mole each)</h2>
+    <div class="bar-chart">
+      <div class="bar-item">
+        <div class="bar carbon" style="height: 60px;"><div class="bar-value">12.01 g</div></div>
+        <div class="bar-label">C<br><small>Carbon</small></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar water" style="height: 90px;"><div class="bar-value">18.02 g</div></div>
+        <div class="bar-label">H₂O<br><small>Water</small></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar copper" style="height: 280px;"><div class="bar-value">63.55 g</div></div>
+        <div class="bar-label">Cu<br><small>Copper</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="simulations.html" class="back-btn">← Back to Simulations</a>
+  </div>
+</div>
+
+<script>
+function selectCard(card, type) {
+  document.querySelectorAll('.beaker-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+}
+
+function showView(view) {
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (view === 'macro') {
+    document.getElementById('macroView').style.display = 'grid';
+    document.getElementById('microView').classList.remove('active');
+  } else {
+    document.getElementById('macroView').style.display = 'none';
+    document.getElementById('microView').classList.add('active');
+    renderParticleViews();
+  }
+}
+
+function createParticles(containerId, color, count) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle-dot';
+    p.style.width = (3 + Math.random() * 4) + 'px';
+    p.style.height = p.style.width;
+    p.style.background = color;
+    p.style.left = (5 + Math.random() * 90) + '%';
+    p.style.top = (10 + Math.random() * 80) + '%';
+    p.style.opacity = 0.4 + Math.random() * 0.6;
+    p.style.animationDelay = (Math.random() * 3) + 's';
+    p.style.animationDuration = (2 + Math.random() * 2) + 's';
+    container.appendChild(p);
+  }
+}
+
+createParticles('carbonParticles', '#888', 30);
+createParticles('copperParticles', '#d4a574', 30);
+createParticles('waterParticles', '#4fc3f7', 30);
+
+function renderParticleViews() {
+  renderCarbonLattice();
+  renderCopperLattice();
+  renderWaterMolecules();
+}
+
+function renderCarbonLattice() {
+  const canvas = document.getElementById('canvasCarbon');
+  if (!canvas || canvas.children.length > 0) return;
+  const spacing = 35;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 8; col++) {
+      const atom = document.createElement('div');
+      atom.className = 'atom C';
+      atom.style.width = '22px';
+      atom.style.height = '22px';
+      atom.style.left = (15 + col * spacing + (row % 2) * spacing/2) + 'px';
+      atom.style.top = (20 + row * spacing * 0.87) + 'px';
+      atom.textContent = 'C';
+      canvas.appendChild(atom);
+    }
+  }
+}
+
+function renderCopperLattice() {
+  const canvas = document.getElementById('canvasCopper');
+  if (!canvas || canvas.children.length > 0) return;
+  const spacing = 40;
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 7; col++) {
+      const atom = document.createElement('div');
+      atom.className = 'atom Cu';
+      atom.style.width = '28px';
+      atom.style.height = '28px';
+      atom.style.left = (20 + col * spacing) + 'px';
+      atom.style.top = (25 + row * spacing) + 'px';
+      atom.textContent = 'Cu';
+      canvas.appendChild(atom);
+    }
+  }
+}
+
+function renderWaterMolecules() {
+  const canvas = document.getElementById('canvasWater');
+  if (!canvas || canvas.children.length > 0) return;
+  for (let i = 0; i < 20; i++) {
+    const group = document.createElement('div');
+    group.style.position = 'absolute';
+    group.style.left = (20 + Math.random() * 500) + 'px';
+    group.style.top = (20 + Math.random() * 230) + 'px';
+
+    const o = document.createElement('div');
+    o.className = 'atom O';
+    o.style.width = '20px';
+    o.style.height = '20px';
+    o.style.position = 'absolute';
+    o.textContent = 'O';
+    group.appendChild(o);
+
+    const h1 = document.createElement('div');
+    h1.className = 'atom H';
+    h1.style.width = '12px';
+    h1.style.height = '12px';
+    h1.style.position = 'absolute';
+    h1.style.left = '18px';
+    h1.style.top = '-5px';
+    h1.textContent = 'H';
+    group.appendChild(h1);
+
+    const h2 = document.createElement('div');
+    h2.className = 'atom H';
+    h2.style.width = '12px';
+    h2.style.height = '12px';
+    h2.style.position = 'absolute';
+    h2.style.left = '18px';
+    h2.style.top = '12px';
+    h2.textContent = 'H';
+    group.appendChild(h2);
+
+    canvas.appendChild(group);
+  }
+}
+</script>
+</body>
+</html>
