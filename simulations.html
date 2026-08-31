@@ -1,140 +1,433 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Simulations — BrainJoy</title>
+
 <meta name="description" content="Interactive science simulations — play with real chemistry, physics, and astrophysics right in your browser." />
+
 <link rel="icon" href="logo.png" type="image/png" />
 <meta name="theme-color" content="#6a0dad" />
+
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="sim-styles.css" />
+
 <base target="_blank">
 </head>
+
 <body>
 
+<!-- Navigation -->
 <nav class="sim-nav">
-  <a href="index.html" class="brand"><img src="assets/happy-brain.png" alt="BrainJoy"><span>BrainJoy</span></a>
+
+  <a href="index.html" class="brand">
+    <img src="assets/happy-brain.png" alt="BrainJoy">
+    <span>BrainJoy</span>
+  </a>
+
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="simulations.html" class="current">Simulations</a>
     <a href="ap-chemistry/i.html">AP Chemistry</a>
     <a href="scholarships.html">Scholarships</a>
   </div>
+
 </nav>
 
+
+<!-- Hero Section -->
 <header class="sim-hero">
+
   <p class="eyebrow">Interactive Science Lab</p>
+
   <h1>Learn science by playing with it.</h1>
-  <p>Drag sliders, mix chemicals, and watch real science happen — no equipment required. New simulations are added regularly.</p>
+
+  <p>
+    Drag sliders, mix chemicals, and watch real science happen —
+    no equipment required. New simulations are added regularly.
+  </p>
+
 </header>
 
+
+<!-- Simulation Cards -->
 <div class="sim-wrap">
+
   <div class="hub-grid">
 
-    <!-- Grade 10: The Mole Concept -->
+
+    <!-- ========================================= -->
+    <!-- GRADE 10 — THE MOLE CONCEPT -->
+    <!-- ========================================= -->
+
     <a href="sim-mole-concept.html" class="sim-card teal">
+
       <span class="tag">Grade 10 · The Mole</span>
+
       <div class="sim-icon">⚖️</div>
+
       <h3>What is a Mole?</h3>
-      <p>Visualize Avogadro's number, compare equal moles of different substances, and calculate molar mass with the interactive compound builder.</p>
+
+      <p>
+        Visualize Avogadro's number, compare equal moles of different
+        substances, and calculate molar mass with the interactive
+        compound builder.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
+
+
+    <!-- Mole Converter -->
 
     <a href="sim-mole-converter.html" class="sim-card">
+
       <span class="tag">Grade 10 · The Mole</span>
+
       <div class="sim-icon">🔄</div>
+
       <h3>Mole Converter</h3>
-      <p>Convert between mass, moles, and particles with step-by-step dimensional analysis — watch units cancel visually.</p>
+
+      <p>
+        Convert between mass, moles, and particles with step-by-step
+        dimensional analysis — watch units cancel visually.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
 
-    <a href="sim-graphite-challenge.html" class="sim-card teal">
+
+    <!-- Counting the Invisible -->
+
+    <a href="counting-invisible.html" class="sim-card teal">
+
       <span class="tag">Grade 10 · The Mole</span>
-      <div class="sim-icon">✏️</div>
-      <h3>The Graphite Challenge</h3>
-      <p>Draw a pencil line, weigh the graphite used, and calculate how many billions of carbon atoms you deposited on the paper.</p>
+
+      <div class="sim-icon">🔬</div>
+
+      <h3>Counting the Invisible</h3>
+
+      <p>
+        Explore how chemists count microscopic particles using the mole
+        and Avogadro's number.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
 
-    <!-- Chemistry Core -->
-    <a href="sim-titration.html" class="sim-card">
-      <span class="tag">Chemistry</span>
-      <div class="sim-icon">🧪</div>
-      <h3>Acid-Base Titration</h3>
-      <p>Drip base into acid, watch the flask change color, and read the pH curve live as you titrate.</p>
+
+    <!-- Equal Moles, Different Masses -->
+
+    <a href="equal-moles.html" class="sim-card">
+
+      <span class="tag">Grade 10 · The Mole</span>
+
+      <div class="sim-icon">⚖️</div>
+
+      <h3>Equal Moles, Different Masses</h3>
+
+      <p>
+        Compare equal numbers of particles in different substances
+        and discover why the masses can be completely different.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
+
+
+    <!-- Mole Conversion Builder -->
+
+    <a href="mole-conversion-builder.html" class="sim-card teal">
+
+      <span class="tag">Grade 10 · The Mole</span>
+
+      <div class="sim-icon">🚂</div>
+
+      <h3>Mole Conversion Builder</h3>
+
+      <p>
+        Build your own mole conversions and follow the conversion
+        pathway between particles, moles, and mass.
+      </p>
+
+      <span class="go">Launch simulation →</span>
+
+    </a>
+
+
+    <!-- Molar Mass Calculator -->
+
+    <a href="molar-mass-calculator.html" class="sim-card">
+
+      <span class="tag">Grade 10 · The Mole</span>
+
+      <div class="sim-icon">⚛️</div>
+
+      <h3>Molar Mass Calculator</h3>
+
+      <p>
+        Build chemical formulas and calculate their molar masses
+        using the periodic table.
+      </p>
+
+      <span class="go">Launch simulation →</span>
+
+    </a>
+
+
+    <!-- Graphite Challenge -->
+
+    <a href="graphite-challenge.html" class="sim-card teal">
+
+      <span class="tag">Grade 10 · The Mole</span>
+
+      <div class="sim-icon">✏️</div>
+
+      <h3>The Graphite Challenge</h3>
+
+      <p>
+        Draw a pencil line, weigh the graphite used, and calculate
+        how many billions of carbon atoms you deposited on the paper.
+      </p>
+
+      <span class="go">Launch simulation →</span>
+
+    </a>
+
+
+    <!-- Multi-Step Conversion Playground -->
+
+    <a href="multi-step-conversion.html" class="sim-card">
+
+      <span class="tag">Grade 10 · The Mole</span>
+
+      <div class="sim-icon">🔄</div>
+
+      <h3>Multi-Step Conversion Playground</h3>
+
+      <p>
+        Practice multi-step mole conversions and see how dimensional
+        analysis connects mass, moles, and particles.
+      </p>
+
+      <span class="go">Launch simulation →</span>
+
+    </a>
+
+
+
+    <!-- ========================================= -->
+    <!-- CHEMISTRY CORE -->
+    <!-- ========================================= -->
+
+
+    <!-- Acid Base Titration -->
+
+    <a href="sim-titration.html" class="sim-card">
+
+      <span class="tag">Chemistry</span>
+
+      <div class="sim-icon">🧪</div>
+
+      <h3>Acid-Base Titration</h3>
+
+      <p>
+        Drip base into acid, watch the flask change color, and read
+        the pH curve live as you titrate.
+      </p>
+
+      <span class="go">Launch simulation →</span>
+
+    </a>
+
+
+    <!-- pH Scale -->
 
     <a href="sim-ph-scale.html" class="sim-card teal">
+
       <span class="tag">Chemistry</span>
+
       <div class="sim-icon">🌡️</div>
+
       <h3>pH Scale Explorer</h3>
-      <p>Compare everyday substances — lemon juice, soap, bleach — on the pH scale and see what makes them acidic or basic.</p>
+
+      <p>
+        Compare everyday substances — lemon juice, soap, bleach —
+        on the pH scale and see what makes them acidic or basic.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
+
+
+    <!-- Build an Atom -->
 
     <a href="sim-build-atom.html" class="sim-card">
+
       <span class="tag">Chemistry</span>
+
       <div class="sim-icon">⚛️</div>
+
       <h3>Build an Atom</h3>
-      <p>Add protons, neutrons, and electrons one at a time and discover which element, isotope, or ion you've built.</p>
+
+      <p>
+        Add protons, neutrons, and electrons one at a time and
+        discover which element, isotope, or ion you've built.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
+
+
+    <!-- Reaction Rates -->
 
     <a href="sim-reaction-rates.html" class="sim-card teal">
+
       <span class="tag">Chemistry</span>
+
       <div class="sim-icon">⚡</div>
+
       <h3>Reaction Rates</h3>
-      <p>Turn up the temperature or concentration and watch molecules collide faster — see what actually speeds up a reaction.</p>
+
+      <p>
+        Turn up the temperature or concentration and watch molecules
+        collide faster — see what actually speeds up a reaction.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
 
-    <!-- Atomic Models -->
+
+
+    <!-- ========================================= -->
+    <!-- ATOMIC MODELS -->
+    <!-- ========================================= -->
+
+
+    <!-- Dalton and Thomson -->
+
     <a href="sim-atomic-models.html" class="sim-card">
+
       <span class="tag">Chemistry</span>
+
       <div class="sim-icon">🔬</div>
+
       <h3>Dalton & Thomson Models</h3>
-      <p>Explore the solid sphere vs. plum pudding model with the famous chocolate chip cookie analogy. Click to discover electrons!</p>
+
+      <p>
+        Explore the solid sphere vs. plum pudding model with the
+        famous chocolate chip cookie analogy. Click to discover
+        electrons!
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
+
+
+    <!-- Thomson CRT -->
 
     <a href="sim-crt-thomson.html" class="sim-card teal">
+
       <span class="tag">Chemistry</span>
+
       <div class="sim-icon">⚡</div>
+
       <h3>Thomson's CRT Experiment</h3>
-      <p>Fire cathode rays through electric and magnetic fields. Watch the beam bend and prove electrons exist inside atoms.</p>
+
+      <p>
+        Fire cathode rays through electric and magnetic fields.
+        Watch the beam bend and prove electrons exist inside atoms.
+      </p>
+
       <span class="go">Launch simulation →</span>
+
     </a>
 
-    <!-- Coming Soon -->
-    <div class="sim-card locked">
-      <span class="badge-soon">Coming soon</span>
-      <div class="sim-icon">🌀</div>
-      <h3>Projectile Motion</h3>
-      <p>Physics simulations are on the way — launch angles, gravity, and trajectories.</p>
-    </div>
+
+
+    <!-- ========================================= -->
+    <!-- COMING SOON -->
+    <!-- ========================================= -->
+
+
+    <!-- Projectile Motion -->
 
     <div class="sim-card locked">
+
       <span class="badge-soon">Coming soon</span>
-      <div class="sim-icon">🪐</div>
-      <h3>Orbits & Gravity</h3>
-      <p>Astrophysics simulations are on the way — build your own solar system.</p>
+
+      <div class="sim-icon">🌀</div>
+
+      <h3>Projectile Motion</h3>
+
+      <p>
+        Physics simulations are on the way — launch angles,
+        gravity, and trajectories.
+      </p>
+
     </div>
+
+
+    <!-- Orbits and Gravity -->
+
+    <div class="sim-card locked">
+
+      <span class="badge-soon">Coming soon</span>
+
+      <div class="sim-icon">🪐</div>
+
+      <h3>Orbits & Gravity</h3>
+
+      <p>
+        Astrophysics simulations are on the way — build your
+        own solar system.
+      </p>
+
+    </div>
+
 
   </div>
+
 </div>
 
+
+
+<!-- Footer -->
+
 <footer class="sim-footer">
+
   <div class="sim-footer-inner">
-    <span>&copy; 2026 BrainJoy · brainjoy.site</span>
+
+    <span>
+      &copy; 2026 BrainJoy · brainjoy.site
+    </span>
+
     <div class="sim-footer-links">
+
       <a href="index.html">Home</a>
+
       <a href="about.html">About</a>
+
       <a href="contact.html">Contact</a>
+
     </div>
+
   </div>
+
 </footer>
+
 
 </body>
 </html>
+```
