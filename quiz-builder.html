@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Builder — BrainJoy</title>
+<meta name="description" content="Build and practice quizzes in your browser, with JSON import and export." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+
+<script src="quiz-store.js"></script>
+<style>
+  .qb-field { margin-bottom:14px; }
+  .qb-field label { display:block; font-weight:600; font-size:.85rem; margin-bottom:6px; color:var(--text-secondary); }
+  .qb-field input, .qb-field textarea, .qb-field select {
+    width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:var(--radius-sm);
+    font-family:var(--font-body); font-size:.95rem; outline:none; transition:border .2s; background:#fff;
+  }
+  .qb-field input:focus, .qb-field textarea:focus { border-color:var(--purple-light); }
+  .q-card { border:1.5px solid var(--border); border-radius:var(--radius-md); padding:18px; margin-bottom:16px; background:var(--purple-50); position:relative; }
+  .q-card h4 { font-family:var(--font-display); margin-bottom:10px; color:var(--purple-dark); }
+  .q-remove { position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--text-muted); }
+  .opt-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .opt-row input[type=text] { flex:1; padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-family:var(--font-body); }
+  .opt-row input[type=radio] { width:18px; height:18px; accent-color:var(--purple); }
+  .opt-hint { font-size:.75rem; color:var(--text-muted); }
+  .quiz-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1.5px solid var(--border); border-radius:var(--radius-sm); margin-bottom:10px; background:#fff; flex-wrap:wrap; }
+  .quiz-row .meta { font-size:.8rem; color:var(--text-muted); }
+  .mode-badge { display:inline-block; padding:4px 14px; border-radius:999px; font-size:.78rem; font-weight:700; }
+  .mode-badge.cloud { background:#dcfce7; color:#15803d; }
+  .mode-badge.local { background:#fef3c7; color:#b45309; }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon"></div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html">Simulations</a>
+    <a href="quiz-builder.html" class="current">Quiz Builder</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow">Teachers &middot; Quiz Core</p>
+  <h1>Build a <span class="gradient-text">quiz.</span></h1>
+  <p class="hero-sub">Multiple choice, true/false and short answer. Try a quiz in this browser, or export a quiz file for someone to import.</p>
+</header>
+
+<div class="sim-wrap">
+  <div style="text-align:center; margin-bottom:20px;">
+    <span class="mode-badge local" id="modeBadge">Checking storage…</span>
+    <p class="panel-note" id="modeNote" style="display:none; margin:10px auto 0; max-width:560px;">Prototype: quizzes are stored <strong>only in this browser</strong>. Links do not share quizzes with another browser or device. Clearing browser storage removes these copies. Cloud saving is not enabled.</p>
+  </div>
+  <div class="sim-lab">
+
+    <div class="panel">
+      <h2>Quiz details</h2>
+      <p class="panel-note">Everything saves when you press Save quiz.</p>
+      <div class="qb-field"><label for="qTitle">Title</label><input id="qTitle" placeholder="e.g. Week 11 - The Mole"></div>
+      <div class="qb-field"><label for="qSubject">Subject</label><input id="qSubject" placeholder="e.g. Chemistry"></div>
+      <div class="qb-field"><label for="qGrade">Grade / level</label><input id="qGrade" placeholder="e.g. Grade 10"></div>
+      <input type="hidden" id="qId">
+      <div class="btnrow" style="margin-top:6px;">
+        <button class="sbtn sbtn-primary" id="saveBtn"> Save quiz</button>
+        <button class="sbtn sbtn-reset" id="newBtn">New quiz</button>
+        <button class="sbtn" id="sampleBtn">Try a sample</button>
+        <label class="sbtn" for="importQuiz">Import quiz file</label>
+        <input id="importQuiz" type="file" accept="application/json,.json" style="max-width:240px">
+      </div>
+      <p class="panel-note" id="saveMsg" style="margin-top:10px;"></p>
+    </div>
+
+    <div class="panel">
+      <h2>Questions</h2>
+      <p class="panel-note">Add up to 100 questions. Select the correct answer for each one.</p>
+      <div id="questionList"></div>
+      <div class="btnrow">
+        <button class="sbtn" style="background:var(--purple-100);color:var(--purple-dark);" onclick="addQuestion('mcq')">+ Multiple choice</button>
+        <button class="sbtn" style="background:var(--teal-50);color:#00796b;" onclick="addQuestion('tf')">+ True / False</button>
+        <button class="sbtn" style="background:#fce7f3;color:#be185d;" onclick="addQuestion('short')">+ Short answer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:26px;">
+    <h2>My saved quizzes</h2>
+    <p class="panel-note">Open a saved quiz to edit or play in this browser. Export a file to move it to another browser.</p>
+    <button class="sbtn" id="backupRaw">Download exact browser-data backup</button><p class="panel-note" id="storageStatus" role="status"></p>
+    <div id="savedList"><p style="color:var(--text-muted); font-size:.9rem;">Loading…</p></div>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon"></div>
+      <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+let questions = [];
+
+function addQuestion(type, data) {
+  const q = data || (type === 'mcq'
+    ? { type, text: '', options: ['', '', '', ''], correct: 0 }
+    : type === 'tf'
+      ? { type, text: '', correct: true }
+      : { type, text: '', answer: '' });
+  questions.push(q);
+  renderQuestions();
+}
+
+function removeQuestion(i) { questions.splice(i, 1); renderQuestions(); }
+
+function renderQuestions() {
+  const host = document.getElementById('questionList');
+  host.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    let inner = '<button class="q-remove" onclick="removeQuestion(' + i + ')">✕</button>';
+    inner += '<h4>Q' + (i + 1) + ' · ' + (q.type === 'mcq' ? 'Multiple choice' : q.type === 'tf' ? 'True / False' : 'Short answer') + '</h4>';
+    inner += '<div class="qb-field"><input placeholder="Question text" value="' + esc(q.text) + '" oninput="questions[' + i + '].text=this.value"></div>';
+    if (q.type === 'mcq') {
+      q.options.forEach((opt, oi) => {
+        inner += '<div class="opt-row"><input type="radio" name="correct-' + i + '" ' + (q.correct === oi ? 'checked' : '') + ' onchange="questions[' + i + '].correct=' + oi + '"><input type="text" placeholder="Option ' + (oi + 1) + '" value="' + esc(opt) + '" oninput="questions[' + i + '].options[' + oi + ']=this.value"></div>';
+      });
+      inner += '<p class="opt-hint">Selected radio = correct answer.</p>';
+    } else if (q.type === 'tf') {
+      inner += '<div class="opt-row"><input type="radio" name="tf-' + i + '" ' + (q.correct === true ? 'checked' : '') + ' onchange="questions[' + i + '].correct=true"> True</div>';
+      inner += '<div class="opt-row"><input type="radio" name="tf-' + i + '" ' + (q.correct === false ? 'checked' : '') + ' onchange="questions[' + i + '].correct=false"> False</div>';
+    } else {
+      inner += '<div class="qb-field"><input placeholder="Correct answer (checked case-insensitively)" value="' + esc(q.answer || '') + '" oninput="questions[' + i + '].answer=this.value"></div>';
+    }
+    card.innerHTML = inner;
+    host.appendChild(card);
+  });
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+document.getElementById('sampleBtn').onclick = () => loadIntoEditor({title:'Chemistry warm-up',subject:'Chemistry',grade:'Practice',questions:[{type:'mcq',text:'Which formula represents water?',options:['H2O','CO2','NaCl','O2'],correct:0},{type:'tf',text:'The pH scale describes how acidic or basic an aqueous solution is.',correct:true},{type:'short',text:'What is the SI unit for amount of substance?',answer:'mol'}]});
+document.getElementById('importQuiz').onchange = async (event) => {
+ const file = event.target.files[0]; if (!file) return;
+ const msg = document.getElementById('saveMsg');
+ try { const saved = await bjQuizStore.importQuiz(await file.text()); loadIntoEditor(saved); await loadSaved(); msg.textContent = 'Imported a new browser copy. The quiz file includes its answer key.'; } catch(e) { msg.textContent = e.message; }
+ event.target.value = '';
+};
+
+document.getElementById('saveBtn').onclick = async () => {
+  const msg = document.getElementById('saveMsg');
+  const title = document.getElementById('qTitle').value.trim();
+  if (!title) { msg.textContent = ' Give the quiz a title first.'; msg.style.color = '#b45309'; return; }
+  const clean = questions;
+  if (!clean.length) { msg.textContent = ' Add at least one question.'; msg.style.color = '#b45309'; return; }
+  const quiz = {
+    id: document.getElementById('qId').value || null,
+    title,
+    subject: document.getElementById('qSubject').value.trim(),
+    grade: document.getElementById('qGrade').value.trim(),
+    questions: clean
+  };
+  try {
+    const saved = await bjQuizStore.saveQuiz(quiz);
+    document.getElementById('qId').value = saved.id;
+    msg.textContent = 'Saved in this browser. Use Play below, or export a backup to move it to another browser.';
+    msg.style.color = '#15803d';
+    loadSaved();
+  } catch (e) {
+    msg.textContent = ' Save failed: ' + e.message;
+    msg.style.color = '#b91c1c';
+  }
+};
+
+document.getElementById('newBtn').onclick = () => {
+  document.getElementById('qId').value = '';
+  document.getElementById('qTitle').value = '';
+  document.getElementById('qSubject').value = '';
+  document.getElementById('qGrade').value = '';
+  questions = [];
+  renderQuestions();
+  document.getElementById('saveMsg').textContent = '';
+};
+
+async function loadSaved() {
+  const host = document.getElementById('savedList');
+  let list;
+  try { list = await bjQuizStore.listQuizzes(); const status = await bjQuizStore.storageStatus(); document.getElementById('storageStatus').textContent = status.legacy || status.unreadable ? status.legacy + ' legacy copies can be played/exported. ' + status.unreadable + ' unreadable records remain preserved in the raw backup. Editing a legacy copy saves a new quiz, leaving its original unchanged.' : 'Saved quizzes are readable. Download a raw backup before making changes if you need the original browser data.'; } catch(e) { host.textContent = e.message; document.getElementById('storageStatus').textContent='The exact raw backup is still available below. It may not be valid JSON. Nothing was reset.'; return; }
+  if (!list.length) { host.innerHTML = '<p style="color:var(--text-muted); font-size:.9rem;">No quizzes yet - build your first one above.</p>'; return; }
+  host.innerHTML = '';
+  list.forEach(q => {
+    const row = document.createElement('div');
+    row.className = 'quiz-row';
+    row.innerHTML = '<div><strong>' + esc(q.title) + '</strong><div class="meta">' + esc(q.subject || '-') + ' · ' + esc(q.grade || '-') + ' · ' + (q.questions ? q.questions.length : 0) + ' questions</div></div>';
+    const btns = document.createElement('div');
+    btns.className = 'btnrow';
+    btns.style.margin = '0';
+    const play = document.createElement('a');
+    play.className = 'sbtn sbtn-primary';
+    play.style.textDecoration = 'none';
+    play.href = 'quiz-play.html?id=' + encodeURIComponent(q.id);
+    play.textContent = '▶ Play';
+    const edit = document.createElement('button');
+    edit.className = 'sbtn';
+    edit.textContent = ' Edit';
+    edit.onclick = () => loadIntoEditor(q);
+    const del = document.createElement('button');
+    del.className = 'sbtn sbtn-reset';
+    del.textContent = 'Delete';
+    del.setAttribute('aria-label', 'Delete ' + q.title); 
+    del.disabled = q.recovery; if(q.recovery) del.textContent = 'Legacy copy preserved';
+    del.onclick = async () => { if (confirm('Delete this browser copy of ' + q.title + '? Export a backup first if you need it.')) { await bjQuizStore.deleteQuiz(q.id); loadSaved(); } };
+    const exportBtn = document.createElement('button');
+    exportBtn.className = 'sbtn'; exportBtn.textContent = 'Export';
+    exportBtn.onclick = () => {
+      const url = URL.createObjectURL(new Blob([bjQuizStore.exportQuiz(q)], {type:'application/json'}));
+      const a = document.createElement('a'); a.href = url; a.download = 'brainjoy-quiz.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+    btns.appendChild(exportBtn);
+    btns.appendChild(play); btns.appendChild(edit); btns.appendChild(del);
+    row.appendChild(btns);
+    host.appendChild(row);
+  });
+}
+
+function loadIntoEditor(q) {
+  document.getElementById('qId').value = q.recovery ? '' : (q.id || '');
+  document.getElementById('qTitle').value = q.title || '';
+  document.getElementById('qSubject').value = q.subject || '';
+  document.getElementById('qGrade').value = q.grade || '';
+  questions = (q.questions || []).map(x => Object.assign({}, x));
+  renderQuestions();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('saveMsg').textContent = q.recovery ? 'Recovered copy of "' + q.title + '". Save quiz creates a new copy and keeps the legacy original unchanged.' : 'Editing "' + q.title + '" - press Save quiz when done.';
+}
+
+document.getElementById('backupRaw').onclick = () => { try { bjQuizStore.downloadRawStorage(); document.getElementById('storageStatus').textContent='Exact raw backup download started. It preserves all quiz records, including unreadable entries. Keep it private; it may contain names or answers. This is a data backup, not an importable quiz file.'; } catch(e) { document.getElementById('storageStatus').textContent='Backup could not start: '+e.message; } };
+
+(async () => {
+  const mode = await bjQuizStore.init();
+  const badge = document.getElementById('modeBadge');
+  const note = document.getElementById('modeNote');
+  badge.className = 'mode-badge local';
+  badge.textContent = 'Browser-only prototype';
+  note.style.display = 'block';
+  await loadSaved();
+  const requested = new URLSearchParams(location.search).get('id');
+  if (requested) {
+    try { const saved = await bjQuizStore.getQuiz(requested); if (!saved) throw Error('That quiz is not saved in this browser. Import its quiz JSON file to edit it here.'); bjQuizStore.validateQuiz(saved); loadIntoEditor(saved); }
+    catch (e) { document.getElementById('saveMsg').textContent = e.message; }
+  }
+})();
+</script>
+</body>
+</html>

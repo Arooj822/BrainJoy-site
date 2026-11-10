@@ -1,0 +1,2 @@
+// Publishable anon key. No service-role key. Cloud mode stays off until live authorization and consent tests pass.
+window.BRAINJOY_CONFIG={"url": "https://kxqjyqohhjkggtqnwubd.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cWp5cW9oaGprZ2d0cW53dWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNjc5OTcsImV4cCI6MjA3NTg0Mzk5N30.5i3FOotMp470xJ3q5eyjxefg2crOEpXFxuW0M1DOCPo", "enabled": false};

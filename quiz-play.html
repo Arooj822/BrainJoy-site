@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Play Quiz — BrainJoy</title>
+<meta name="description" content="Play a BrainJoy quiz: answer at your own pace and get your score instantly." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+
+<script src="quiz-store.js"></script>
+<style>
+  .play-card { max-width:720px; margin:0 auto; }
+  .q-progress { display:flex; gap:6px; margin:16px 0; flex-wrap:wrap; }
+  .q-dot { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; background:var(--purple-100); color:var(--purple-dark); border:2px solid transparent; }
+  .q-dot.current { border-color:var(--purple); background:#fff; }
+  .q-dot.done { background:var(--teal); color:#fff; }
+  .q-text { font-family:var(--font-display); font-size:1.4rem; margin:14px 0 20px; line-height:1.4; }
+  .answer-btn { display:block; width:100%; text-align:left; padding:15px 18px; margin-bottom:10px; border-radius:var(--radius-sm); border:2px solid var(--border); background:#fff; font-family:var(--font-body); font-weight:600; font-size:1rem; cursor:pointer; transition:.15s; }
+  .answer-btn:hover:not(:disabled) { border-color:var(--purple-light); transform:translateY(-1px); }
+  .answer-btn:disabled { cursor:default; }
+  .answer-btn.correct { border-color:#16a34a; background:#dcfce7; color:#15803d; }
+  .answer-btn.wrong { border-color:#dc2626; background:#fee2e2; color:#b91c1c; }
+  .short-input { width:100%; padding:14px 16px; border:2px solid var(--border); border-radius:var(--radius-sm); font-family:var(--font-body); font-size:1rem; margin-bottom:10px; }
+  .feedback { font-weight:700; margin:12px 0; min-height:1.5em; }
+  .score-hero { text-align:center; padding:30px 10px; }
+  .score-big { font-family:var(--font-display); font-size:3.4rem; font-weight:800; color:var(--purple); }
+  .review-item { border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:12px; background:#fff; }
+  .review-item .pill { margin-left:8px; }
+  .name-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:16px; }
+  .name-row input { padding:13px 18px; border:2px solid var(--border); border-radius:999px; font-family:var(--font-body); font-size:1rem; min-width:240px; }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon"></div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html">Simulations</a>
+    <a href="quiz-builder.html">Quiz Builder</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow" id="heroEyebrow">Quiz</p>
+  <h1 id="heroTitle">Loading <span class="gradient-text">quiz…</span></h1>
+  <p class="hero-sub" id="heroSub"></p><p class="panel-note">Browser-only practice prototype. Scores are not sent to a teacher.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="panel play-card" id="playPanel">
+    <div id="playArea"><p style="color:var(--text-muted); text-align:center;">Loading…</p></div>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon"></div>
+      <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+let quiz = null, idx = 0, score = 0, answers = [], answered = false;
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function boot() {
+  const id = new URLSearchParams(location.search).get('id');
+  const area = document.getElementById('playArea');
+  await bjQuizStore.init();
+  if (!id) { area.innerHTML = '<p style="text-align:center;">No quiz selected. Open the quiz builder, save a quiz, then select Play.</p>'; return; }
+  quiz = await bjQuizStore.getQuiz(id);
+  if (!quiz) { area.innerHTML = '<p style="text-align:center;">This browser does not have that quiz. Import its quiz file in the builder first.</p>'; return; }
+  document.getElementById('heroEyebrow').textContent = (quiz.subject || 'Quiz') + (quiz.grade ? ' · ' + quiz.grade : '');
+  document.getElementById('heroTitle').innerHTML = esc(quiz.title);
+  document.getElementById('heroSub').textContent = quiz.questions.length + ' questions · answer at your own pace';
+  showStart();
+}
+
+function showStart() {
+  const area = document.getElementById('playArea');
+  area.innerHTML =
+    '<div class="score-hero"><h2 style="font-family:var(--font-display);">Ready to play?</h2>' +
+    '<p style="color:var(--text-secondary); margin:10px 0 4px;">' + quiz.questions.length + ' questions. You get instant feedback after each one.</p>' +
+    '<div class="name-row"><button class="sbtn sbtn-primary" id="startBtn">Start ▶</button></div></div>';
+  document.getElementById('startBtn').onclick = () => { idx = 0; score = 0; answers = []; renderQuestion(); };
+}
+
+function renderQuestion() {
+  answered = false;
+  const area = document.getElementById('playArea');
+  const q = quiz.questions[idx];
+  let dots = '<div class="q-progress">';
+  quiz.questions.forEach((_, i) => {
+    dots += '<div class="q-dot' + (i < idx ? ' done' : i === idx ? ' current' : '') + '">' + (i + 1) + '</div>';
+  });
+  dots += '</div>';
+
+  let body = '<div class="q-text">' + esc(q.text) + '</div>';
+  if (q.type === 'mcq') {
+    q.options.forEach((opt, oi) => {
+      body += '<button class="answer-btn" data-oi="' + oi + '">' + esc(opt) + '</button>';
+    });
+  } else if (q.type === 'tf') {
+    body += '<button class="answer-btn" data-tf="true">True</button>';
+    body += '<button class="answer-btn" data-tf="false">False</button>';
+  } else {
+    body += '<input class="short-input" id="shortAnswer" aria-label="Your answer" maxlength="500" placeholder="Type your answer…"><button class="sbtn sbtn-primary" id="checkShort">Check</button>';
+  }
+  body += '<div class="feedback" id="feedback"></div>';
+  area.innerHTML = dots + body;
+
+  if (q.type === 'mcq') {
+    area.querySelectorAll('[data-oi]').forEach(b => {
+      b.onclick = () => grade(b, parseInt(b.dataset.oi) === q.correct, 'The correct answer: ' + q.options[q.correct]);
+    });
+  } else if (q.type === 'tf') {
+    area.querySelectorAll('[data-tf]').forEach(b => {
+      b.onclick = () => grade(b, (b.dataset.tf === 'true') === q.correct, 'The correct answer: ' + (q.correct ? 'True' : 'False'));
+    });
+  } else {
+    const check = () => {
+      if (answered) return;
+      const given = document.getElementById('shortAnswer').value.trim();
+      if (!given) { document.getElementById('feedback').textContent = 'Enter an answer first.'; document.getElementById('shortAnswer').focus(); return; }
+      const ok = given.toLowerCase() === String(q.answer || '').trim().toLowerCase();
+      grade(null, ok, 'The correct answer: ' + q.answer);
+    };
+    document.getElementById('checkShort').onclick = check;
+    document.getElementById('shortAnswer').addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  }
+}
+
+function grade(btn, ok, reveal) {
+  if (answered) return;
+  answered = true;
+  document.querySelectorAll('.answer-btn').forEach(b => { b.disabled = true; });
+  const check = document.getElementById('checkShort'); if (check) check.disabled = true;
+  const input = document.getElementById('shortAnswer'); if (input) input.disabled = true;
+  if (btn) btn.classList.add(ok ? 'correct' : 'wrong');
+  if (ok) score++;
+  answers.push({ q: quiz.questions[idx], ok });
+  const fb = document.getElementById('feedback');
+  fb.setAttribute('role','status');
+  fb.style.color = ok ? '#15803d' : '#b91c1c';
+  fb.innerHTML = (ok ? ' Correct!' : ' Not quite. ' + esc(reveal)) + ' ';
+  const next = document.createElement('button');
+  next.className = 'sbtn sbtn-primary';
+  next.style.marginLeft = '10px';
+  next.textContent = idx + 1 < quiz.questions.length ? 'Next →' : 'See results';
+  next.onclick = () => { idx++; if (idx < quiz.questions.length) renderQuestion(); else showResults(); };
+  fb.appendChild(next);
+}
+
+function showResults() {
+  const area = document.getElementById('playArea');
+  const pct = Math.round(100 * score / quiz.questions.length);
+  let msg = pct >= 80 ? ' Excellent work!' : pct >= 50 ? ' Good effort - review the ones you missed.' : ' Keep practicing - every mistake is a step.';
+  let html = '<div class="score-hero"><div class="score-big">' + score + ' / ' + quiz.questions.length + '</div>' +
+    '<p style="font-family:var(--font-display); font-size:1.3rem;">' + pct + '%</p>' +
+    '<p style="color:var(--text-secondary); margin:8px 0 18px;">' + msg + '</p>' +
+    '<button class="sbtn sbtn-primary" onclick="showStart()">Play again ↻</button> <a href="practice.html">Practice library</a></div>';
+  html += '<h3 style="font-family:var(--font-display); margin:20px 0 12px;">Review</h3>';
+  answers.forEach((a, i) => {
+    html += '<div class="review-item"><strong>Q' + (i + 1) + '.</strong> ' + esc(a.q.text) +
+      '<span class="pill ' + (a.ok ? 'base' : 'acid') + '">' + (a.ok ? 'Correct' : 'Missed') + '</span><p>Expected answer: ' + esc(a.q.type === 'mcq' ? a.q.options[a.q.correct] : a.q.type === 'tf' ? (a.q.correct ? 'True' : 'False') : a.q.answer) + '</p></div>';
+  });
+  area.innerHTML = html;
+}
+
+boot().catch(e => { document.getElementById('playArea').textContent = 'Quiz could not load: ' + e.message; });
+</script>
+</body>
+</html>
