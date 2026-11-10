@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Enzyme Activity &amp; pH — BrainJoy</title>
+<meta name="description" content="Explore how pH affects enzyme activity: adjust the pH, watch the reaction rate change, and discover each enzyme's optimum pH." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .enzyme-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:14px; }
+  .enzyme-btn { padding:12px 10px; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:#fff; font-family:var(--font-body); font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; text-align:left; }
+  .enzyme-btn small { display:block; font-weight:500; color:var(--text-muted); margin-top:2px; }
+  .enzyme-btn:hover { border-color:var(--purple-light); transform:translateY(-2px); }
+  .enzyme-btn.active { border-color:var(--purple); background:var(--purple-50); box-shadow:var(--shadow-sm); }
+  .tube-stage { display:flex; gap:34px; justify-content:center; align-items:flex-end; flex-wrap:wrap; margin:24px 0 6px; }
+  .test-tube { width:70px; height:190px; border:4px solid var(--slate); border-top:none; border-radius:0 0 34px 34px; position:relative; overflow:hidden; background:rgba(255,255,255,.6); }
+  .tube-liquid { position:absolute; bottom:0; left:0; right:0; height:62%; background:linear-gradient(180deg,#bae6fd,#7dd3fc); transition:filter .5s; }
+  .bubble { position:absolute; bottom:8px; border-radius:50%; background:rgba(255,255,255,.9); animation:rise linear infinite; }
+  @keyframes rise { from { transform:translateY(0); opacity:.9; } to { transform:translateY(-120px); opacity:0; } }
+  .stage-label { text-align:center; margin-top:10px; font-weight:600; font-size:.9rem; }
+  .activity-bar-wrap { margin-top:18px; }
+  .activity-bar { height:26px; border-radius:999px; background:var(--purple-100); overflow:hidden; }
+  .activity-fill { height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--teal),var(--teal-light)); transition:width .5s; }
+  .status-line { font-family:var(--font-display); font-weight:700; font-size:1.15rem; margin-top:12px; min-height:1.6em; }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon">🧠</div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow">Biology &amp; Chemistry Sim &middot; Enzymes</p>
+  <h1>Why enzymes are <span class="gradient-text">picky about pH.</span></h1>
+  <p class="hero-sub">Choose an enzyme, slide the pH, and watch the reaction speed up near its optimum — and stall when the enzyme denatures.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Reaction Chamber</h2>
+        <p class="panel-note">Bubble speed = reaction rate. The curve shows activity across the whole pH range; the marker is your current pH.</p>
+      </div>
+
+      <div class="tube-stage">
+        <div>
+          <div class="test-tube"><div class="tube-liquid" id="tubeLiquid"></div><div id="bubbleLayer" style="position:absolute;inset:0;"></div></div>
+          <div class="stage-label" id="tubeLabel">Reaction rate</div>
+        </div>
+        <svg width="340" height="220" viewBox="0 0 340 220" aria-label="Activity versus pH curve">
+          <line x1="34" y1="190" x2="330" y2="190" stroke="#5a5a6e" stroke-width="2"/>
+          <line x1="34" y1="190" x2="34" y2="14" stroke="#5a5a6e" stroke-width="2"/>
+          <g id="curveLabels" font-size="10" fill="#5a5a6e" font-family="Poppins,sans-serif"></g>
+          <path id="curvePath" fill="none" stroke="#6a0dad" stroke-width="3" stroke-linecap="round"/>
+          <circle id="curveMarker" r="7" fill="#00bfa5" stroke="#fff" stroke-width="2.5"/>
+        </svg>
+      </div>
+
+      <div class="activity-bar-wrap">
+        <div class="meter-label" style="margin-bottom:6px;">Enzyme activity</div>
+        <div class="activity-bar"><div class="activity-fill" id="activityFill"></div></div>
+      </div>
+      <div class="status-line" id="statusLine"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">Pepsin digests protein in your stomach. Amylase works in your mouth. Trypsin works in the small intestine. Catalase protects your cells.</p>
+
+      <h3 style="font-family:var(--font-display); font-weight:700; font-size:1.0rem;">Enzyme</h3>
+      <div class="enzyme-grid" id="enzymeGrid"></div>
+
+      <div class="custom-slider-wrap" style="margin-top:20px;">
+        <label>pH of environment <span class="val" id="phLabel">2.0</span></label>
+        <input type="range" id="phSlider" min="0" max="14" step="0.1" value="2.0">
+      </div>
+
+      <div class="readouts" style="margin-top:18px;">
+        <div class="readout">
+          <div class="meter-label">Optimum pH</div>
+          <div class="meter-display" id="optDisplay" style="font-size:1.5rem;">2.0</div>
+        </div>
+        <div class="readout">
+          <div class="meter-label">Activity now</div>
+          <div class="meter-display" id="actDisplay" style="font-size:1.5rem;">100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>Why the peak?</h3>
+      <p>An enzyme's active site is held in shape by ionic bonds and hydrogen bonds. At the <strong>optimum pH</strong> that shape fits its substrate perfectly. Move the pH and the charges on amino acids change, warping the active site — so the reaction slows.</p>
+    </div>
+    <div class="callout">
+      <h3>Denaturation</h3>
+      <p>Far enough from the optimum, the enzyme's shape unravels — it is <strong>denatured</strong>, and for many enzymes this change cannot be undone. Pepsin is built for stomach acid (optimum around pH 2) and slowly loses its shape in neutral conditions, while salivary amylase (optimum ~pH 7) keeps working for a while after swallowing and only denatures as the stomach's acid takes over.</p>
+    </div>
+    <div class="callout">
+      <h3>Real bodies, real pH zones</h3>
+      <p>Your digestive tract is a pH assembly line: mouth ~7, stomach ~2, small intestine ~8. Each enzyme evolved for its own zone, which is why digestion happens in stages instead of all at once.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon">🧠</div>
+      <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const ENZYMES = [
+  { name:'Pepsin', where:'stomach', opt:2.0, sigma:1.4 },
+  { name:'Salivary amylase', where:'mouth', opt:6.8, sigma:1.2 },
+  { name:'Catalase', where:'cells', opt:7.0, sigma:1.8 },
+  { name:'Trypsin', where:'small intestine', opt:8.0, sigma:1.3 }
+];
+
+let enzyme = ENZYMES[0];
+let ph = 2.0;
+let bubbles = [];
+
+const phSlider = document.getElementById('phSlider');
+const phLabel = document.getElementById('phLabel');
+const optDisplay = document.getElementById('optDisplay');
+const actDisplay = document.getElementById('actDisplay');
+const statusLine = document.getElementById('statusLine');
+const activityFill = document.getElementById('activityFill');
+const bubbleLayer = document.getElementById('bubbleLayer');
+const curvePath = document.getElementById('curvePath');
+const curveMarker = document.getElementById('curveMarker');
+
+const X0 = 34, X1 = 330, Y0 = 190, Y1 = 24;
+const px = v => X0 + (v / 14) * (X1 - X0);
+const py = a => Y0 - a * (Y0 - Y1);
+
+(function drawAxes(){
+  const g = document.getElementById('curveLabels');
+  for (let v = 0; v <= 14; v += 2) {
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', px(v) - 4); t.setAttribute('y', 205); t.textContent = v;
+    g.appendChild(t);
+  }
+  const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
+  t2.setAttribute('x', 8); t2.setAttribute('y', 20); t2.textContent = 'Activity';
+  g.appendChild(t2);
+})();
+
+function activityAt(v, e) {
+  const d = (v - e.opt) / e.sigma;
+  return Math.exp(-0.5 * d * d);
+}
+
+function drawCurve() {
+  let d = '';
+  for (let v = 0; v <= 14.001; v += 0.2) {
+    d += (d ? ' L' : 'M') + px(v).toFixed(1) + ' ' + py(activityAt(v, enzyme)).toFixed(1);
+  }
+  curvePath.setAttribute('d', d);
+}
+
+function renderBubbles(activity) {
+  const target = Math.round(activity * 8);
+  while (bubbles.length < target) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 4 + Math.random() * 7;
+    b.style.width = size + 'px'; b.style.height = size + 'px';
+    b.style.left = (8 + Math.random() * 46) + 'px';
+    b.style.animationDuration = (0.8 + Math.random() * 1.2) + 's';
+    bubbleLayer.appendChild(b);
+    bubbles.push(b);
+  }
+  while (bubbles.length > target) {
+    const b = bubbles.pop();
+    b.remove();
+  }
+  // speed up bubbles with activity
+  bubbles.forEach(b => {
+    const base = parseFloat(b.dataset.dur || (b.dataset.dur = 0.8 + Math.random() * 1.2));
+    b.style.animationDuration = (base / Math.max(activity, 0.15)) + 's';
+  });
+}
+
+function render() {
+  const a = activityAt(ph, enzyme);
+  phLabel.textContent = ph.toFixed(1);
+  optDisplay.textContent = enzyme.opt.toFixed(1);
+  actDisplay.textContent = Math.round(a * 100) + '%';
+  activityFill.style.width = (a * 100) + '%';
+
+  curveMarker.setAttribute('cx', px(ph));
+  curveMarker.setAttribute('cy', py(a));
+
+  renderBubbles(a);
+
+  if (a > 0.85) { statusLine.textContent = '🚀 Near the optimum — ' + enzyme.name + ' is working at full speed.'; statusLine.style.color = '#00796b'; }
+  else if (a > 0.4) { statusLine.textContent = '🙂 Active, but the active site is distorted — reaction slowed.'; statusLine.style.color = 'var(--text-secondary)'; }
+  else if (a > 0.1) { statusLine.textContent = '😟 Barely active — this pH badly warps the enzyme.'; statusLine.style.color = '#b45309'; }
+  else { statusLine.textContent = '💀 Denatured. ' + enzyme.name + ' cannot work at pH ' + ph.toFixed(1) + '.'; statusLine.style.color = '#b91c1c'; }
+}
+
+const grid = document.getElementById('enzymeGrid');
+ENZYMES.forEach((e, i) => {
+  const b = document.createElement('button');
+  b.className = 'enzyme-btn' + (i === 0 ? ' active' : '');
+  b.innerHTML = e.name + '<small>' + e.where + ' · optimum pH ' + e.opt.toFixed(1) + '</small>';
+  b.onclick = () => {
+    enzyme = e;
+    document.querySelectorAll('.enzyme-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    drawCurve();
+    render();
+  };
+  grid.appendChild(b);
+});
+
+phSlider.oninput = () => { ph = parseFloat(phSlider.value); render(); };
+
+drawCurve();
+render();
+</script>
+</body>
+</html>

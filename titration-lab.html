@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Acid-Base Titration Lab — BrainJoy</title>
+<meta name="description" content="Perform a virtual titration: add base drop by drop, watch the phenolphthalein change color, and find the equivalence point." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .lab-bench { display:flex; justify-content:center; padding:20px 0 6px; }
+  .drop { animation: drip 0.45s ease-in; }
+  @keyframes drip { 0% { transform:translateY(-18px); opacity:0; } 30% { opacity:1; } 100% { transform:translateY(0); opacity:1; } }
+  .status-line { font-family:var(--font-display); font-weight:700; font-size:1.2rem; text-align:center; min-height:1.7em; margin-top:12px; }
+  .readouts { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:18px; }
+  .calc-card { background:var(--purple-50); border:1.5px solid var(--purple-200); border-radius:var(--radius-md); padding:18px 20px; margin-top:18px; display:none; }
+  .calc-card.show { display:block; }
+  .calc-card h3 { font-family:var(--font-display); color:var(--purple-dark); margin-bottom:8px; }
+  .calc-card code { display:block; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; margin:6px 0; font-size:.92rem; }
+  .drop-hint { font-size:.78rem; color:var(--text-muted); margin-top:6px; text-align:center; }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon">🧠</div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow">Chemistry Sim &middot; Titration</p>
+  <h1>Find the <span class="gradient-text">equivalence point.</span></h1>
+  <p class="hero-sub">Add sodium hydroxide drop by drop to hydrochloric acid with phenolphthalein. Stop at the first permanent pale pink — that is your endpoint.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Titration Bench</h2>
+        <p class="panel-note">Flask: 25.0 mL of HCl (unknown concentration) + phenolphthalein. Burette: 0.100 mol/L NaOH.</p>
+      </div>
+
+      <div class="lab-bench">
+        <svg width="300" height="360" viewBox="0 0 300 360" aria-label="Titration apparatus">
+          <!-- stand -->
+          <rect x="30" y="40" width="8" height="300" fill="#8b9dc3" rx="3"/>
+          <rect x="30" y="336" width="240" height="10" fill="#8b9dc3" rx="4"/>
+          <rect x="34" y="86" width="120" height="8" fill="#a8b9d8" rx="3"/>
+          <!-- burette -->
+          <rect x="150" y="20" width="26" height="150" fill="rgba(219,234,254,.65)" stroke="#5a5a6e" stroke-width="2.5" rx="4"/>
+          <g id="buretteMarks" font-size="7" fill="#5a5a6e"></g>
+          <rect id="buretteLiquid" x="153" y="30" width="20" height="134" fill="#bfdbfe" rx="2"/>
+          <path d="M163 170 L163 190" stroke="#5a5a6e" stroke-width="4" stroke-linecap="round"/>
+          <circle id="dropCircle" cx="163" cy="196" r="0" fill="#93c5fd"/>
+          <!-- flask (conical) -->
+          <path d="M120 230 L120 260 L78 336 L248 336 L206 260 L206 230 Z" fill="rgba(255,255,255,.55)" stroke="#5a5a6e" stroke-width="3" stroke-linejoin="round"/>
+          <path id="flaskLiquid" d="M94 300 L232 300 L248 336 L78 336 Z" fill="#f8fafc" stroke="none" style="transition:fill .5s;"/>
+          <text x="222" y="352" text-anchor="middle" font-size="11" fill="#5a5a6e" font-family="Poppins,sans-serif">HCl + phenolphthalein</text>
+        </svg>
+      </div>
+
+      <div class="status-line" id="statusLine">Ready. Add base to begin.</div>
+      <p class="drop-hint">1 drop = 0.05 mL. Go slowly near 25 mL — one drop can take you past the endpoint.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">Add NaOH from the burette. Watch the flask for the first permanent pale pink.</p>
+
+      <div class="btnrow" style="flex-direction:column; gap:10px;">
+        <button class="sbtn sbtn-primary" id="dropBtn">Add 1 drop (0.05 mL)</button>
+        <button class="sbtn" id="mlBtn" style="background:var(--teal-50);color:#00796b;">Add 1.00 mL</button>
+        <button class="sbtn sbtn-reset" id="resetBtn">Reset titration</button>
+      </div>
+
+      <div class="readouts">
+        <div class="readout">
+          <div class="meter-label">Volume added</div>
+          <div class="meter-display" id="volDisplay" style="font-size:1.6rem;">0.00 mL</div>
+        </div>
+        <div class="readout">
+          <div class="meter-label">Flask color</div>
+          <div class="meter-display" id="colorDisplay" style="font-size:1.1rem;">Colorless</div>
+        </div>
+      </div>
+
+      <div class="calc-card" id="calcCard">
+        <h3>🎉 Endpoint reached — calculate the acid concentration</h3>
+        <p style="font-size:.9rem; color:var(--text-secondary);">At the endpoint, moles of NaOH = moles of HCl (1:1 reaction).</p>
+        <code id="calcSteps"></code>
+        <code id="calcAnswer"></code>
+      </div>
+    </div>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>What is the equivalence point?</h3>
+      <p>The moment when the moles of added base exactly equal the moles of acid in the flask: <strong>HCl + NaOH → NaCl + H₂O</strong>. Before it, the flask stays colorless because every OH⁻ is consumed. Just past it, excess OH⁻ turns phenolphthalein pink.</p>
+    </div>
+    <div class="callout">
+      <h3>Endpoint vs equivalence point</h3>
+      <p>The <strong>endpoint</strong> is what you see — the indicator's color change. The <strong>equivalence point</strong> is the exact chemical balance, and the two are rarely perfectly identical. Good technique picks an indicator whose endpoint falls as close as possible to the equivalence point, which is why phenolphthalein suits a strong acid–strong base titration like this one.</p>
+    </div>
+    <div class="callout">
+      <h3>Why drops matter near the end</h3>
+      <p>Far from the endpoint, a millilitre barely changes the flask. Near it, a single drop (0.05 mL) can swing the mixture from acidic to basic. Real lab technique: swirl constantly and add dropwise once the pink starts lingering.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon">🧠</div>
+      <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const ACID_VOL_ML = 25.0;      // HCl in flask
+const BASE_MOLAR = 0.100;      // NaOH concentration
+const ACID_MOLAR_TRUE = 0.100; // hidden true value -> equivalence at 25.00 mL
+const EQ_VOL = ACID_MOLAR_TRUE * ACID_VOL_ML / BASE_MOLAR; // 25.00 mL
+
+let volAdded = 0;
+let finished = false;
+
+const volDisplay = document.getElementById('volDisplay');
+const colorDisplay = document.getElementById('colorDisplay');
+const statusLine = document.getElementById('statusLine');
+const flaskLiquid = document.getElementById('flaskLiquid');
+const buretteLiquid = document.getElementById('buretteLiquid');
+const dropCircle = document.getElementById('dropCircle');
+const calcCard = document.getElementById('calcCard');
+
+// burette volume marks 0..50
+(function(){
+  const g = document.getElementById('buretteMarks');
+  for (let v = 0; v <= 50; v += 10) {
+    const y = 30 + (v / 50) * 134;
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', 182); t.setAttribute('y', y + 2);
+    t.textContent = v;
+    g.appendChild(t);
+  }
+})();
+
+function flaskState() {
+  if (volAdded < EQ_VOL - 0.05) return { fill:'#f8fafc', label:'Colorless' };
+  if (volAdded <= EQ_VOL + 0.30) return { fill:'#fbcfe8', label:'Pale pink' };
+  return { fill:'#ec4899', label:'Hot pink' };
+}
+
+function animateDrop() {
+  dropCircle.setAttribute('r', 5);
+  dropCircle.classList.remove('drop');
+  void dropCircle.getBoundingClientRect();
+  dropCircle.classList.add('drop');
+  setTimeout(() => dropCircle.setAttribute('r', 0), 450);
+}
+
+function render() {
+  volDisplay.textContent = volAdded.toFixed(2) + ' mL';
+  const st = flaskState();
+  flaskLiquid.setAttribute('fill', st.fill);
+  colorDisplay.textContent = st.label;
+
+  const remaining = Math.max(0, 50 - volAdded);
+  const h = (remaining / 50) * 134;
+  buretteLiquid.setAttribute('y', 30 + (134 - h));
+  buretteLiquid.setAttribute('height', h);
+
+  if (finished) return;
+  if (volAdded === 0) { statusLine.textContent = 'Ready. Add base to begin.'; statusLine.style.color = 'var(--text)'; }
+  else if (volAdded < EQ_VOL - 0.05) { statusLine.textContent = 'Colorless — keep going, acid still in excess.'; statusLine.style.color = 'var(--text-secondary)'; }
+  else if (volAdded <= EQ_VOL + 0.30) {
+    statusLine.textContent = '🌸 First permanent pale pink — endpoint! Stop here.';
+    statusLine.style.color = '#be185d';
+    showCalculation();
+  } else {
+    statusLine.textContent = '⚠️ Overshot! The solution is dark pink — too much base. Reset and try again, slower near 25 mL.';
+    statusLine.style.color = '#b91c1c';
+  }
+}
+
+function showCalculation() {
+  finished = true;
+  const nBase = BASE_MOLAR * volAdded / 1000;
+  const cAcid = nBase * 1000 / ACID_VOL_ML;
+  document.getElementById('calcSteps').textContent =
+    'n(NaOH) = ' + BASE_MOLAR.toFixed(3) + ' mol/L × ' + volAdded.toFixed(2) + ' mL ÷ 1000 = ' + nBase.toFixed(5) + ' mol   →   n(HCl) = ' + nBase.toFixed(5) + ' mol';
+  document.getElementById('calcAnswer').textContent =
+    'c(HCl) = n ÷ V = ' + nBase.toFixed(5) + ' mol ÷ 0.0250 L = ' + cAcid.toFixed(3) + ' mol/L';
+  calcCard.classList.add('show');
+}
+
+function add(amount) {
+  if (finished || volAdded >= 50) return;
+  animateDrop();
+  volAdded = Math.round((volAdded + amount) * 100) / 100;
+  render();
+}
+
+document.getElementById('dropBtn').onclick = () => add(0.05);
+document.getElementById('mlBtn').onclick = () => add(1.00);
+document.getElementById('resetBtn').onclick = () => {
+  volAdded = 0; finished = false;
+  calcCard.classList.remove('show');
+  render();
+};
+
+render();
+</script>
+</body>
+</html>
