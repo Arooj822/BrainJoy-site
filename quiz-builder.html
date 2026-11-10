@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Quiz Builder — BrainJoy</title>
-<meta name="description" content="Create quizzes with multiple-choice, true/false and short-answer questions, then share them with your class." />
+<meta name="description" content="Build and practice quizzes in your browser, with JSON import and export." />
 <link rel="icon" href="logo.png" type="image/png" />
 <meta name="theme-color" content="#6a0dad" />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="sim-styles.css" />
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="quiz-store.js"></script>
 <style>
   .qb-field { margin-bottom:14px; }
@@ -37,7 +37,7 @@
 
 <nav class="sim-nav">
   <a href="index.html" class="brand">
-    <div class="brand-icon">🧠</div>
+    <div class="brand-icon"></div>
     <span>BrainJoy</span>
   </a>
   <div class="nav-links">
@@ -53,7 +53,7 @@
   <div class="hero-blob"></div>
   <p class="eyebrow">Teachers &middot; Quiz Core</p>
   <h1>Build a <span class="gradient-text">quiz.</span></h1>
-  <p class="hero-sub">Multiple choice, true/false and short answer. Save it, then send the play link to your students.</p>
+  <p class="hero-sub">Multiple choice, true/false and short answer. Try a quiz in this browser, or export a quiz file for someone to import.</p>
 </header>
 
 <div class="sim-wrap">
@@ -66,20 +66,23 @@
     <div class="panel">
       <h2>Quiz details</h2>
       <p class="panel-note">Everything saves when you press Save quiz.</p>
-      <div class="qb-field"><label>Title</label><input id="qTitle" placeholder="e.g. Week 11 - The Mole"></div>
-      <div class="qb-field"><label>Subject</label><input id="qSubject" placeholder="e.g. Chemistry"></div>
-      <div class="qb-field"><label>Grade / level</label><input id="qGrade" placeholder="e.g. Grade 10"></div>
+      <div class="qb-field"><label for="qTitle">Title</label><input id="qTitle" placeholder="e.g. Week 11 - The Mole"></div>
+      <div class="qb-field"><label for="qSubject">Subject</label><input id="qSubject" placeholder="e.g. Chemistry"></div>
+      <div class="qb-field"><label for="qGrade">Grade / level</label><input id="qGrade" placeholder="e.g. Grade 10"></div>
       <input type="hidden" id="qId">
       <div class="btnrow" style="margin-top:6px;">
-        <button class="sbtn sbtn-primary" id="saveBtn">💾 Save quiz</button>
+        <button class="sbtn sbtn-primary" id="saveBtn"> Save quiz</button>
         <button class="sbtn sbtn-reset" id="newBtn">New quiz</button>
+        <button class="sbtn" id="sampleBtn">Try a sample</button>
+        <label class="sbtn" for="importQuiz">Import quiz file</label>
+        <input id="importQuiz" type="file" accept="application/json,.json" style="max-width:240px">
       </div>
       <p class="panel-note" id="saveMsg" style="margin-top:10px;"></p>
     </div>
 
     <div class="panel">
       <h2>Questions</h2>
-      <p class="panel-note">Add as many as you like. Tick the correct answer for MCQ and true/false.</p>
+      <p class="panel-note">Add up to 100 questions. Select the correct answer for each one.</p>
       <div id="questionList"></div>
       <div class="btnrow">
         <button class="sbtn" style="background:var(--purple-100);color:var(--purple-dark);" onclick="addQuestion('mcq')">+ Multiple choice</button>
@@ -91,7 +94,7 @@
 
   <div class="panel" style="margin-top:26px;">
     <h2>My saved quizzes</h2>
-    <p class="panel-note">Open one to edit, or copy its play link for students.</p>
+    <p class="panel-note">Open a saved quiz to edit or play in this browser. Export a file to move it to another browser.</p>
     <div id="savedList"><p style="color:var(--text-muted); font-size:.9rem;">Loading…</p></div>
   </div>
 </div>
@@ -99,7 +102,7 @@
 <footer class="sim-footer">
   <div class="sim-footer-inner">
     <div class="footer-brand">
-      <div class="brand-icon">🧠</div>
+      <div class="brand-icon"></div>
       <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
     </div>
     <div class="sim-footer-links">
@@ -151,12 +154,20 @@ function renderQuestions() {
 
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
+document.getElementById('sampleBtn').onclick = () => loadIntoEditor({title:'Chemistry warm-up',subject:'Chemistry',grade:'Practice',questions:[{type:'mcq',text:'Which formula represents water?',options:['H2O','CO2','NaCl','O2'],correct:0},{type:'tf',text:'The pH scale describes how acidic or basic an aqueous solution is.',correct:true},{type:'short',text:'What is the SI unit for amount of substance?',answer:'mol'}]});
+document.getElementById('importQuiz').onchange = async (event) => {
+ const file = event.target.files[0]; if (!file) return;
+ const msg = document.getElementById('saveMsg');
+ try { const saved = await bjQuizStore.importQuiz(await file.text()); loadIntoEditor(saved); await loadSaved(); msg.textContent = 'Imported a new browser copy. The quiz file includes its answer key.'; } catch(e) { msg.textContent = e.message; }
+ event.target.value = '';
+};
+
 document.getElementById('saveBtn').onclick = async () => {
   const msg = document.getElementById('saveMsg');
   const title = document.getElementById('qTitle').value.trim();
-  if (!title) { msg.textContent = '⚠️ Give the quiz a title first.'; msg.style.color = '#b45309'; return; }
+  if (!title) { msg.textContent = ' Give the quiz a title first.'; msg.style.color = '#b45309'; return; }
   const clean = questions.filter(q => q.text.trim());
-  if (!clean.length) { msg.textContent = '⚠️ Add at least one question with text.'; msg.style.color = '#b45309'; return; }
+  if (!clean.length) { msg.textContent = ' Add at least one question with text.'; msg.style.color = '#b45309'; return; }
   const quiz = {
     id: document.getElementById('qId').value || null,
     title,
@@ -167,11 +178,11 @@ document.getElementById('saveBtn').onclick = async () => {
   try {
     const saved = await bjQuizStore.saveQuiz(quiz);
     document.getElementById('qId').value = saved.id;
-    msg.textContent = '✅ Saved' + (bjQuizStore.mode === 'cloud' ? ' to the class cloud.' : ' on this device.') + ' Play link: quiz-play.html?id=' + saved.id;
+    msg.textContent = ' Saved' + (bjQuizStore.mode === 'cloud' ? ' to the class cloud.' : ' on this device.') + ' Play link: quiz-play.html?id=' + saved.id;
     msg.style.color = '#15803d';
     loadSaved();
   } catch (e) {
-    msg.textContent = '❌ Save failed: ' + e.message;
+    msg.textContent = ' Save failed: ' + e.message;
     msg.style.color = '#b91c1c';
   }
 };
@@ -188,7 +199,8 @@ document.getElementById('newBtn').onclick = () => {
 
 async function loadSaved() {
   const host = document.getElementById('savedList');
-  const list = await bjQuizStore.listQuizzes();
+  let list;
+  try { list = await bjQuizStore.listQuizzes(); } catch(e) { host.textContent = e.message; return; }
   if (!list.length) { host.innerHTML = '<p style="color:var(--text-muted); font-size:.9rem;">No quizzes yet - build your first one above.</p>'; return; }
   host.innerHTML = '';
   list.forEach(q => {
@@ -205,12 +217,20 @@ async function loadSaved() {
     play.textContent = '▶ Play';
     const edit = document.createElement('button');
     edit.className = 'sbtn';
-    edit.textContent = '✏️ Edit';
+    edit.textContent = ' Edit';
     edit.onclick = () => loadIntoEditor(q);
     const del = document.createElement('button');
     del.className = 'sbtn sbtn-reset';
-    del.textContent = '🗑';
-    del.onclick = async () => { await bjQuizStore.deleteQuiz(q.id); loadSaved(); };
+    del.textContent = 'Delete';
+    del.setAttribute('aria-label', 'Delete ' + q.title); 
+    del.onclick = async () => { if (confirm('Delete this browser copy of ' + q.title + '? Export a backup first if you need it.')) { await bjQuizStore.deleteQuiz(q.id); loadSaved(); } };
+    const exportBtn = document.createElement('button');
+    exportBtn.className = 'sbtn'; exportBtn.textContent = 'Export';
+    exportBtn.onclick = () => {
+      const url = URL.createObjectURL(new Blob([bjQuizStore.exportQuiz(q)], {type:'application/json'}));
+      const a = document.createElement('a'); a.href = url; a.download = 'brainjoy-quiz.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+    btns.appendChild(exportBtn);
     btns.appendChild(play); btns.appendChild(edit); btns.appendChild(del);
     row.appendChild(btns);
     host.appendChild(row);
@@ -218,7 +238,7 @@ async function loadSaved() {
 }
 
 function loadIntoEditor(q) {
-  document.getElementById('qId').value = q.id;
+  document.getElementById('qId').value = q.id || '';
   document.getElementById('qTitle').value = q.title || '';
   document.getElementById('qSubject').value = q.subject || '';
   document.getElementById('qGrade').value = q.grade || '';
@@ -234,11 +254,11 @@ function loadIntoEditor(q) {
   const note = document.getElementById('modeNote');
   if (mode === 'cloud') {
     badge.className = 'mode-badge cloud';
-    badge.textContent = '☁️ Saving to class cloud - play links work on any device';
+    badge.textContent = ' Saving to class cloud - play links work on any device';
     note.style.display = 'none';
   } else {
     badge.className = 'mode-badge local';
-    badge.textContent = '💾 Same-device mode - prototype only';
+    badge.textContent = ' Browser-only prototype';
     note.style.display = 'block';
   }
   loadSaved();
