@@ -76,7 +76,7 @@
 </footer>
 
 <script>
-let quiz = null, idx = 0, score = 0, answers = [];
+let quiz = null, idx = 0, score = 0, answers = [], answered = false;
 
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -103,6 +103,7 @@ function showStart() {
 }
 
 function renderQuestion() {
+  answered = false;
   const area = document.getElementById('playArea');
   const q = quiz.questions[idx];
   let dots = '<div class="q-progress">';
@@ -120,7 +121,7 @@ function renderQuestion() {
     body += '<button class="answer-btn" data-tf="true">True</button>';
     body += '<button class="answer-btn" data-tf="false">False</button>';
   } else {
-    body += '<input class="short-input" id="shortAnswer" placeholder="Type your answer…"><button class="sbtn sbtn-primary" id="checkShort">Check</button>';
+    body += '<input class="short-input" id="shortAnswer" aria-label="Your answer" maxlength="500" placeholder="Type your answer…"><button class="sbtn sbtn-primary" id="checkShort">Check</button>';
   }
   body += '<div class="feedback" id="feedback"></div>';
   area.innerHTML = dots + body;
@@ -135,7 +136,9 @@ function renderQuestion() {
     });
   } else {
     const check = () => {
+      if (answered) return;
       const given = document.getElementById('shortAnswer').value.trim();
+      if (!given) { document.getElementById('feedback').textContent = 'Enter an answer first.'; document.getElementById('shortAnswer').focus(); return; }
       const ok = given.toLowerCase() === String(q.answer || '').trim().toLowerCase();
       grade(null, ok, 'The correct answer: ' + q.answer);
     };
@@ -145,6 +148,8 @@ function renderQuestion() {
 }
 
 function grade(btn, ok, reveal) {
+  if (answered) return;
+  answered = true;
   document.querySelectorAll('.answer-btn').forEach(b => { b.disabled = true; });
   const check = document.getElementById('checkShort'); if (check) check.disabled = true;
   const input = document.getElementById('shortAnswer'); if (input) input.disabled = true;
@@ -152,6 +157,7 @@ function grade(btn, ok, reveal) {
   if (ok) score++;
   answers.push({ q: quiz.questions[idx], ok });
   const fb = document.getElementById('feedback');
+  fb.setAttribute('role','status');
   fb.style.color = ok ? '#15803d' : '#b91c1c';
   fb.innerHTML = (ok ? ' Correct!' : ' Not quite. ' + esc(reveal)) + ' ';
   const next = document.createElement('button');
@@ -169,11 +175,11 @@ function showResults() {
   let html = '<div class="score-hero"><div class="score-big">' + score + ' / ' + quiz.questions.length + '</div>' +
     '<p style="font-family:var(--font-display); font-size:1.3rem;">' + pct + '%</p>' +
     '<p style="color:var(--text-secondary); margin:8px 0 18px;">' + msg + '</p>' +
-    '<button class="sbtn sbtn-primary" onclick="showStart()">Play again ↻</button></div>';
+    '<button class="sbtn sbtn-primary" onclick="showStart()">Play again ↻</button> <a href="practice.html">Practice library</a></div>';
   html += '<h3 style="font-family:var(--font-display); margin:20px 0 12px;">Review</h3>';
   answers.forEach((a, i) => {
     html += '<div class="review-item"><strong>Q' + (i + 1) + '.</strong> ' + esc(a.q.text) +
-      '<span class="pill ' + (a.ok ? 'base' : 'acid') + '">' + (a.ok ? 'Correct' : 'Missed') + '</span></div>';
+      '<span class="pill ' + (a.ok ? 'base' : 'acid') + '">' + (a.ok ? 'Correct' : 'Missed') + '</span><p>Expected answer: ' + esc(a.q.type === 'mcq' ? a.q.options[a.q.correct] : a.q.type === 'tf' ? (a.q.correct ? 'True' : 'False') : a.q.answer) + '</p></div>';
   });
   area.innerHTML = html;
 }
