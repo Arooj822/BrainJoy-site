@@ -550,8 +550,15 @@
     @media (max-width: 480px) {
       .path-grid { grid-template-columns: 1fr; }
     }
+
+/* Preserve all navigation/actions without mobile clipping. */
+.navbar{height:auto;min-height:68px;row-gap:10px;padding:12px 24px;grid-template-columns:auto 1fr auto}
+.nav-left{display:contents}.hamburger{grid-column:1;grid-row:1}.nav-center{grid-column:2;grid-row:1;justify-content:flex-start}.nav-right{grid-column:3;grid-row:1}.nav-search{grid-column:1;grid-row:2;width:180px}.nav-links{grid-column:2 / -1;grid-row:2;min-width:0}.nav-links a{white-space:nowrap}.score-badge{white-space:nowrap}
+.pf-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}.pf-card{min-width:0;overflow-wrap:anywhere}.admin-modal{overflow-x:hidden}.admin-modal>*{max-width:100%}#bj-global-toast,.auth-notice{max-width:calc(100vw - 28px);white-space:normal;text-align:center}#role-indicator{flex-wrap:wrap}
+@media(max-width:768px){.navbar{padding:10px 14px;grid-template-columns:auto 1fr;gap:8px}.nav-center{grid-column:2;justify-content:center}.nav-right{grid-column:1 / -1;grid-row:2;justify-self:center;gap:8px}.nav-right .btn{padding:8px 12px;font-size:13px}.nav-right .score-badge{font-size:12px;padding:7px 9px}.logo{width:32px;height:32px}.admin-modal-overlay{padding:12px}.admin-modal{padding:50px 18px 24px;max-height:92dvh}.pf-grid{grid-template-columns:minmax(0,1fr)}.feature-cards{flex-wrap:wrap}.admin-modal>div[style*="max-width:700px"]{padding:20px!important}.quiz-grid{grid-template-columns:minmax(0,1fr)}.auth-modal{max-height:94dvh;overflow-y:auto;padding:44px 20px 24px}.auth-overlay{padding:12px}#role-indicator,#subjects-panel{top:116px}.nav-search,.nav-links{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
   </style>
-<base target="_blank">
+
 </head>
 
 <div id="pricingModal" class="auth-overlay">
@@ -715,10 +722,10 @@
     <h2 style="font-family:'Baloo 2',cursive;font-size:1.9rem;color:var(--text);margin-bottom:8px;">🎓 Student Learning Hub</h2>
     <p style="color:var(--text-muted);font-size:1rem;margin-bottom:32px;">Master any subject, track your progress, and play fun games.</p>
     <div class="pf-grid" style="text-align:left;">
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">📚</div><h4>Study Guides</h4><p>Quick outlines & core concepts for any subject.</p></div>
+      <div class="pf-card" onclick="location.href='resources/atomic-structure-sample.html'"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">📚</div><h4>Study Guides</h4><p>Start with the original atomic-structure sample and teacher guide. More subjects are in development.</p></div>
       <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🤖</div><h4>BrainJoy AI Tutor</h4><p>AI-powered 24/7 homework help — ask anything.</p></div>
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🗂</div><h4>Flashcards</h4><p>Visual learning cards for fast recall and revision.</p></div>
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🎮</div><h4>Games & Quizzes</h4><p>Play challenges and join live class games.</p></div>
+      <div class="pf-card" onclick="location.href='flashcards.html'"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🗂</div><h4>Flashcards</h4><p>Visual learning cards for fast recall and revision.</p></div>
+      <div class="pf-card" onclick="location.href='practice.html'"><span class="role-tag student">🎓 Students</span><div class="pf-card-icon">🎮</div><h4>Games & Quizzes</h4><p>Open self-paced practice and your saved quizzes. Multi-device live joining is still being built.</p></div>
     </div>
     <div style="max-width:700px;margin:36px auto 0;background:#fff;border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-sm);text-align:center;">
       <div class="section-role-banner for-student" style="margin:0 auto 16px;">🎓 For Students — Gamified Challenges</div>
@@ -745,12 +752,12 @@
     <h2 style="font-family:'Baloo 2',cursive;font-size:1.9rem;color:var(--text);margin-bottom:8px;">👩‍🏫 Teacher Command Center</h2>
     <p style="color:var(--text-muted);font-size:1rem;margin-bottom:32px;">Create dynamic lessons, monitor students, and free up your time.</p>
     <div class="pf-grid" style="text-align:left;">
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📝</div><h4>AI Lesson Planner</h4><p>Generate complete lesson plans in seconds with AI.</p></div>
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">🎯</div><h4>Live Review Game</h4><p>Host whole-class interactive quizzes live.</p></div>
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">🧮</div><h4>Quiz Builder AI</h4><p>Auto-generate tests from any topic or curriculum.</p></div>
+      <div class="pf-card" onclick="location.href='lesson-planner.html'"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📝</div><h4>AI Lesson Planner</h4><p>Editable lesson-planning tools available now. AI generation is not enabled.</p></div>
+      <div class="pf-card" onclick="location.href='review-game.html'"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">🎯</div><h4>Live Review Game</h4><p>Shared-screen team review is available now. Multi-device live play is still in development.</p></div>
+      <div class="pf-card" onclick="location.href='quiz-builder.html'"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">🧮</div><h4>Quiz Builder AI</h4><p>Build, import and export your own quizzes. AI generation is not enabled.</p></div>
       <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📂</div><h4>Classroom Dashboard</h4><p>Organize assignments, grades & student groups.</p></div>
       <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">📊</div><h4>Student Analytics</h4><p>Real-time progress tracking & early alerts.</p></div>
-      <div class="pf-card" onclick="requireAuthAction()"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">⚡</div><h4>BrainBlast Mode</h4><p>High-energy whole-class review sessions.</p></div>
+      <div class="pf-card" onclick="location.href='review-game.html'"><span class="role-tag teacher">👩‍🏫 Teachers</span><div class="pf-card-icon">⚡</div><h4>BrainBlast Mode</h4><p>Teacher-led shared-screen review with team points. No device joining required.</p></div>
     </div>
 
     <!-- Make Your Own Teaching Games -->
@@ -758,10 +765,10 @@
       <span class="role-tag teacher" style="display:inline-block;margin-bottom:14px;">👩‍🏫 For Teachers</span>
       <h3 style="font-family:'Baloo 2',cursive;font-size:1.7rem;color:var(--pink);margin-bottom:10px;">🎉 Make Your Own Teaching Games!</h3>
       <p style="max-width:600px;margin:0 auto 22px;color:var(--purple);font-size:0.9rem;">Join teachers creating interactive, joyful classroom games with BrainJoy — no tech skills needed.</p>
-      <button class="btn-primary" onclick="requireAuthAction()" style="margin-bottom:28px;padding:13px 32px;border-radius:var(--radius-pill);font-size:0.95rem;">🎮 Play Games</button>
+      <button class="btn-primary" onclick="location.href='review-game.html'" style="margin-bottom:28px;padding:13px 32px;border-radius:var(--radius-pill);font-size:0.95rem;">🎮 Play Games</button>
       <div class="feature-cards">
         <div class="feature-card"><h3>🖥️ Less Tech</h3><p>One screen, whole class plays together.</p></div>
-        <div class="feature-card"><h3>📝 Less Prep</h3><p>Millions of ready-made games waiting.</p></div>
+        <div class="feature-card"><h3>📝 Less Prep</h3><p>Original samples and quiz-import tools, with more resources in development.</p></div>
         <div class="feature-card"><h3>🎨 More Fun</h3><p>Interactive, playful & memorable.</p></div>
         <div class="feature-card"><h3>🏆 More Play</h3><p>Great for review, warm-ups & challenges.</p></div>
       </div>
@@ -773,7 +780,7 @@
         <span class="role-tag teacher">👩‍🏫 For Teachers</span>
       </div>
       <h3 style="text-align:center;font-family:'Baloo 2',cursive;color:var(--purple-dark);font-size:1.8rem;margin-bottom:6px;">🧾 AI Lesson Planner</h3>
-      <p style="text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:28px;">Generate a complete, curriculum-aligned lesson plan in seconds.</p>
+      <p style="text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:28px;">Create an editable planning template. You check the content and curriculum fit; AI generation is not enabled.</p>
       <div class="planner-field"><label>Subject</label><input id="subject" type="text" placeholder="e.g., Science"></div>
       <div class="planner-field"><label>Grade Level</label><input id="grade" type="text" placeholder="e.g., Year 3"></div>
       <div class="planner-field"><label>Topic</label><input id="topic" type="text" placeholder="e.g., Forces and Motion"></div>
@@ -781,7 +788,7 @@
         <button id="generateBtn" class="btn-primary">✨ Generate Lesson Plan</button>
         <button id="viewLessonsBtn" class="btn-secondary">📂 View Saved Lessons</button>
       </div>
-      <div id="output"></div>
+      <p><a href="lesson-planner.html">Open the editable lesson planner with timings, print and file export</a>. Template-based planning is available; AI generation is not enabled.</p><div id="output" role="status"></div>
     </div>
   </div>
 </div>
@@ -829,6 +836,8 @@
       <a href="#latest-sparks">Latest Posts</a>
       <a href="simulations.html">Simulations</a>
       <a href="quiz-builder.html">Quiz Builder</a>
+      <a href="classroom-tools.html">Classroom Tools</a>
+      <a href="practice.html">Practice library</a><a href="resource-library.html">Resource Library</a>
       <a href="scholarships.html">Scholarships</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
@@ -907,7 +916,7 @@
       <div class="ns-section-title">🎓 Student — Learning Core</div>
       <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">🏠</span> Dashboard</a>
       <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar(); openModal('studentHubModal')"><span class="ns-menu-icon">🤖</span> AI Tutor <span class="ns-badge">For Students</span></a>
-      <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar(); openModal('studentHubModal')"><span class="ns-menu-icon">🗂</span> Flashcards</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="location.href='flashcards.html'"><span class="ns-menu-icon">🗂</span> Flashcards</a>
       <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('student', () => { closeSidebar(); openModal('studentHubModal'); })"><span class="ns-menu-icon">📝</span> Practice Tests</a>
       <div class="ns-section-title" style="margin-top:16px;">Gamification</div>
       <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('student', () => { closeSidebar(); openModal('studentHubModal'); })"><span class="ns-menu-icon">🎯</span> Daily Quests <span class="ns-badge">NEW</span></a>
@@ -921,7 +930,7 @@
       <a href="javascript:void(0)" class="ns-menu-item" onclick="closeSidebar()"><span class="ns-menu-icon">📋</span> Assignment Tracker</a>
       <div class="ns-section-title" style="margin-top:16px;">AI & Engagement</div>
       <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🪄</span> Create Quiz (AI)</a>
-      <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🧾</span> AI Lesson Planner</a>
+      <a href="javascript:void(0)" class="ns-menu-item" onclick="location.href='lesson-planner.html'"><span class="ns-menu-icon">🧾</span> AI Lesson Planner</a>
       <a href="javascript:void(0)" class="ns-menu-item" onclick="requireAuth('teacher', () => { closeSidebar(); openModal('teacherHubModal'); })"><span class="ns-menu-icon">🎮</span> Live Game</a>
       <a href="#stats" class="ns-menu-item" onclick="requireAuth('teacher', closeSidebar)"><span class="ns-menu-icon">📊</span> Analytics</a>
     </div>
@@ -1035,7 +1044,7 @@
         <li>Daily quests & leaderboards</li>
         <li>Progress tracking</li>
       </ul>
-      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Student platform coming soon! Meanwhile, check Latest Posts & Scholarships.')">Coming Soon →</button>
+      <button class="path-cta" onclick="event.stopPropagation(); activatePath('student')">Coming Soon →</button>
     </div>
     <div class="path-card teacher-card coming-soon-overlay" id="path-teacher" onclick="activatePath('teacher')">
       <span class="path-card-icon">👩‍🏫</span>
@@ -1047,7 +1056,7 @@
         <li>Quiz builder (AI-powered)</li>
         <li>Student analytics dashboard</li>
       </ul>
-      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Teacher tools coming soon!')">Coming Soon →</button>
+      <button class="path-cta" onclick="event.stopPropagation(); activatePath('teacher')">Coming Soon →</button>
     </div>
     <div class="path-card parent-card coming-soon-overlay" id="path-parent" onclick="activatePath('parent')">
       <span class="path-card-icon">👪</span>
@@ -1059,7 +1068,7 @@
         <li>Screen time controls</li>
         <li>Reward system</li>
       </ul>
-      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Parent portal coming soon!')">Coming Soon →</button>
+      <button class="path-cta" onclick="event.stopPropagation(); activatePath('parent')">Coming Soon →</button>
     </div>
     <div class="path-card admin-card coming-soon-overlay" id="path-admin" onclick="activatePath('admin')">
       <span class="path-card-icon">🏛</span>
@@ -1071,7 +1080,7 @@
         <li>Teacher permissions</li>
         <li>Engagement reports</li>
       </ul>
-      <button class="path-cta" onclick="event.stopPropagation(); showBjToast('🚧 Admin console coming soon!')">Coming Soon →</button>
+      <button class="path-cta" onclick="event.stopPropagation(); activatePath('admin')">Coming Soon →</button>
     </div>
   </div>
   <div class="path-active-msg" id="path-active-msg">
@@ -1086,10 +1095,10 @@
   <h2 class="section-title">Everything you need, all in one place</h2>
   <p class="section-sub">AI tools, role hubs, and personalized learning for every subject — launching soon. Meanwhile enjoy our live posts, scholarships & AP Chemistry lessons.</p>
   <div class="pf-role-tabs">
-    <button class="pf-role-btn" id="pf-btn-student" onclick="showBjToast('🚧 Student hub coming soon!')"><span>🎓</span> For Students <span class="coming-soon-badge">Soon</span></button>
-    <button class="pf-role-btn" id="pf-btn-teacher" onclick="showBjToast('🚧 Teacher hub coming soon!')"><span>👩‍🏫</span> For Teachers <span class="coming-soon-badge">Soon</span></button>
-    <button class="pf-role-btn" id="pf-btn-parent" onclick="showBjToast('🚧 Parent portal coming soon!')"><span>👪</span> For Parents <span class="coming-soon-badge">Soon</span></button>
-    <button class="pf-role-btn" id="pf-btn-admin" onclick="showBjToast('🚧 Admin console coming soon!')"><span>🏛</span> For Admins <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-student" onclick="activatePath('student')"><span>🎓</span> For Students <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-teacher" onclick="activatePath('teacher')"><span>👩‍🏫</span> For Teachers <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-parent" onclick="activatePath('parent')"><span>👪</span> For Parents <span class="coming-soon-badge">Soon</span></button>
+    <button class="pf-role-btn" id="pf-btn-admin" onclick="activatePath('admin')"><span>🏛</span> For Admins <span class="coming-soon-badge">Soon</span></button>
   </div>
 </section>
 
@@ -1120,10 +1129,10 @@
 <section id="stats">
   <h2>🌍 Our Growing Impact <span class="coming-soon-badge" style="font-size:0.75rem;vertical-align:middle;">Targets</span></h2>
   <div class="stats-grid">
-    <div class="stat-item"><h3 style="color:var(--pink)" id="stat1">0</h3><p>Students Empowered</p></div>
-    <div class="stat-item"><h3 style="color:var(--purple)" id="stat2">0</h3><p>Teachers Joined</p></div>
-    <div class="stat-item"><h3 style="color:var(--gold)" id="stat3">0</h3><p>Games Created</p></div>
-    <div class="stat-item"><h3 style="color:var(--teal)" id="stat4">0</h3><p>Countries Reached</p></div>
+    <div class="stat-item"><h3 style="color:var(--pink)" id="stat1">0</h3><p>Student goal, not current count</p></div>
+    <div class="stat-item"><h3 style="color:var(--purple)" id="stat2">0</h3><p>Teacher goal, not current count</p></div>
+    <div class="stat-item"><h3 style="color:var(--gold)" id="stat3">0</h3><p>Game goal, not current count</p></div>
+    <div class="stat-item"><h3 style="color:var(--teal)" id="stat4">0</h3><p>Country goal, not current count</p></div>
   </div>
 </section>
 
@@ -1151,14 +1160,14 @@
 
 <!-- ===== PARTNERS ===== -->
 <section id="partners">
-  <h2>🏫 Trusted by Schools Worldwide</h2>
-  <p style="color:var(--purple-dark);margin-bottom:0;">From Dubai to London — BrainJoy inspires joyful learning everywhere.</p>
+  <h2>🏫 School partnerships</h2>
+  <p style="color:var(--purple-dark);margin-bottom:0;">Partnerships are being prepared. These spaces are placeholders, not school endorsements.</p>
   <div class="partner-cards">
-    <div class="partner-card"><img src="assets/partner1.png" alt="Partner 1"></div>
-    <div class="partner-card"><img src="assets/partner2.png" alt="Partner 2"></div>
-    <div class="partner-card"><img src="assets/partner3.png" alt="Partner 3"></div>
-    <div class="partner-card"><img src="assets/partner4.png" alt="Partner 4"></div>
-    <div class="partner-card"><img src="assets/partner5.png" alt="Partner 5"></div>
+    <div class="partner-card"><span>Future partner space 1</span></div>
+    <div class="partner-card"><span>Future partner space 2</span></div>
+    <div class="partner-card"><span>Future partner space 3</span></div>
+    <div class="partner-card"><span>Future partner space 4</span></div>
+    <div class="partner-card"><span>Future partner space 5</span></div>
   </div>
 </section>
 
@@ -1212,8 +1221,10 @@
   // ===== SUPABASE =====
   const SUPABASE_URL = 'https://kxqjyqohhjkggtqnwubd.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_sQjeQCi8f6J4iQgyP3jGSA_7fK1Noek';
+  const HOME_CLOUD_ENABLED = false; // Opening real accounts needs the separate onboarding release gate.
   let supabaseClient = null;
   try {
+    if (!HOME_CLOUD_ENABLED) throw new Error('Cloud account entry remains closed during development.');
     const { createClient } = supabase;
     supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } catch(e) { console.warn('Supabase not loaded:', e); }
@@ -1221,6 +1232,13 @@
   let currentUser = null;
   let activeRole = null;
 
+  // Honest development-state account controls; no credentials collected while closed.
+  if (!HOME_CLOUD_ENABLED) {
+    ['loginEmail','loginPassword','signupName','signupEmail','signupPassword'].forEach(id => { const el=document.getElementById(id); if(el)el.disabled=true; });
+    ['loginModal','signupModal'].forEach(id => { const modal=document.getElementById(id); if(!modal)return; const notice=document.createElement('p');notice.textContent='Cloud accounts are not open yet. These controls will not send a sign-in or create an account. The quiz builder, flashcards and classroom tools work without an account.';notice.style.cssText='padding:14px;margin:16px;background:#fff2cf;border-radius:10px;color:#3a2b17';modal.querySelector('.auth-modal')?.prepend(notice); });
+  }
+  // Preserve existing click targets and make card actions usable by keyboard.
+  document.querySelectorAll('div[onclick]').forEach(el=>{el.tabIndex=0;el.setAttribute('role',el.getAttribute('onclick').includes('location.href')?'link':'button');el.addEventListener('keydown',e=>{if(e.target===el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();el.click();}});});
   // ===== ROLE PATH SYSTEM =====
   const roleConfig = {
     student: { label: '🎓 Showing student experience', cta: 'Sign Up as Student', msgText: '🎓 You\'re viewing the Student experience', indicatorClass: 'student', modal: 'studentHubModal' },
@@ -1371,7 +1389,7 @@
     return true;
   }
   function requireAuth(role, callback) {
-    if (!currentUser) { event && event.preventDefault(); showAuthNotice(); return false; }
+    if (!currentUser) { showAuthNotice(); return false; }
     if (callback) callback();
     return true;
   }
@@ -1453,12 +1471,13 @@
 
   // ===== AUTH ACTIONS =====
   async function signupUser() {
+    if (!HOME_CLOUD_ENABLED) { showBjToast('New accounts are not open yet. No account was created. Try the tools without an account.'); return; }
     if (!currentSignupRole) { alert('Please select a role first.'); return; }
     const name = document.getElementById('signupName').value.trim();
     const email = document.getElementById('signupEmail').value.trim();
     const password = document.getElementById('signupPassword').value;
     if (!name || !email || !password) { alert('Please fill in all fields.'); return; }
-    if (!supabaseClient) { currentUser = { name, email, role: currentSignupRole }; showSignupStep(3); return; }
+    if (!supabaseClient) { showBjToast('Account service could not load. No account was created.'); return; }
     try {
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, role: currentSignupRole } } });
       if (error) throw error;
@@ -1468,10 +1487,11 @@
   }
 
   async function loginUser() {
+    if (!HOME_CLOUD_ENABLED) { showBjToast('Cloud account access is not open yet. No sign-in was attempted.'); return; }
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     if (!email || !password) { alert('Please enter your email and password.'); return; }
-    if (!supabaseClient) { currentUser = { email, role: 'user' }; closeModal('loginModal'); showBjToast('✅ Logged in as ' + email); return; }
+    if (!supabaseClient) { showBjToast('Account service could not load. You are not signed in.'); return; }
     try {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -1492,24 +1512,29 @@
   }
   document.querySelector('.next')?.addEventListener('click', () => { idx = (idx+1) % cards.length; updateCarousel(); });
   document.querySelector('.prev')?.addEventListener('click', () => { idx = (idx-1+cards.length) % cards.length; updateCarousel(); });
-  setInterval(() => { idx = (idx+1) % cards.length; updateCarousel(); }, 4000);
+  if (cards.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => { idx = (idx+1) % cards.length; updateCarousel(); }, 4000);
 
   // ===== LESSON PLANNER =====
   document.getElementById('generateBtn')?.addEventListener('click', () => {
-    if (!requireAuthAction()) return;
     const subject = document.getElementById('subject').value.trim();
     const grade = document.getElementById('grade').value.trim();
     const topic = document.getElementById('topic').value.trim();
     const output = document.getElementById('output');
     if (!subject || !grade || !topic) { output.textContent = '⚠️ Please fill in all fields!'; return; }
-    output.textContent = '🧠 Generating lesson plan...\n\nLesson for ' + subject + ' (' + grade + '): ' + topic + '\n\n📌 Objectives:\n• Understand the core concepts of ' + topic + '\n• Apply learning through collaborative activity\n\n📋 Activities:\n• Warm-up: quick recall quiz (5 mins)\n• Group discussion: key ideas (15 mins)\n• Individual task: worksheet / flashcard creation (20 mins)\n• Wrap-up: exit ticket question (5 mins)\n\n🎯 Assessment: peer review + teacher check';
-    let saved = JSON.parse(localStorage.getItem('lessons') || '[]');
-    saved.push({ subject, grade, topic, plan: output.textContent });
-    localStorage.setItem('lessons', JSON.stringify(saved));
+    output.textContent = 'Editable template, not AI-generated. Review before teaching.\n\nLesson for ' + subject + ' (' + grade + '): ' + topic + '\n\n📌 Objectives:\n• Understand the core concepts of ' + topic + '\n• Apply learning through collaborative activity\n\n📋 Activities:\n• Warm-up: quick recall quiz (5 mins)\n• Group discussion: key ideas (15 mins)\n• Individual task: worksheet / flashcard creation (20 mins)\n• Wrap-up: exit ticket question (5 mins)\n\n🎯 Assessment: peer review + teacher check';
+    try {
+      const raw = localStorage.getItem('lessons');
+      const saved = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(saved) || saved.some(x => !x || typeof x.plan !== 'string')) throw new Error('Existing lesson data is not readable. It has been preserved.');
+      saved.push({ subject, grade, topic, plan: output.textContent });
+      localStorage.setItem('lessons', JSON.stringify(saved));
+      output.textContent += '\n\nSaved only in this browser. Clearing storage removes this copy. Use the full planner to export.';
+    } catch (err) { output.textContent += '\n\nNot saved: ' + err.message; }
   });
   document.getElementById('viewLessonsBtn')?.addEventListener('click', () => {
     const output = document.getElementById('output');
-    const saved = JSON.parse(localStorage.getItem('lessons') || '[]');
+    let saved;
+    try { saved = JSON.parse(localStorage.getItem('lessons') || '[]'); if (!Array.isArray(saved) || saved.some(x => !x || typeof x.plan !== 'string')) throw new Error('Unreadable lesson data'); } catch (err) { output.textContent = 'Saved lessons could not be read. Existing data was preserved. Use the full planner for file import/export.'; return; }
     if (!saved.length) { output.textContent = 'No lessons saved yet. Generate your first one above!'; return; }
     output.textContent = saved.map(d => `Subject: ${d.subject}\nGrade: ${d.grade}\nTopic: ${d.topic}\n\n${d.plan}\n\n──────────────────\n`).join('\n');
   });
@@ -1520,8 +1545,7 @@
     const email = document.getElementById('emailInput').value.trim();
     const msg = document.getElementById('subscribeMsg');
     if (!email) { msg.textContent = '⚠️ Please enter your email!'; return; }
-    msg.textContent = '🎉 Thanks ' + email + '! You\'re officially part of BrainJoy 💜';
-    e.target.reset();
+    msg.textContent = 'Newsletter signup is not connected yet. Your email was not sent or saved.';
   });
 
   // ===== STATS COUNTER =====
@@ -1555,7 +1579,7 @@
   // ===== TOAST =====
   function showBjToast(msg) {
     const t = document.getElementById('bj-global-toast');
-    if (msg) t.innerHTML = msg;
+    if (msg) t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
@@ -1564,5 +1588,6 @@
   const navScore = document.getElementById('nav-score');
   if (navScore) navScore.innerText = localStorage.getItem('brainPoints') || 0;
 </script>
+<script src="homepage-icons.js"></script>
 </body>
-        </html>
+  </html>
