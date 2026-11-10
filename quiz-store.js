@@ -1,76 +1,71 @@
-// BrainJoy quiz core - shared backend helpers.
-// Same-browser prototype only. No cloud reads or writes are enabled.
-(function () {
+// BrainJoy quiz prototype. Browser-only until cloud authorization is verified.
+(function (root) {
+  'use strict';
   const LOCAL_KEY = 'bj_quizzes';
-  // Deliberately offline until authentication and row ownership are verified.
-  const client = null;
-
+  function validateQuiz(input) {
+    if (!input || typeof input !== 'object') throw new Error('Invalid quiz file.');
+    const title = String(input.title || '').trim();
+    if (!title || title.length > 160) throw new Error('Use a title between 1 and 160 characters.');
+    if (!Array.isArray(input.questions) || input.questions.length < 1 || input.questions.length > 100) throw new Error('A quiz needs 1 to 100 questions.');
+    const questions = input.questions.map((q, i) => {
+      if (!q || !['mcq', 'tf', 'short'].includes(q.type)) throw new Error('Question ' + (i + 1) + ': unsupported question type.');
+      const text = String(q.text || '').trim();
+      if (!text || text.length > 2000) throw new Error('Question ' + (i + 1) + ': enter question text (up to 2,000 characters).');
+      const item = { type: q.type, text };
+      if (q.type === 'mcq') {
+        if (!Array.isArray(q.options) || q.options.length < 2 || q.options.length > 6) throw new Error('Question ' + (i + 1) + ': add 2 to 6 choices.');
+        item.options = q.options.map(x => String(x).trim());
+        if (item.options.some(x => !x || x.length > 500)) throw new Error('Question ' + (i + 1) + ': fill every choice (up to 500 characters).');
+        if (new Set(item.options.map(x => x.toLowerCase())).size !== item.options.length) throw new Error('Question ' + (i + 1) + ': choices must be different.');
+        if (!Number.isInteger(q.correct) || q.correct < 0 || q.correct >= item.options.length) throw new Error('Question ' + (i + 1) + ': select a correct choice.');
+        item.correct = q.correct;
+      } else if (q.type === 'tf') {
+        if (typeof q.correct !== 'boolean') throw new Error('Question ' + (i + 1) + ': select True or False.');
+        item.correct = q.correct;
+      } else {
+        item.answer = String(q.answer || '').trim();
+        if (!item.answer || item.answer.length > 500) throw new Error('Question ' + (i + 1) + ': enter the expected answer.');
+      }
+      return item;
+    });
+    return { title, subject: String(input.subject || '').trim().slice(0, 100), grade: String(input.grade || '').trim().slice(0, 60), questions };
+  }
   function readLocal() {
-    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }
-    catch (e) { return []; }
+    const raw = root.localStorage.getItem(LOCAL_KEY);
+    if (!raw) return [];
+    let list;
+    try { list = JSON.parse(raw); } catch (_) { throw new Error('Saved browser data cannot be read. Export or recover it before resetting storage.'); }
+    if (!Array.isArray(list)) throw new Error('Saved browser data has an unexpected format. Nothing was overwritten.');
+    return list;
   }
   function writeLocal(list) {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
+    try { root.localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
+    catch (_) { throw new Error('Browser storage is full or unavailable. Your quiz was not saved. Export a copy before closing.'); }
   }
-
-  window.bjQuizStore = {
-    mode: 'checking',
-
-    async init() {
-      this.mode = 'local';
-      return this.mode;
-    },
-
-    async saveQuiz(quiz) {
-      quiz.updated_at = new Date().toISOString();
-      if (this.mode === 'cloud') {
-        const row = {
-          title: quiz.title, subject: quiz.subject, grade: quiz.grade,
-          questions: quiz.questions, updated_at: quiz.updated_at
-        };
-        let q;
-        if (quiz.id && !String(quiz.id).startsWith('local-')) {
-          q = client.from('quizzes').update(row).eq('id', quiz.id).select().single();
-        } else {
-          q = client.from('quizzes').insert([row]).select().single();
-        }
-        const { data, error } = await q;
-        if (error) throw new Error(error.message);
-        return data;
-      }
+  root.bjQuizStore = {
+    mode: 'local',
+    validateQuiz,
+    async init() { this.mode = 'local'; return this.mode; },
+    async saveQuiz(input) {
+      const quiz = validateQuiz(input);
       const list = readLocal();
-      if (!quiz.id) quiz.id = 'local-' + Date.now();
+      quiz.id = input.id ? String(input.id) : 'local-' + (root.crypto && root.crypto.randomUUID ? root.crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+      quiz.updated_at = new Date().toISOString();
       const i = list.findIndex(x => x.id === quiz.id);
       if (i >= 0) list[i] = quiz; else list.push(quiz);
       writeLocal(list);
       return quiz;
     },
-
-    async listQuizzes() {
-      if (this.mode === 'cloud') {
-        const { data, error } = await client.from('quizzes').select('*').order('updated_at', { ascending: false });
-        if (error) throw new Error(error.message);
-        return data || [];
-      }
-      return readLocal().sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || ''));
+    async listQuizzes() { return readLocal().sort((a,b) => String(b.updated_at || '').localeCompare(String(a.updated_at || ''))); },
+    async getQuiz(id) { return readLocal().find(x => x.id === id) || null; },
+    async deleteQuiz(id) { writeLocal(readLocal().filter(x => x.id !== id)); },
+    async importQuiz(text) {
+      if (typeof text !== 'string' || text.length > 1000000) throw new Error('Choose a quiz JSON file smaller than 1 MB.');
+      let input;
+      try { input = JSON.parse(text); } catch (_) { throw new Error('This is not a valid JSON quiz file.'); }
+      const quiz = validateQuiz(input);
+      return this.saveQuiz(quiz); // Always a new copy. Never overwrite an existing quiz on import.
     },
-
-    async getQuiz(id) {
-      if (this.mode === 'cloud' && !String(id).startsWith('local-')) {
-        const { data, error } = await client.from('quizzes').select('*').eq('id', id).single();
-        if (error) throw new Error(error.message);
-        return data;
-      }
-      return readLocal().find(x => x.id === id) || null;
-    },
-
-    async deleteQuiz(id) {
-      if (this.mode === 'cloud' && !String(id).startsWith('local-')) {
-        const { error } = await client.from('quizzes').delete().eq('id', id);
-        if (error) throw new Error(error.message);
-        return;
-      }
-      writeLocal(readLocal().filter(x => x.id !== id));
-    }
+    exportQuiz(quiz) { return JSON.stringify({ format: 'brainjoy-quiz', version: 1, ...validateQuiz(quiz) }, null, 2); }
   };
-})();
+})(typeof window === 'undefined' ? globalThis : window);
