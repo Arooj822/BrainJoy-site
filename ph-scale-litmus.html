@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>pH Scale &amp; Litmus Testing — BrainJoy</title>
+<meta name="description" content="Test substances with virtual red and blue litmus paper and classify them as acidic, basic, or neutral in this interactive simulation." />
+<link rel="icon" href="logo.png" type="image/png" />
+<meta name="theme-color" content="#6a0dad" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sim-styles.css" />
+<style>
+  .litmus-stage { display:flex; gap:28px; justify-content:center; align-items:flex-end; flex-wrap:wrap; margin:26px 0 10px; }
+  .beaker { width:150px; text-align:center; }
+  .beaker-glass { width:130px; height:150px; margin:0 auto; border:4px solid var(--slate); border-top:none; border-radius:0 0 18px 18px; position:relative; overflow:hidden; background:rgba(255,255,255,.6); }
+  .beaker-liquid { position:absolute; bottom:0; left:0; right:0; height:70%; transition:background .6s; background:#dbeafe; }
+  .beaker-name { margin-top:10px; font-weight:600; font-size:.95rem; }
+  .strips { display:flex; gap:36px; align-items:flex-start; }
+  .strip-wrap { text-align:center; }
+  .strip { width:44px; height:170px; border-radius:8px 8px 4px 4px; border:2px solid rgba(0,0,0,.15); transition:background .8s, transform .5s; box-shadow:var(--shadow-sm); }
+  .strip.red { background:#fca5a5; }
+  .strip.blue { background:#93c5fd; }
+  .strip.dipped { transform:translateY(34px); }
+  .strip-label { margin-top:8px; font-size:.8rem; font-weight:600; color:var(--text-secondary); }
+  .sub-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-top:16px; }
+  .sub-btn { padding:11px 10px; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:#fff; font-family:var(--font-body); font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; }
+  .sub-btn:hover { border-color:var(--purple-light); transform:translateY(-2px); }
+  .sub-btn.active { border-color:var(--purple); background:var(--purple-50); box-shadow:var(--shadow-sm); }
+  .guess-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .result-line { font-family:var(--font-display); font-weight:700; font-size:1.15rem; margin-top:16px; min-height:1.6em; }
+  .log-table { width:100%; border-collapse:collapse; margin-top:14px; font-size:.85rem; }
+  .log-table th, .log-table td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); }
+  .log-table th { color:var(--text-muted); font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .pill { display:inline-block; padding:2px 12px; border-radius:999px; font-weight:700; font-size:.78rem; }
+  .pill.acid { background:#fee2e2; color:#b91c1c; }
+  .pill.base { background:#dbeafe; color:#1d4ed8; }
+  .pill.neutral { background:#dcfce7; color:#15803d; }
+</style>
+</head>
+<body>
+
+<nav class="sim-nav">
+  <a href="index.html" class="brand">
+    <div class="brand-icon">🧠</div>
+    <span>BrainJoy</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="simulations.html" class="current">Simulations</a>
+    <a href="ap-chemistry/">AP Chemistry</a>
+    <a href="scholarships.html">Scholarships</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<header class="sim-hero">
+  <div class="hero-blob"></div>
+  <p class="eyebrow">Chemistry Sim &middot; Acids &amp; Bases</p>
+  <h1>Test substances with <span class="gradient-text">litmus paper.</span></h1>
+  <p class="hero-sub">Pick a substance, predict acidic, basic or neutral, then dip virtual red and blue litmus strips to check your answer.</p>
+</header>
+
+<div class="sim-wrap">
+  <div class="sim-lab">
+
+    <div class="panel apparatus-panel">
+      <div style="width:100%;">
+        <h2>Testing Bench</h2>
+        <p class="panel-note">Blue litmus turns red in acid. Red litmus turns blue in base. Neutral substances change neither.</p>
+      </div>
+
+      <div class="litmus-stage">
+        <div class="strips">
+          <div class="strip-wrap">
+            <div class="strip blue" id="blueStrip"></div>
+            <div class="strip-label">Blue litmus</div>
+          </div>
+          <div class="strip-wrap">
+            <div class="strip red" id="redStrip"></div>
+            <div class="strip-label">Red litmus</div>
+          </div>
+        </div>
+        <div class="beaker">
+          <div class="beaker-glass"><div class="beaker-liquid" id="beakerLiquid"></div></div>
+          <div class="beaker-name" id="beakerName">Choose a substance →</div>
+        </div>
+      </div>
+
+      <div class="result-line" id="resultLine"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Controls</h2>
+      <p class="panel-note">1. Pick a substance. 2. Make your prediction. 3. Dip the strips.</p>
+
+      <h3 style="font-family:var(--font-display); font-weight:700; font-size:1.0rem; margin-top:6px;">Substance</h3>
+      <div class="sub-grid" id="subGrid"></div>
+
+      <h3 style="font-family:var(--font-display); font-weight:700; font-size:1.0rem; margin-top:18px;">Your prediction</h3>
+      <div class="guess-row">
+        <button class="sbtn" data-guess="acid" style="background:#fee2e2;color:#b91c1c;">Acidic</button>
+        <button class="sbtn" data-guess="neutral" style="background:#dcfce7;color:#15803d;">Neutral</button>
+        <button class="sbtn" data-guess="base" style="background:#dbeafe;color:#1d4ed8;">Basic</button>
+      </div>
+
+      <div class="btnrow" style="margin-top:20px;">
+        <button class="sbtn sbtn-primary" id="dipBtn" disabled>Dip the strips</button>
+        <button class="sbtn sbtn-reset" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="score-card" style="margin-top:20px;">
+        <span id="scoreText">Score: 0 / 0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:26px;">
+    <h2>Results Log</h2>
+    <p class="panel-note">Every test you run is recorded here.</p>
+    <table class="log-table">
+      <thead><tr><th>Substance</th><th>Blue litmus</th><th>Red litmus</th><th>Conclusion</th></tr></thead>
+      <tbody id="logBody"><tr><td colspan="4" style="color:var(--text-muted);">No tests yet.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="callouts">
+    <div class="callout">
+      <h3>How litmus works</h3>
+      <p>Litmus is a dye extracted from lichens. Acids turn <strong>blue litmus paper red</strong>; bases turn <strong>red litmus paper blue</strong>. If neither strip changes, the substance is neutral. Litmus tells you acid-or-base, but not how strong — for that you need a pH value.</p>
+    </div>
+    <div class="callout">
+      <h3>Why "no change" matters</h3>
+      <p>A strip that keeps its color is still data. Litmus only flips color when a solution is clearly acidic or clearly basic, so a substance like distilled water leaves both strips unchanged. Litmus cannot tell you the exact pH or how close to neutral something is — for that you need indicator solution or a pH meter.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="sim-footer">
+  <div class="sim-footer-inner">
+    <div class="footer-brand">
+      <div class="brand-icon">🧠</div>
+      <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
+    </div>
+    <div class="sim-footer-links">
+      <a href="simulations.html">All Simulations</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const SUBSTANCES = [
+  { name:'Lemon juice', ph:2.2, type:'acid', color:'#fef08a' },
+  { name:'Vinegar', ph:2.9, type:'acid', color:'#fde68a' },
+  { name:'Black coffee', ph:5.0, type:'acid', color:'#d6b08c' },
+  { name:'Distilled water', ph:7.0, type:'neutral', color:'#dbeafe' },
+  { name:'Baking soda solution', ph:8.3, type:'base', color:'#e0f2fe' },
+  { name:'Soap solution', ph:10.0, type:'base', color:'#e0e7ff' },
+  { name:'Milk of magnesia', ph:10.5, type:'base', color:'#f5f5f4' },
+  { name:'Household bleach', ph:12.5, type:'base', color:'#fafaf9' }
+];
+
+let current = null, guess = null, score = 0, total = 0, logged = 0;
+const blueStrip = document.getElementById('blueStrip');
+const redStrip = document.getElementById('redStrip');
+const dipBtn = document.getElementById('dipBtn');
+const resultLine = document.getElementById('resultLine');
+const logBody = document.getElementById('logBody');
+
+const grid = document.getElementById('subGrid');
+SUBSTANCES.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'sub-btn';
+  b.textContent = s.name;
+  b.onclick = () => selectSubstance(i, b);
+  grid.appendChild(b);
+});
+
+document.querySelectorAll('[data-guess]').forEach(b => {
+  b.onclick = () => {
+    guess = b.dataset.guess;
+    document.querySelectorAll('[data-guess]').forEach(x => x.style.outline = 'none');
+    b.style.outline = '3px solid var(--purple)';
+    updateDipBtn();
+  };
+});
+
+function selectSubstance(i, btn) {
+  current = SUBSTANCES[i];
+  document.querySelectorAll('.sub-btn').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('beakerName').textContent = current.name + ' (pH ' + current.ph.toFixed(1) + ')';
+  document.getElementById('beakerLiquid').style.background = current.color;
+  resultLine.textContent = '';
+  updateDipBtn();
+}
+
+function updateDipBtn() { dipBtn.disabled = !(current && guess); }
+
+dipBtn.onclick = () => {
+  blueStrip.classList.add('dipped');
+  redStrip.classList.add('dipped');
+  setTimeout(() => {
+    let blueResult, redResult;
+    if (current.type === 'acid') { blueStrip.style.background = '#ef4444'; blueResult = 'turned red'; redResult = 'no change'; }
+    else if (current.type === 'base') { redStrip.style.background = '#3b82f6'; redResult = 'turned blue'; blueResult = 'no change'; }
+    else { blueResult = 'no change'; redResult = 'no change'; }
+
+    total++;
+    const correct = guess === current.type;
+    if (correct) score++;
+    document.getElementById('scoreText').textContent = 'Score: ' + score + ' / ' + total;
+    const label = current.type === 'acid' ? 'acidic' : current.type === 'base' ? 'basic' : 'neutral';
+    resultLine.textContent = (correct ? '✅ Correct! ' : '❌ Not quite. ') + current.name + ' is ' + label + '.';
+    resultLine.style.color = correct ? '#15803d' : '#b91c1c';
+
+    if (logged === 0) logBody.innerHTML = '';
+    logged++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + current.name + '</td><td>' + blueResult + '</td><td>' + redResult + '</td><td><span class="pill ' + current.type + '">' + label + '</span></td>';
+    logBody.prepend(tr);
+
+    setTimeout(() => { blueStrip.classList.remove('dipped'); redStrip.classList.remove('dipped'); }, 900);
+  }, 600);
+};
+
+document.getElementById('resetBtn').onclick = () => {
+  blueStrip.style.background = ''; redStrip.style.background = '';
+  blueStrip.className = 'strip blue'; redStrip.className = 'strip red';
+  current = null; guess = null;
+  document.querySelectorAll('.sub-btn').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('[data-guess]').forEach(x => x.style.outline = 'none');
+  document.getElementById('beakerName').textContent = 'Choose a substance →';
+  document.getElementById('beakerLiquid').style.background = '#dbeafe';
+  resultLine.textContent = '';
+  dipBtn.disabled = true;
+};
+</script>
+</body>
+</html>
