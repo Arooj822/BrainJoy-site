@@ -1,17 +1,9 @@
 // BrainJoy quiz core - shared backend helpers.
-// Uses Supabase when reachable; falls back to localStorage so quizzes still
-// save and play on this device while the backend is being restored.
+// Same-browser prototype only. No cloud reads or writes are enabled.
 (function () {
-  const SUPABASE_URL = 'https://kxqjyqohhjkggtqnwubd.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_sQjeQCi8f6J4iQgyP3jGSA_7fK1Noek';
   const LOCAL_KEY = 'bj_quizzes';
-
-  let client = null;
-  try {
-    if (window.supabase && window.supabase.createClient) {
-      client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-  } catch (e) { client = null; }
+  // Deliberately offline until authentication and row ownership are verified.
+  const client = null;
 
   function readLocal() {
     try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); }
@@ -25,13 +17,7 @@
     mode: 'checking',
 
     async init() {
-      if (!client) { this.mode = 'local'; return this.mode; }
-      try {
-        const ctrl = new AbortController();
-        setTimeout(() => ctrl.abort(), 4000);
-        const { error } = await client.from('quizzes').select('id', { head: true, count: 'exact' }).limit(1);
-        this.mode = error ? 'local' : 'cloud';
-      } catch (e) { this.mode = 'local'; }
+      this.mode = 'local';
       return this.mode;
     },
 
