@@ -166,8 +166,8 @@ document.getElementById('saveBtn').onclick = async () => {
   const msg = document.getElementById('saveMsg');
   const title = document.getElementById('qTitle').value.trim();
   if (!title) { msg.textContent = ' Give the quiz a title first.'; msg.style.color = '#b45309'; return; }
-  const clean = questions.filter(q => q.text.trim());
-  if (!clean.length) { msg.textContent = ' Add at least one question with text.'; msg.style.color = '#b45309'; return; }
+  const clean = questions;
+  if (!clean.length) { msg.textContent = ' Add at least one question.'; msg.style.color = '#b45309'; return; }
   const quiz = {
     id: document.getElementById('qId').value || null,
     title,
@@ -178,7 +178,7 @@ document.getElementById('saveBtn').onclick = async () => {
   try {
     const saved = await bjQuizStore.saveQuiz(quiz);
     document.getElementById('qId').value = saved.id;
-    msg.textContent = ' Saved' + (bjQuizStore.mode === 'cloud' ? ' to the class cloud.' : ' on this device.') + ' Play link: quiz-play.html?id=' + saved.id;
+    msg.textContent = 'Saved in this browser. Use Play below, or export a backup to move it to another browser.';
     msg.style.color = '#15803d';
     loadSaved();
   } catch (e) {
@@ -252,16 +252,15 @@ function loadIntoEditor(q) {
   const mode = await bjQuizStore.init();
   const badge = document.getElementById('modeBadge');
   const note = document.getElementById('modeNote');
-  if (mode === 'cloud') {
-    badge.className = 'mode-badge cloud';
-    badge.textContent = ' Saving to class cloud - play links work on any device';
-    note.style.display = 'none';
-  } else {
-    badge.className = 'mode-badge local';
-    badge.textContent = ' Browser-only prototype';
-    note.style.display = 'block';
+  badge.className = 'mode-badge local';
+  badge.textContent = 'Browser-only prototype';
+  note.style.display = 'block';
+  await loadSaved();
+  const requested = new URLSearchParams(location.search).get('id');
+  if (requested) {
+    try { const saved = await bjQuizStore.getQuiz(requested); if (!saved) throw Error('That quiz is not saved in this browser. Import its quiz JSON file to edit it here.'); bjQuizStore.validateQuiz(saved); loadIntoEditor(saved); }
+    catch (e) { document.getElementById('saveMsg').textContent = e.message; }
   }
-  loadSaved();
 })();
 </script>
 </body>
