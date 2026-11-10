@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#6a0dad" />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="sim-styles.css" />
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="quiz-store.js"></script>
 <style>
   .play-card { max-width:720px; margin:0 auto; }
@@ -37,7 +37,7 @@
 
 <nav class="sim-nav">
   <a href="index.html" class="brand">
-    <div class="brand-icon">🧠</div>
+    <div class="brand-icon"></div>
     <span>BrainJoy</span>
   </a>
   <div class="nav-links">
@@ -53,7 +53,7 @@
   <div class="hero-blob"></div>
   <p class="eyebrow" id="heroEyebrow">Quiz</p>
   <h1 id="heroTitle">Loading <span class="gradient-text">quiz…</span></h1>
-  <p class="hero-sub" id="heroSub"></p>
+  <p class="hero-sub" id="heroSub"></p><p class="panel-note">Browser-only practice prototype. Scores are not sent to a teacher.</p>
 </header>
 
 <div class="sim-wrap">
@@ -65,7 +65,7 @@
 <footer class="sim-footer">
   <div class="sim-footer-inner">
     <div class="footer-brand">
-      <div class="brand-icon">🧠</div>
+      <div class="brand-icon"></div>
       <span>&copy; 2026 BrainJoy &middot; brainjoy.site</span>
     </div>
     <div class="sim-footer-links">
@@ -84,9 +84,9 @@ async function boot() {
   const id = new URLSearchParams(location.search).get('id');
   const area = document.getElementById('playArea');
   await bjQuizStore.init();
-  if (!id) { area.innerHTML = '<p style="text-align:center;">No quiz selected. Ask your teacher for the play link.</p>'; return; }
+  if (!id) { area.innerHTML = '<p style="text-align:center;">No quiz selected. Open the quiz builder, save a quiz, then select Play.</p>'; return; }
   quiz = await bjQuizStore.getQuiz(id);
-  if (!quiz) { area.innerHTML = '<p style="text-align:center;">Quiz not found. Check the link with your teacher.</p>'; return; }
+  if (!quiz) { area.innerHTML = '<p style="text-align:center;">This browser does not have that quiz. Import its quiz file in the builder first.</p>'; return; }
   document.getElementById('heroEyebrow').textContent = (quiz.subject || 'Quiz') + (quiz.grade ? ' · ' + quiz.grade : '');
   document.getElementById('heroTitle').innerHTML = esc(quiz.title);
   document.getElementById('heroSub').textContent = quiz.questions.length + ' questions · answer at your own pace';
@@ -98,7 +98,7 @@ function showStart() {
   area.innerHTML =
     '<div class="score-hero"><h2 style="font-family:var(--font-display);">Ready to play?</h2>' +
     '<p style="color:var(--text-secondary); margin:10px 0 4px;">' + quiz.questions.length + ' questions. You get instant feedback after each one.</p>' +
-    '<div class="name-row"><input id="playerName" placeholder="Your name (optional)"><button class="sbtn sbtn-primary" id="startBtn">Start ▶</button></div></div>';
+    '<div class="name-row"><button class="sbtn sbtn-primary" id="startBtn">Start ▶</button></div></div>';
   document.getElementById('startBtn').onclick = () => { idx = 0; score = 0; answers = []; renderQuestion(); };
 }
 
@@ -153,7 +153,7 @@ function grade(btn, ok, reveal) {
   answers.push({ q: quiz.questions[idx], ok });
   const fb = document.getElementById('feedback');
   fb.style.color = ok ? '#15803d' : '#b91c1c';
-  fb.innerHTML = (ok ? '✅ Correct!' : '❌ Not quite. ' + esc(reveal)) + ' ';
+  fb.innerHTML = (ok ? ' Correct!' : ' Not quite. ' + esc(reveal)) + ' ';
   const next = document.createElement('button');
   next.className = 'sbtn sbtn-primary';
   next.style.marginLeft = '10px';
@@ -165,7 +165,7 @@ function grade(btn, ok, reveal) {
 function showResults() {
   const area = document.getElementById('playArea');
   const pct = Math.round(100 * score / quiz.questions.length);
-  let msg = pct >= 80 ? '🏆 Excellent work!' : pct >= 50 ? '💪 Good effort - review the ones you missed.' : '🌱 Keep practicing - every mistake is a step.';
+  let msg = pct >= 80 ? ' Excellent work!' : pct >= 50 ? ' Good effort - review the ones you missed.' : ' Keep practicing - every mistake is a step.';
   let html = '<div class="score-hero"><div class="score-big">' + score + ' / ' + quiz.questions.length + '</div>' +
     '<p style="font-family:var(--font-display); font-size:1.3rem;">' + pct + '%</p>' +
     '<p style="color:var(--text-secondary); margin:8px 0 18px;">' + msg + '</p>' +
@@ -178,7 +178,7 @@ function showResults() {
   area.innerHTML = html;
 }
 
-boot();
+boot().catch(e => { document.getElementById('playArea').textContent = 'Quiz could not load: ' + e.message; });
 </script>
 </body>
 </html>
