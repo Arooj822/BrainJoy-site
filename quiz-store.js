@@ -36,6 +36,11 @@
     let list;
     try { list = JSON.parse(raw); } catch (_) { throw new Error('Saved browser data cannot be read. Export or recover it before resetting storage.'); }
     if (!Array.isArray(list)) throw new Error('Saved browser data has an unexpected format. Nothing was overwritten.');
+    const ids = new Set();
+    for (const q of list) {
+      try { validateQuiz(q); if (typeof q.id !== 'string' || !/^local-[a-zA-Z0-9-]+$/.test(q.id) || ids.has(q.id)) throw Error('identifier'); ids.add(q.id); }
+      catch (_) { throw new Error('Saved browser data contains an unreadable quiz. Nothing was overwritten. Preserve or export this browser data before repairing it.'); }
+    }
     return list;
   }
   function writeLocal(list) {
@@ -49,7 +54,7 @@
     async saveQuiz(input) {
       const quiz = validateQuiz(input);
       const list = readLocal();
-      quiz.id = input.id ? String(input.id) : 'local-' + (root.crypto && root.crypto.randomUUID ? root.crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+      quiz.id = typeof input.id === 'string' && /^local-[a-zA-Z0-9-]+$/.test(input.id) ? input.id : 'local-' + (root.crypto && root.crypto.randomUUID ? root.crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
       quiz.updated_at = new Date().toISOString();
       const i = list.findIndex(x => x.id === quiz.id);
       if (i >= 0) list[i] = quiz; else list.push(quiz);
