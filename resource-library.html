@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resource Library | BrainJoy 🧠</title>
+    <title>Resource Library | BrainJoy </title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -37,7 +37,7 @@
             background: #f1f5f9;
             border-radius: 12px;
             padding: 10px 20px;
-            width: 400px;
+            width: min(400px, 45vw);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -161,19 +161,20 @@
             justify-content: space-between;
             align-items: center;
         }
-    </style>
+    .rl-navbar{gap:18px;flex-wrap:wrap}.rl-navbar>div{display:flex;gap:16px;align-items:center}.rl-logo{white-space:nowrap}.rl-search-bar{flex:1;min-width:180px;max-width:400px}.rl-banner{gap:24px}.rl-banner p{line-height:1.6}.rl-card[hidden]{display:none}.rl-card p{line-height:1.5}.rl-btn{text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ad7ed0;outline-offset:4px}@media(max-width:650px){.rl-navbar{padding:20px;gap:16px}.rl-search-bar{order:3;max-width:none;flex-basis:100%;width:100%}.rl-navbar>div:not(.rl-search-bar){margin-left:0;flex-wrap:wrap}.rl-banner{padding:28px;display:block}.rl-banner h1{font-size:1.7rem!important;line-height:1.2}.rl-banner button{margin-top:22px}.rl-filters{padding:15px 20px;max-width:100vw}.rl-container{margin:24px auto}.rl-grid{grid-template-columns:1fr}body{overflow-x:hidden}}@media(prefers-reduced-motion:reduce){*{transition:none!important}.rl-card:hover{transform:none}}
+</style>
 </head>
 <body>
 
     <nav class="rl-navbar">
-        <a href="#" class="rl-logo">🧠 BrainJoy <span style="font-weight: 300; font-size: 1rem; color: #718096;">Library</span></a>
+        <a href="index.html" class="rl-logo"> BrainJoy <span style="font-weight: 300; font-size: 1rem; color: #718096;">Library</span></a>
         
         <div class="rl-search-bar">
-            🔍 <input type="text" placeholder="Search Chemistry, KS3 Math, Phonics...">
+            🔍 <input type="search" aria-label="Search resource plans" placeholder="Search Chemistry, KS3 Math, Phonics...">
         </div>
 
         <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="#" style="text-decoration: none; color: var(--bj-text); font-weight: 600;">My Downloads</a>
+            <a href="#library-help" style="text-decoration: none; color: var(--bj-text); font-weight: 600;">My Downloads</a>
             <button class="rl-btn" style="background: var(--bj-gold);">Sell Your Resources</button>
         </div>
     </nav>
@@ -192,27 +193,27 @@
         
         <div class="rl-banner">
             <div>
-                <h1 style="font-size: 2rem; margin-bottom: 10px;">Become a Gold Member 🏆</h1>
-                <p style="opacity: 0.9;">Unlimited access to 5,000+ premium resources and AI-powered assessments.</p>
+                <h1 style="font-size: 2rem; margin-bottom: 10px;">Your next great lesson starts here</h1>
+                <p style="opacity: 0.9;">Explore original teaching-resource samples. Paid packs and memberships are being prepared, not yet for sale.</p>
             </div>
-            <button class="rl-btn" style="background: #fff; color: var(--bj-purple); padding: 15px 30px; font-size: 1rem;">Upgrade Now</button>
+            <button class="rl-btn" style="background: #fff; color: var(--bj-purple); padding: 15px 30px; font-size: 1rem;">See what is available</button>
         </div>
 
-        <div class="rl-section-title">✨ Featured Resources</div>
+        <div style="padding:18px;border:1px solid #dcc9ed;border-radius:14px;background:white;margin-bottom:25px"><strong>Library in development</strong><p>Try the original five-question atomic-structure sample below, free. The existing pack ideas and example prices are preserved as plans, not active offers. No cart, subscription or payment is active. Final pack contents, prices and buyer terms will be confirmed before sales open.</p><p><a href="resources/atomic-structure-sample.html">Open the free sample and teacher guide</a> · <a href="flashcards.html?sample=atomic">Practise with flashcards</a> · <a href="resources/atomic-structure-sample.json" download>Download quiz JSON (includes answers)</a> · <a href="classroom-tools.html">Try classroom tools</a></p></div><div class="rl-section-title">Featured resource plans</div>
 
         <div class="rl-grid">
             <!-- Resource 1 -->
             <div class="rl-card">
                 <div class="rl-thumb" style="background: #f3e8ff;">
                     <span class="rl-badge badge-pro">PRO</span>
-                    <span style="font-size: 4rem;">🧪</span>
+                    <span style="font-size: 4rem;"><svg width="80" height="80" viewBox="0 0 80 80" aria-label="Original chemistry flask illustration"><path d="M29 8h22M34 8v25L15 65q-4 8 6 8h38q10 0 6-8L46 33V8" fill="#cbb1ee" stroke="#7842b5" stroke-width="4"/><path d="M25 51h30l8 16H17z" fill="#8b55cf"/></svg></span>
                 </div>
                 <div class="rl-content">
                     <span class="rl-tag">Chemistry / Secondary</span>
                     <h3 class="rl-title">Periodic Trends: Complete Mastery Pack</h3>
                     <p style="font-size: 0.8rem; color: #718096;">Full lesson slides + 3 interactive games + Printable Exam.</p>
                     <div class="rl-footer">
-                        <span class="rl-price">$4.99</span>
+                        <span class="rl-price">Example: $4.99</span>
                         <button class="rl-btn">View Pack</button>
                     </div>
                 </div>
@@ -227,10 +228,10 @@
                 <div class="rl-content">
                     <span class="rl-tag">Physics / A-Level</span>
                     <h3 class="rl-title">Atomic Structure Quiz Bank</h3>
-                    <p style="font-size: 0.8rem; color: #718096;">50 MCQ questions for BrainJoy Quiz Sprint mode.</p>
+                    <p style="font-size: 0.8rem; color: #718096;">Planned: 50 MCQ questions for BrainJoy Quiz Sprint mode. Available now: five-question original sample.</p>
                     <div class="rl-footer">
                         <span class="rl-price" style="color: #1a7f3c;">FREE</span>
-                        <button class="rl-btn">Download</button>
+                        <a class="rl-btn" href="resources/atomic-structure-sample.html">Open free sample</a>
                     </div>
                 </div>
             </div>
@@ -239,21 +240,27 @@
             <div class="rl-card">
                 <div class="rl-thumb" style="background: #e0f2fe;">
                     <span class="rl-badge badge-pro">PRO</span>
-                    <span style="font-size: 4rem;">🦒</span>
+                    <span style="font-size: 4rem;"><svg width="80" height="80" viewBox="0 0 80 80" aria-label="Original smiling leaf illustration"><path d="M12 65Q7 9 66 12Q72 65 12 65" fill="#80cbb0"/><path d="M13 65l40-40" stroke="#28785f" stroke-width="4"/><circle cx="38" cy="31" r="3" fill="#185540"/><circle cx="54" cy="35" r="3" fill="#185540"/></svg></span>
                 </div>
                 <div class="rl-content">
                     <span class="rl-tag">Science / Primary</span>
                     <h3 class="rl-title">Animal Kingdoms: Sort & Match Game</h3>
                     <p style="font-size: 0.8rem; color: #718096;">Interactive drag-and-drop game for ages 5-8.</p>
                     <div class="rl-footer">
-                        <span class="rl-price">$2.50</span>
+                        <span class="rl-price">Example: $2.50</span>
                         <button class="rl-btn">Add to Cart</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </div><p id="emptyResources" hidden style="padding:25px;background:white;border-radius:12px">No matching resources yet. Try All Resources or another search.</p>
 
     </div>
 
-</body>
+<dialog id="resourceInfo" style="max-width:520px;border:1px solid #ddd;border-radius:18px;padding:28px"><h2 id="infoTitle"></h2><p id="infoText"></p><form method="dialog"><button class="rl-btn">Close</button></form></dialog><script>
+const info=document.getElementById('resourceInfo');document.querySelectorAll('a[href="#library-help"]').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById('infoTitle').textContent=a.textContent;document.getElementById('infoText').textContent='Your paid library and seller tools are not open yet. The free atomic-structure sample is available now. No account, sale or payment is created by this page.';info.showModal();});document.querySelectorAll('button.rl-btn').forEach(b=>{if(b.closest('dialog'))return;b.onclick=()=>{document.getElementById('infoTitle').textContent=b.textContent==='See what is available'?'Try the free sample':'Resource plan, not yet on sale';document.getElementById('infoText').textContent='This library is being prepared. No payment or cart is active. You can open the free atomic-structure sample and import its JSON into the quiz builder. Paid packs need final content, pricing, buyer terms and approved payment setup before release.';info.showModal();};});
+const search=document.querySelector('.rl-search-bar input');let category='All Resources';
+function filterResources(){const query=search.value.trim().toLowerCase(),term=category.toLowerCase();const cards=[...document.querySelectorAll('.rl-card')];cards.forEach(c=>{const text=c.textContent.toLowerCase();c.hidden=!(text.includes(query)&&(term==='all resources'||text.includes(term)||(term==='interactive quizzes'&&text.includes('quiz'))));});document.getElementById('emptyResources').hidden=cards.some(c=>!c.hidden);}
+search.addEventListener('input',filterResources);
+document.querySelectorAll('.rl-filter-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.rl-filter-btn').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-pressed','false');});b.classList.add('active');b.setAttribute('aria-pressed','true');category=b.textContent.trim();filterResources();});
+</script></body>
 </html>
