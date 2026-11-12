@@ -13,9 +13,12 @@ jobs:
     steps:
       - name: Rebuild the hash-verified bw release, then overlay the bx files
         shell: bash
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
         run: |
           set -e
-          curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/.github/workflows/brainjoy-allowlisted-pages.yml" -o old.yml
+          curl -fsSL "https://raw.githubusercontent.com/$REPO/$SHA/.github/workflows/brainjoy-allowlisted-pages.yml" -o old.yml
           python3 - <<'PYX'
           import hashlib, yaml
           raw = open('old.yml','rb').read()
