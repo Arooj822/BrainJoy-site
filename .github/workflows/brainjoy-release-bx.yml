@@ -32,7 +32,7 @@ jobs:
           import base64, gzip, hashlib, pathlib
           import lzma, json
           OVERLAY = {
-            "bj-docread.js": "6cfb21d23f641446543faa983163734b9f18fbdd8f75c2169861218b15671478",OVERLAY = {
+            "bj-docread.js": "6cfb21d23f641446543faa983163734b9f18fbdd8f75c2169861218b15671478",
             "lesson-docimport.js": "4cfdbbb489eac613a9cfb3b4628583d64c82343568e46840748015c9f115d896",
             "sim-reaction-rates.html": "c794cd69d93702dda32c769ddb7e8add8e254163756c9a7fcca8aed3138229ca",
             "conductivity-lab.html": "406c1dd941155d7bdf908462872b19b0beceb1d4f42d5ddf0a50a80ac4bbfa74",
